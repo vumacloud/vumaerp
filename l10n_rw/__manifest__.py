@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kenya - Base Localization',
+    'name': 'Rwanda - Base Localization',
     'version': '18.0.1.0.0',
     'category': 'Accounting/Localizations',
-    'summary': 'Base localization module for Kenya',
+    'summary': 'Base localization module for Rwanda',
     'description': """
-Kenya Base Localization
-=======================
+Rwanda Base Localization
+========================
 
-This module provides the base localization for Kenya including:
-- Kenya country data
-- Currency (KES - Kenyan Shilling)
+This module provides the base localization for Rwanda including:
+- Rwanda country data
+- Currency (RWF - Rwandan Franc)
 - Regional configurations
 - Base compliance structures
 
-This is the foundation module for all Kenya-specific Odoo customizations.
+This is the foundation module for all Rwanda-specific Odoo customizations.
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
