@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ethiopia specific country configuration -->
+        <record id="base.et" model="res.country">
+            <field name="name">Ethiopia</field>
+            <field name="code">ET</field>
+            <field name="currency_id" ref="base.ETB"/>
+            <field name="phone_code">251</field>
+        </record>
+    </data>
+</odoo>
