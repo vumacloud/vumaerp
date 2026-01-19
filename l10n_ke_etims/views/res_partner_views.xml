@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Partner Form Inherit -->
+    <record id="res_partner_view_form_etims" model="ir.ui.view">
+        <field name="name">res.partner.form.etims</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add KRA PIN field after VAT -->
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="etims_pin" placeholder="A123456789B"/>
+                <button name="action_validate_pin" string="Validate PIN" type="object"
+                        class="btn-link" icon="fa-check"
+                        invisible="not etims_pin or etims_pin_validated"/>
+                <span class="text-success" invisible="not etims_pin_validated">
+                    <i class="fa fa-check-circle"/> Validated
+                </span>
+            </xpath>
+
+            <!-- Add eTIMS page -->
+            <xpath expr="//notebook" position="inside">
+                <page string="eTIMS" name="etims" groups="l10n_ke_etims.group_etims_user">
+                    <group>
+                        <group string="KRA Information">
+                            <field name="etims_pin"/>
+                            <field name="etims_pin_validated"/>
+                            <field name="etims_pin_validation_date"/>
+                        </group>
+                        <group string="Customer Settings">
+                            <field name="etims_customer_type"/>
+                            <field name="etims_branch_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <button name="action_validate_pin" string="Validate with KRA" type="object"
+                                class="btn-primary" icon="fa-check-circle"
+                                invisible="not etims_pin"/>
+                        <button name="action_search_kra" string="Search KRA Database" type="object"
+                                class="btn-secondary" icon="fa-search"
+                                invisible="not etims_pin"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Tree Inherit -->
+    <record id="res_partner_view_tree_etims" model="ir.ui.view">
+        <field name="name">res.partner.tree.etims</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="after">
+                <field name="etims_pin" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filter -->
+    <record id="res_partner_view_search_etims" model="ir.ui.view">
+        <field name="name">res.partner.search.etims</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='supplier']" position="after">
+                <separator/>
+                <filter name="pin_validated" string="PIN Validated" domain="[('etims_pin_validated', '=', True)]"/>
+                <filter name="has_pin" string="Has KRA PIN" domain="[('etims_pin', '!=', False)]"/>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="after">
+                <field name="etims_pin" string="KRA PIN"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

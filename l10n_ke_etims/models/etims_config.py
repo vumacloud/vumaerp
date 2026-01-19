@@ -6,8 +6,14 @@ from odoo.exceptions import UserError, ValidationError
 class EtimsConfig(models.Model):
     _name = 'etims.config'
     _description = 'eTIMS Configuration'
-    _rec_name = 'company_id'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _rec_name = 'name'
 
+    name = fields.Char(
+        string='Name',
+        required=True,
+        default='eTIMS Configuration',
+    )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
@@ -16,6 +22,17 @@ class EtimsConfig(models.Model):
         ondelete='cascade',
     )
     active = fields.Boolean(default=True)
+    is_active = fields.Boolean(
+        string='Active Configuration',
+        default=True,
+        help='Mark this as the active eTIMS configuration for the company',
+    )
+    timeout = fields.Integer(
+        string='Request Timeout',
+        default=30,
+        help='API request timeout in seconds',
+    )
+    notes = fields.Text(string='Notes')
 
     # Environment
     environment = fields.Selection([
@@ -53,10 +70,26 @@ class EtimsConfig(models.Model):
         default=False,
         help='Automatically submit invoices to eTIMS on validation',
     )
+    auto_register_products = fields.Boolean(
+        string='Auto-register Products',
+        default=False,
+        help='Automatically register products with eTIMS on creation',
+    )
+    auto_report_stock = fields.Boolean(
+        string='Auto-report Stock',
+        default=False,
+        help='Automatically report stock movements to eTIMS',
+    )
     submit_on_post = fields.Boolean(
         string='Submit on Post',
         default=True,
         help='Submit invoice to eTIMS when posted',
+    )
+
+    # Related devices
+    device_count = fields.Integer(
+        string='Device Count',
+        compute='_compute_device_count',
     )
 
     # Status
@@ -72,6 +105,50 @@ class EtimsConfig(models.Model):
     _sql_constraints = [
         ('company_uniq', 'unique(company_id)', 'Only one eTIMS configuration per company is allowed.'),
     ]
+
+    @api.depends('company_id')
+    def _compute_device_count(self):
+        for config in self:
+            config.device_count = self.env['etims.device'].search_count([
+                ('company_id', '=', config.company_id.id)
+            ])
+
+    def action_view_devices(self):
+        """View devices for this company."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('eTIMS Devices'),
+            'res_model': 'etims.device',
+            'view_mode': 'tree,form',
+            'domain': [('company_id', '=', self.company_id.id)],
+            'context': {'default_company_id': self.company_id.id},
+        }
+
+    def action_initialize_device(self):
+        """Initialize a new device."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Register Device'),
+            'res_model': 'etims.device',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_company_id': self.company_id.id,
+                'default_serial_number': self.device_serial,
+            },
+        }
+
+    @api.model
+    def get_active_config(self, company=None):
+        """Get the active eTIMS configuration for the company."""
+        company = company or self.env.company
+        config = self.search([
+            ('company_id', '=', company.id),
+            ('is_active', '=', True),
+        ], limit=1)
+        return config
 
     @api.model
     def get_config(self, company=None):
