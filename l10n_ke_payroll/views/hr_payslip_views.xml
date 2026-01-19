@@ -10,7 +10,7 @@
                     <group>
                         <group string="Deductions">
                             <field name="ke_paye_amount"/>
-                            <field name="ke_nhif_amount"/>
+                            <field name="ke_shif_amount"/>
                             <field name="ke_nssf_amount"/>
                             <field name="ke_housing_levy_amount"/>
                         </group>

@@ -100,18 +100,19 @@ result = -config.calculate_nssf(gross)
             </field>
         </record>
 
-        <!-- NHIF Contribution -->
-        <record id="rule_ke_nhif" model="hr.salary.rule">
-            <field name="name">NHIF Contribution</field>
-            <field name="code">KE_NHIF</field>
+        <!-- SHIF Contribution (SHA - replaced NHIF Oct 2024) -->
+        <record id="rule_ke_shif" model="hr.salary.rule">
+            <field name="name">SHIF (SHA)</field>
+            <field name="code">KE_SHIF</field>
             <field name="sequence">21</field>
             <field name="category_id" ref="category_ke_statutory"/>
             <field name="struct_id" ref="structure_ke_employee"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
 gross = categories.GROSS
-result = -env['kenya.nhif.rate'].get_contribution(gross)
+result = -config.calculate_shif(gross)
             </field>
         </record>
 
@@ -191,8 +192,8 @@ result = config.personal_relief
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 config = env['kenya.statutory.config'].get_config(payslip.company_id)
-nhif = abs(rules.KE_NHIF) if rules.KE_NHIF else 0
-result = config.calculate_insurance_relief(nhif)
+shif = abs(rules.KE_SHIF) if rules.KE_SHIF else 0
+result = config.calculate_insurance_relief(shif)
             </field>
         </record>
 
