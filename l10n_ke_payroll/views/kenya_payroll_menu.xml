@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_kenya_payroll_config"
+              name="Kenya Payroll"
+              parent="om_hr_payroll.menu_hr_payroll_configuration"
+              sequence="100"/>
+
+    <menuitem id="menu_kenya_statutory_config"
+              name="Statutory Configuration"
+              parent="menu_kenya_payroll_config"
+              action="kenya_statutory_config_action"
+              sequence="10"/>
+
+    <menuitem id="menu_kenya_nhif_rates"
+              name="NHIF Rates"
+              parent="menu_kenya_payroll_config"
+              action="kenya_nhif_rate_action"
+              sequence="20"/>
+
+    <menuitem id="menu_kenya_paye_bands"
+              name="PAYE Tax Bands"
+              parent="menu_kenya_payroll_config"
+              action="kenya_paye_tax_band_action"
+              sequence="30"/>
+</odoo>
