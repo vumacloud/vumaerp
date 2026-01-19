@@ -1,15 +1,15 @@
-# Odoo Kenya Localization Addons
+# Odoo Tanzania Localization Addons
 
-Private Odoo 18.0 addons for Kenya localization and customizations.
+Private Odoo 18.0 addons for Tanzania localization and customizations.
 
 ## Structure
 
 ```
-odoo-addons-kenya/
-├── l10n_ke/                 # Kenya base localization
-├── l10n_ke_accounting/      # Kenya accounting (KRA compliance)
-├── l10n_ke_payroll/         # Kenya payroll (NHIF, NSSF, PAYE)
-├── l10n_ke_edi/             # Kenya e-invoicing (TIMS/eTIMS)
+odoo-addons-tanzania/
+├── l10n_tz/                 # Tanzania base localization
+├── l10n_tz_accounting/      # Tanzania accounting (TRA compliance)
+├── l10n_tz_payroll/         # Tanzania payroll (NSSF, PAYE, SDL, WCF)
+├── l10n_tz_edi/             # Tanzania e-invoicing (VFD/EFD)
 └── [custom modules]/        # Client-specific modules
 ```
 
@@ -17,12 +17,12 @@ odoo-addons-kenya/
 
 1. Clone this repository into your Odoo addons path:
    ```bash
-   git clone <repo-url> /path/to/odoo/addons/kenya
+   git clone <repo-url> /path/to/odoo/addons/tanzania
    ```
 
 2. Add to your Odoo configuration:
    ```
-   addons_path = /path/to/odoo/addons,/path/to/odoo/addons/kenya
+   addons_path = /path/to/odoo/addons,/path/to/odoo/addons/tanzania
    ```
 
 3. Update apps list and install modules.

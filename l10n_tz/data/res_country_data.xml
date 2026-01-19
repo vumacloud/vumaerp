@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Tanzania specific country configuration -->
+        <record id="base.tz" model="res.country">
+            <field name="name">Tanzania</field>
+            <field name="code">TZ</field>
+            <field name="currency_id" ref="base.TZS"/>
+            <field name="phone_code">255</field>
+        </record>
+    </data>
+</odoo>
