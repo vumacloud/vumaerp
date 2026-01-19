@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kenya Statutory Config -->
+    <record id="kenya_statutory_config_view_form" model="ir.ui.view">
+        <field name="name">kenya.statutory.config.form</field>
+        <field name="model">kenya.statutory.config</field>
+        <field name="arch" type="xml">
+            <form string="Kenya Statutory Configuration">
+                <sheet>
+                    <group>
+                        <group string="General">
+                            <field name="name"/>
+                            <field name="company_id"/>
+                            <field name="is_active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="NSSF">
+                            <field name="nssf_tier1_limit"/>
+                            <field name="nssf_tier1_rate"/>
+                            <field name="nssf_tier2_limit"/>
+                            <field name="nssf_tier2_rate"/>
+                        </group>
+                        <group string="Housing Levy">
+                            <field name="housing_levy_rate"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Tax Reliefs">
+                            <field name="personal_relief"/>
+                            <field name="insurance_relief_rate"/>
+                            <field name="insurance_relief_max"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="kenya_statutory_config_action" model="ir.actions.act_window">
+        <field name="name">Statutory Configuration</field>
+        <field name="res_model">kenya.statutory.config</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <!-- NHIF Rates -->
+    <record id="kenya_nhif_rate_view_tree" model="ir.ui.view">
+        <field name="name">kenya.nhif.rate.tree</field>
+        <field name="model">kenya.nhif.rate</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="min_salary"/>
+                <field name="max_salary"/>
+                <field name="contribution"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="kenya_nhif_rate_action" model="ir.actions.act_window">
+        <field name="name">NHIF Rates</field>
+        <field name="res_model">kenya.nhif.rate</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- PAYE Tax Bands -->
+    <record id="kenya_paye_tax_band_view_tree" model="ir.ui.view">
+        <field name="name">kenya.paye.tax.band.tree</field>
+        <field name="model">kenya.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="kenya_paye_tax_band_action" model="ir.actions.act_window">
+        <field name="name">PAYE Tax Bands</field>
+        <field name="res_model">kenya.paye.tax.band</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

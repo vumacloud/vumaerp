@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Kenya Salary Rule Categories -->
+        <record id="category_ke_allowance" model="hr.salary.rule.category">
+            <field name="name">Allowances (Kenya)</field>
+            <field name="code">KE_ALW</field>
+        </record>
+
+        <record id="category_ke_statutory" model="hr.salary.rule.category">
+            <field name="name">Statutory Deductions (Kenya)</field>
+            <field name="code">KE_DED</field>
+        </record>
+
+        <record id="category_ke_relief" model="hr.salary.rule.category">
+            <field name="name">Tax Reliefs (Kenya)</field>
+            <field name="code">KE_REL</field>
+        </record>
+
+        <record id="category_ke_employer" model="hr.salary.rule.category">
+            <field name="name">Employer Contributions (Kenya)</field>
+            <field name="code">KE_EMP</field>
+        </record>
+    </data>
+</odoo>

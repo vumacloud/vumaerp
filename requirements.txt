@@ -1,0 +1,9 @@
+# Python dependencies for Kenya localization addons
+# These are in addition to Odoo's base requirements
+
+# No additional dependencies required for base module
+# Add country-specific dependencies below as needed:
+
+# Example:
+# python-stdnum>=1.18  # For tax ID validation
+# phonenumbers>=8.12   # For phone number validation

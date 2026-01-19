@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- ==================== BASIC & ALLOWANCES ==================== -->
+
+        <!-- Basic Salary -->
+        <record id="rule_ke_basic" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">KE_BASIC</field>
+            <field name="sequence">1</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage</field>
+        </record>
+
+        <!-- House Allowance -->
+        <record id="rule_ke_house_allowance" model="hr.salary.rule">
+            <field name="name">House Allowance</field>
+            <field name="code">KE_HOUSE_ALW</field>
+            <field name="sequence">5</field>
+            <field name="category_id" ref="category_ke_allowance"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = hasattr(contract, 'ke_house_allowance') and contract.ke_house_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ke_house_allowance if hasattr(contract, 'ke_house_allowance') else 0</field>
+        </record>
+
+        <!-- Transport Allowance -->
+        <record id="rule_ke_transport_allowance" model="hr.salary.rule">
+            <field name="name">Transport Allowance</field>
+            <field name="code">KE_TRANS_ALW</field>
+            <field name="sequence">6</field>
+            <field name="category_id" ref="category_ke_allowance"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = hasattr(contract, 'ke_transport_allowance') and contract.ke_transport_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ke_transport_allowance if hasattr(contract, 'ke_transport_allowance') else 0</field>
+        </record>
+
+        <!-- Medical Allowance -->
+        <record id="rule_ke_medical_allowance" model="hr.salary.rule">
+            <field name="name">Medical Allowance</field>
+            <field name="code">KE_MED_ALW</field>
+            <field name="sequence">7</field>
+            <field name="category_id" ref="category_ke_allowance"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = hasattr(contract, 'ke_medical_allowance') and contract.ke_medical_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ke_medical_allowance if hasattr(contract, 'ke_medical_allowance') else 0</field>
+        </record>
+
+        <!-- Other Allowances -->
+        <record id="rule_ke_other_allowances" model="hr.salary.rule">
+            <field name="name">Other Allowances</field>
+            <field name="code">KE_OTHER_ALW</field>
+            <field name="sequence">8</field>
+            <field name="category_id" ref="category_ke_allowance"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = hasattr(contract, 'ke_other_allowances') and contract.ke_other_allowances > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ke_other_allowances if hasattr(contract, 'ke_other_allowances') else 0</field>
+        </record>
+
+        <!-- Gross Salary -->
+        <record id="rule_ke_gross" model="hr.salary.rule">
+            <field name="name">Gross Salary</field>
+            <field name="code">KE_GROSS</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.BASIC + categories.KE_ALW
+            </field>
+        </record>
+
+        <!-- ==================== STATUTORY DEDUCTIONS ==================== -->
+
+        <!-- NSSF Employee Contribution -->
+        <record id="rule_ke_nssf" model="hr.salary.rule">
+            <field name="name">NSSF Contribution</field>
+            <field name="code">KE_NSSF</field>
+            <field name="sequence">20</field>
+            <field name="category_id" ref="category_ke_statutory"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = not (hasattr(contract, 'ke_pension_opt_out') and contract.ke_pension_opt_out)</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = -config.calculate_nssf(gross)
+            </field>
+        </record>
+
+        <!-- SHIF Contribution (SHA - replaced NHIF Oct 2024) -->
+        <record id="rule_ke_shif" model="hr.salary.rule">
+            <field name="name">SHIF (SHA)</field>
+            <field name="code">KE_SHIF</field>
+            <field name="sequence">21</field>
+            <field name="category_id" ref="category_ke_statutory"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = -config.calculate_shif(gross)
+            </field>
+        </record>
+
+        <!-- Housing Levy -->
+        <record id="rule_ke_housing_levy" model="hr.salary.rule">
+            <field name="name">Housing Levy</field>
+            <field name="code">KE_HOUSING</field>
+            <field name="sequence">22</field>
+            <field name="category_id" ref="category_ke_statutory"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = -config.calculate_housing_levy(gross)
+            </field>
+        </record>
+
+        <!-- Taxable Income -->
+        <record id="rule_ke_taxable_income" model="hr.salary.rule">
+            <field name="name">Taxable Income</field>
+            <field name="code">KE_TAXABLE</field>
+            <field name="sequence">30</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="appears_on_payslip">False</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+gross = categories.GROSS
+nssf = abs(categories.KE_DED) if 'KE_NSSF' not in [l.code for l in payslip.line_ids] else abs(rules.KE_NSSF)
+private_pension = contract.ke_private_pension if hasattr(contract, 'ke_private_pension') else 0
+result = gross - nssf - private_pension
+            </field>
+        </record>
+
+        <!-- PAYE (Gross) -->
+        <record id="rule_ke_paye_gross" model="hr.salary.rule">
+            <field name="name">PAYE (Gross Tax)</field>
+            <field name="code">KE_PAYE_GROSS</field>
+            <field name="sequence">31</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="appears_on_payslip">False</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+taxable = rules.KE_TAXABLE
+result = env['kenya.paye.tax.band'].calculate_paye(taxable)
+            </field>
+        </record>
+
+        <!-- Personal Relief -->
+        <record id="rule_ke_personal_relief" model="hr.salary.rule">
+            <field name="name">Personal Relief</field>
+            <field name="code">KE_PERSONAL_RELIEF</field>
+            <field name="sequence">32</field>
+            <field name="category_id" ref="category_ke_relief"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+result = config.personal_relief
+            </field>
+        </record>
+
+        <!-- Insurance Relief -->
+        <record id="rule_ke_insurance_relief" model="hr.salary.rule">
+            <field name="name">Insurance Relief</field>
+            <field name="code">KE_INSURANCE_RELIEF</field>
+            <field name="sequence">33</field>
+            <field name="category_id" ref="category_ke_relief"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+shif = abs(rules.KE_SHIF) if rules.KE_SHIF else 0
+result = config.calculate_insurance_relief(shif)
+            </field>
+        </record>
+
+        <!-- PAYE (Net) -->
+        <record id="rule_ke_paye" model="hr.salary.rule">
+            <field name="name">PAYE</field>
+            <field name="code">KE_PAYE</field>
+            <field name="sequence">40</field>
+            <field name="category_id" ref="category_ke_statutory"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+paye_gross = rules.KE_PAYE_GROSS
+personal_relief = rules.KE_PERSONAL_RELIEF
+insurance_relief = rules.KE_INSURANCE_RELIEF
+paye_net = max(0, paye_gross - personal_relief - insurance_relief)
+result = -paye_net
+            </field>
+        </record>
+
+        <!-- Net Salary -->
+        <record id="rule_ke_net" model="hr.salary.rule">
+            <field name="name">Net Salary</field>
+            <field name="code">KE_NET</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="om_hr_payroll.NET"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.GROSS + categories.KE_DED
+            </field>
+        </record>
+
+        <!-- ==================== EMPLOYER CONTRIBUTIONS ==================== -->
+
+        <!-- NSSF Employer Contribution -->
+        <record id="rule_ke_nssf_employer" model="hr.salary.rule">
+            <field name="name">NSSF (Employer)</field>
+            <field name="code">KE_NSSF_ER</field>
+            <field name="sequence">110</field>
+            <field name="category_id" ref="category_ke_employer"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="appears_on_payslip">True</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = not (hasattr(contract, 'ke_pension_opt_out') and contract.ke_pension_opt_out)</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = config.calculate_nssf(gross)
+            </field>
+        </record>
+
+        <!-- Housing Levy Employer Contribution -->
+        <record id="rule_ke_housing_levy_employer" model="hr.salary.rule">
+            <field name="name">Housing Levy (Employer)</field>
+            <field name="code">KE_HOUSING_ER</field>
+            <field name="sequence">111</field>
+            <field name="category_id" ref="category_ke_employer"/>
+            <field name="struct_id" ref="structure_ke_employee"/>
+            <field name="appears_on_payslip">True</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['kenya.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = config.calculate_housing_levy(gross)
+            </field>
+        </record>
+    </data>
+</odoo>

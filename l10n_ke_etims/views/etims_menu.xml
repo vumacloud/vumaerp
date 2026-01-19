@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main eTIMS Menu under Accounting -->
+    <menuitem id="menu_etims_root"
+              name="eTIMS"
+              parent="account.menu_finance"
+              sequence="90"
+              groups="l10n_ke_etims.group_etims_user"/>
+
+    <!-- Configuration submenu -->
+    <menuitem id="menu_etims_config"
+              name="Configuration"
+              parent="menu_etims_root"
+              sequence="100"/>
+
+    <menuitem id="menu_etims_config_settings"
+              name="Settings"
+              parent="menu_etims_config"
+              action="etims_config_action"
+              sequence="10"/>
+
+    <menuitem id="menu_etims_devices"
+              name="Devices"
+              parent="menu_etims_config"
+              action="etims_device_action"
+              sequence="20"/>
+
+    <!-- Master Data submenu -->
+    <menuitem id="menu_etims_master"
+              name="Master Data"
+              parent="menu_etims_root"
+              sequence="50"/>
+
+    <menuitem id="menu_etims_codes"
+              name="eTIMS Codes"
+              parent="menu_etims_master"
+              action="etims_code_action"
+              sequence="10"/>
+
+    <menuitem id="menu_etims_item_class"
+              name="Item Classifications"
+              parent="menu_etims_master"
+              action="etims_item_class_action"
+              sequence="20"/>
+
+    <!-- Reports submenu -->
+    <menuitem id="menu_etims_reports"
+              name="Reports"
+              parent="menu_etims_root"
+              sequence="80"/>
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- eTIMS Device Form View -->
+    <record id="etims_device_view_form" model="ir.ui.view">
+        <field name="name">etims.device.form</field>
+        <field name="model">etims.device</field>
+        <field name="arch" type="xml">
+            <form string="eTIMS Device">
+                <header>
+                    <button name="action_verify_device" string="Verify Device" type="object"
+                            class="oe_highlight" invisible="state == 'verified'"/>
+                    <button name="action_initialize" string="Initialize" type="object"
+                            invisible="state != 'verified'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,verified,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Device Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Device Information">
+                            <field name="serial_number"/>
+                            <field name="device_id"/>
+                            <field name="config_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Status">
+                            <field name="last_request_date"/>
+                            <field name="last_receipt_number"/>
+                            <field name="communication_key" password="True"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Technical Details" name="technical">
+                            <group>
+                                <field name="sdc_id"/>
+                                <field name="mrc_no"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- eTIMS Device Tree View -->
+    <record id="etims_device_view_tree" model="ir.ui.view">
+        <field name="name">etims.device.tree</field>
+        <field name="model">etims.device</field>
+        <field name="arch" type="xml">
+            <tree string="eTIMS Devices">
+                <field name="name"/>
+                <field name="serial_number"/>
+                <field name="device_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'verified'"
+                       decoration-success="state == 'active'"/>
+                <field name="last_request_date"/>
+                <field name="config_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- eTIMS Device Action -->
+    <record id="etims_device_action" model="ir.actions.act_window">
+        <field name="name">eTIMS Devices</field>
+        <field name="res_model">etims.device</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register eTIMS Devices
+            </p>
+            <p>
+                Register your virtual OSCU devices here. Each device can process eTIMS transactions.
+            </p>
+        </field>
+    </record>
+</odoo>

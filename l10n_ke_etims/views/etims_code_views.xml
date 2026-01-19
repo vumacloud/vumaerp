@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- eTIMS Code Tree View -->
+    <record id="etims_code_view_tree" model="ir.ui.view">
+        <field name="name">etims.code.tree</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <tree string="eTIMS Codes">
+                <field name="code_type"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- eTIMS Code Form View -->
+    <record id="etims_code_view_form" model="ir.ui.view">
+        <field name="name">etims.code.form</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <form string="eTIMS Code">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code_type"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- eTIMS Code Search View -->
+    <record id="etims_code_view_search" model="ir.ui.view">
+        <field name="name">etims.code.search</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <search string="eTIMS Codes">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="code_type"/>
+                <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                <separator/>
+                <filter name="item_class" string="Item Classification" domain="[('code_type', '=', '01')]"/>
+                <filter name="taxation" string="Taxation Type" domain="[('code_type', '=', '02')]"/>
+                <filter name="country" string="Country" domain="[('code_type', '=', '03')]"/>
+                <filter name="pkg_unit" string="Packaging Unit" domain="[('code_type', '=', '04')]"/>
+                <filter name="qty_unit" string="Quantity Unit" domain="[('code_type', '=', '05')]"/>
+                <filter name="payment" string="Payment Type" domain="[('code_type', '=', '06')]"/>
+                <filter name="transaction" string="Transaction Type" domain="[('code_type', '=', '07')]"/>
+                <filter name="stock_move" string="Stock Movement" domain="[('code_type', '=', '08')]"/>
+                <filter name="product_type" string="Product Type" domain="[('code_type', '=', '09')]"/>
+                <filter name="import_status" string="Import Status" domain="[('code_type', '=', '10')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_code_type" string="Code Type" context="{'group_by': 'code_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- eTIMS Code Action -->
+    <record id="etims_code_action" model="ir.actions.act_window">
+        <field name="name">eTIMS Codes</field>
+        <field name="res_model">etims.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No eTIMS codes found
+            </p>
+            <p>
+                eTIMS codes are synced from KRA. Use the "Sync Codes" button in
+                eTIMS Configuration to fetch the latest codes.
+            </p>
+        </field>
+    </record>
+</odoo>
