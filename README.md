@@ -1,15 +1,15 @@
-# Odoo Kenya Localization Addons
+# Odoo Uganda Localization Addons
 
-Private Odoo 18.0 addons for Kenya localization and customizations.
+Private Odoo 18.0 addons for Uganda localization and customizations.
 
 ## Structure
 
 ```
-odoo-addons-kenya/
-├── l10n_ke/                 # Kenya base localization
-├── l10n_ke_accounting/      # Kenya accounting (KRA compliance)
-├── l10n_ke_payroll/         # Kenya payroll (NHIF, NSSF, PAYE)
-├── l10n_ke_edi/             # Kenya e-invoicing (TIMS/eTIMS)
+odoo-addons-uganda/
+├── l10n_ug/                 # Uganda base localization
+├── l10n_ug_accounting/      # Uganda accounting (URA compliance)
+├── l10n_ug_payroll/         # Uganda payroll (NSSF, PAYE, LST)
+├── l10n_ug_edi/             # Uganda e-invoicing (EFRIS)
 └── [custom modules]/        # Client-specific modules
 ```
 
@@ -17,12 +17,12 @@ odoo-addons-kenya/
 
 1. Clone this repository into your Odoo addons path:
    ```bash
-   git clone <repo-url> /path/to/odoo/addons/kenya
+   git clone <repo-url> /path/to/odoo/addons/uganda
    ```
 
 2. Add to your Odoo configuration:
    ```
-   addons_path = /path/to/odoo/addons,/path/to/odoo/addons/kenya
+   addons_path = /path/to/odoo/addons,/path/to/odoo/addons/uganda
    ```
 
 3. Update apps list and install modules.
