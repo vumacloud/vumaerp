@@ -1,0 +1,13 @@
+# Environment (contains secrets!)
+.env
+
+# Backups
+backups/
+
+# SSL certificates
+nginx/ssl/*.key
+nginx/ssl/*.crt
+nginx/ssl/*.pem
+
+# Local overrides
+docker-compose.override.yml
