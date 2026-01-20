@@ -201,7 +201,7 @@ def create_account():
 
     # Generate subdomain
     subdomain = db_name.replace('_', '-')
-    url = f"https://{subdomain}.vumacloud.com"
+    url = f"https://{subdomain}.vumaerp.com"
 
     logger.info(f"Successfully created database: {db_name}")
 
