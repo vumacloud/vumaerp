@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================= -->
+    <!-- Uganda Statutory Configuration Views         -->
+    <!-- ============================================= -->
+
+    <!-- Statutory Config Form View -->
+    <record id="view_uganda_statutory_config_form" model="ir.ui.view">
+        <field name="name">uganda.statutory.config.form</field>
+        <field name="model">uganda.statutory.config</field>
+        <field name="arch" type="xml">
+            <form string="Uganda Statutory Configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="NSSF Rates">
+                            <field name="nssf_employee_rate" widget="percentage"/>
+                            <field name="nssf_employer_rate" widget="percentage"/>
+                        </group>
+                        <group string="Status">
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Uganda NSSF Contribution Rates:</strong>
+                                <ul>
+                                    <li>Employee: 5% of gross earnings</li>
+                                    <li>Employer: 10% of gross earnings</li>
+                                    <li>Total: 15% of gross earnings</li>
+                                </ul>
+                                <p>These rates are set by the Uganda National Social Security Fund Act.</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Statutory Config Tree View -->
+    <record id="view_uganda_statutory_config_tree" model="ir.ui.view">
+        <field name="name">uganda.statutory.config.tree</field>
+        <field name="model">uganda.statutory.config</field>
+        <field name="arch" type="xml">
+            <tree string="Uganda Statutory Configurations">
+                <field name="name"/>
+                <field name="nssf_employee_rate"/>
+                <field name="nssf_employer_rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Statutory Config Action -->
+    <record id="action_uganda_statutory_config" model="ir.actions.act_window">
+        <field name="name">Statutory Configuration</field>
+        <field name="res_model">uganda.statutory.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Uganda statutory rates
+            </p>
+            <p>Set up NSSF contribution rates for employee and employer.</p>
+        </field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- PAYE Tax Bands Views                         -->
+    <!-- ============================================= -->
+
+    <!-- PAYE Tax Band Form View -->
+    <record id="view_uganda_paye_tax_band_form" model="ir.ui.view">
+        <field name="name">uganda.paye.tax.band.form</field>
+        <field name="model">uganda.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <form string="PAYE Tax Band">
+                <sheet>
+                    <group>
+                        <group string="Income Range (Monthly)">
+                            <field name="name"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                        </group>
+                        <group string="Tax Rate">
+                            <field name="rate" widget="percentage"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Tree View -->
+    <record id="view_uganda_paye_tax_band_tree" model="ir.ui.view">
+        <field name="name">uganda.paye.tax.band.tree</field>
+        <field name="model">uganda.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <tree string="PAYE Tax Bands" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Action -->
+    <record id="action_uganda_paye_tax_band" model="ir.actions.act_window">
+        <field name="name">PAYE Tax Bands</field>
+        <field name="res_model">uganda.paye.tax.band</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define PAYE tax bands
+            </p>
+            <p>
+                Configure the progressive tax bands for Uganda PAYE calculation.
+                Current bands range from 0% (below UGX 235,000) to 40% (above UGX 10,000,000).
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Local Service Tax (LST) Rate Views           -->
+    <!-- ============================================= -->
+
+    <!-- LST Rate Form View -->
+    <record id="view_uganda_lst_rate_form" model="ir.ui.view">
+        <field name="name">uganda.lst.rate.form</field>
+        <field name="model">uganda.lst.rate</field>
+        <field name="arch" type="xml">
+            <form string="Local Service Tax Rate">
+                <sheet>
+                    <group>
+                        <group string="Income Range (Annual)">
+                            <field name="name"/>
+                            <field name="min_income"/>
+                            <field name="max_income"/>
+                        </group>
+                        <group string="Tax Amount">
+                            <field name="annual_amount"/>
+                            <field name="monthly_amount" readonly="1"/>
+                            <field name="district"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Local Service Tax (LST):</strong>
+                            <ul>
+                                <li>Paid in 4 equal monthly installments</li>
+                                <li>Deducted in July, August, September, and October</li>
+                                <li>Rates vary by local government district</li>
+                            </ul>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- LST Rate Tree View -->
+    <record id="view_uganda_lst_rate_tree" model="ir.ui.view">
+        <field name="name">uganda.lst.rate.tree</field>
+        <field name="model">uganda.lst.rate</field>
+        <field name="arch" type="xml">
+            <tree string="Local Service Tax Rates" editable="bottom">
+                <field name="name"/>
+                <field name="district"/>
+                <field name="min_income"/>
+                <field name="max_income"/>
+                <field name="annual_amount"/>
+                <field name="monthly_amount"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- LST Rate Action -->
+    <record id="action_uganda_lst_rate" model="ir.actions.act_window">
+        <field name="name">Local Service Tax Rates</field>
+        <field name="res_model">uganda.lst.rate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define Local Service Tax rates
+            </p>
+            <p>
+                Configure LST rates by income bracket and district.
+                LST is collected in 4 monthly installments (July-October).
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Menu Items                                   -->
+    <!-- ============================================= -->
+
+    <!-- Uganda Payroll Configuration Menu -->
+    <menuitem id="menu_uganda_payroll_root"
+        name="Uganda Payroll"
+        parent="om_hr_payroll.menu_hr_payroll_root"
+        sequence="90"/>
+
+    <menuitem id="menu_uganda_payroll_config"
+        name="Configuration"
+        parent="menu_uganda_payroll_root"
+        sequence="100"/>
+
+    <menuitem id="menu_uganda_statutory_config"
+        name="Statutory Configuration"
+        parent="menu_uganda_payroll_config"
+        action="action_uganda_statutory_config"
+        sequence="10"/>
+
+    <menuitem id="menu_uganda_paye_tax_bands"
+        name="PAYE Tax Bands"
+        parent="menu_uganda_payroll_config"
+        action="action_uganda_paye_tax_band"
+        sequence="20"/>
+
+    <menuitem id="menu_uganda_lst_rates"
+        name="Local Service Tax Rates"
+        parent="menu_uganda_payroll_config"
+        action="action_uganda_lst_rate"
+        sequence="30"/>
+
+    <!-- Uganda Payslips Menu -->
+    <menuitem id="menu_uganda_payslips"
+        name="Uganda Payslips"
+        parent="menu_uganda_payroll_root"
+        action="action_hr_payslip_uganda"
+        sequence="10"/>
+</odoo>

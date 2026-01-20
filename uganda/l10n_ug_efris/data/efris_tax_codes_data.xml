@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- EFRIS Tax Category Codes -->
+        <!-- Based on URA EFRIS Tax Categories -->
+
+        <record id="efris_tax_code_01" model="efris.tax.code">
+            <field name="code">01</field>
+            <field name="name">Standard Rate (18%)</field>
+            <field name="rate">18.0</field>
+            <field name="tax_type">vat</field>
+        </record>
+
+        <record id="efris_tax_code_02" model="efris.tax.code">
+            <field name="code">02</field>
+            <field name="name">Zero Rated</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">zero</field>
+        </record>
+
+        <record id="efris_tax_code_03" model="efris.tax.code">
+            <field name="code">03</field>
+            <field name="name">Exempt</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">exempt</field>
+        </record>
+
+        <record id="efris_tax_code_04" model="efris.tax.code">
+            <field name="code">04</field>
+            <field name="name">Deemed VAT</field>
+            <field name="rate">18.0</field>
+            <field name="tax_type">vat</field>
+        </record>
+
+        <!-- EFRIS Goods/Services Classification Codes -->
+        <!-- Main Categories from URA EFRIS -->
+
+        <record id="efris_goods_code_1" model="efris.goods.code">
+            <field name="code">1</field>
+            <field name="name">Agricultural Products</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_2" model="efris.goods.code">
+            <field name="code">2</field>
+            <field name="name">Food Products</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_3" model="efris.goods.code">
+            <field name="code">3</field>
+            <field name="name">Beverages</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_4" model="efris.goods.code">
+            <field name="code">4</field>
+            <field name="name">Tobacco Products</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_5" model="efris.goods.code">
+            <field name="code">5</field>
+            <field name="name">Textiles and Clothing</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_6" model="efris.goods.code">
+            <field name="code">6</field>
+            <field name="name">Footwear</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_7" model="efris.goods.code">
+            <field name="code">7</field>
+            <field name="name">Electronics and Appliances</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_8" model="efris.goods.code">
+            <field name="code">8</field>
+            <field name="name">Machinery and Equipment</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_9" model="efris.goods.code">
+            <field name="code">9</field>
+            <field name="name">Vehicles and Parts</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_10" model="efris.goods.code">
+            <field name="code">10</field>
+            <field name="name">Petroleum Products</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_11" model="efris.goods.code">
+            <field name="code">11</field>
+            <field name="name">Pharmaceuticals</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_12" model="efris.goods.code">
+            <field name="code">12</field>
+            <field name="name">Construction Materials</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_13" model="efris.goods.code">
+            <field name="code">13</field>
+            <field name="name">Furniture</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_14" model="efris.goods.code">
+            <field name="code">14</field>
+            <field name="name">Office Supplies</field>
+            <field name="category">goods</field>
+        </record>
+
+        <record id="efris_goods_code_99" model="efris.goods.code">
+            <field name="code">99</field>
+            <field name="name">Other Goods</field>
+            <field name="category">goods</field>
+        </record>
+
+        <!-- Services Categories -->
+        <record id="efris_goods_code_s01" model="efris.goods.code">
+            <field name="code">S01</field>
+            <field name="name">Professional Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s02" model="efris.goods.code">
+            <field name="code">S02</field>
+            <field name="name">Transportation Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s03" model="efris.goods.code">
+            <field name="code">S03</field>
+            <field name="name">Accommodation Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s04" model="efris.goods.code">
+            <field name="code">S04</field>
+            <field name="name">Financial Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s05" model="efris.goods.code">
+            <field name="code">S05</field>
+            <field name="name">IT Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s06" model="efris.goods.code">
+            <field name="code">S06</field>
+            <field name="name">Consulting Services</field>
+            <field name="category">services</field>
+        </record>
+
+        <record id="efris_goods_code_s99" model="efris.goods.code">
+            <field name="code">S99</field>
+            <field name="name">Other Services</field>
+            <field name="category">services</field>
+        </record>
+    </data>
+</odoo>

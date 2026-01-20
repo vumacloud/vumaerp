@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_efris_config_user,efris.config.user,model_efris_config,account.group_account_invoice,1,0,0,0
+access_efris_config_manager,efris.config.manager,model_efris_config,account.group_account_manager,1,1,1,1
+access_efris_device_user,efris.device.user,model_efris_device,account.group_account_invoice,1,0,0,0
+access_efris_device_manager,efris.device.manager,model_efris_device,account.group_account_manager,1,1,1,1
+access_efris_tax_code_user,efris.tax.code.user,model_efris_tax_code,account.group_account_invoice,1,0,0,0
+access_efris_tax_code_manager,efris.tax.code.manager,model_efris_tax_code,account.group_account_manager,1,1,1,1
+access_efris_goods_code_user,efris.goods.code.user,model_efris_goods_code,account.group_account_invoice,1,0,0,0
+access_efris_goods_code_manager,efris.goods.code.manager,model_efris_goods_code,account.group_account_manager,1,1,1,1
+access_efris_document_type_user,efris.document.type.user,model_efris_document_type,account.group_account_invoice,1,0,0,0
+access_efris_document_type_manager,efris.document.type.manager,model_efris_document_type,account.group_account_manager,1,1,1,1
+access_efris_invoice_wizard,efris.invoice.wizard,model_efris_invoice_wizard,account.group_account_invoice,1,1,1,1
+access_efris_goods_registration_wizard,efris.goods.registration.wizard,model_efris_goods_registration_wizard,account.group_account_manager,1,1,1,1

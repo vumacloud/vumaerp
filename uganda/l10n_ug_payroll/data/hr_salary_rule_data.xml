@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- ==================== BASIC & ALLOWANCES ==================== -->
+
+        <!-- Basic Salary -->
+        <record id="rule_ug_basic" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">UG_BASIC</field>
+            <field name="sequence">1</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage</field>
+        </record>
+
+        <!-- House Allowance -->
+        <record id="rule_ug_house_allowance" model="hr.salary.rule">
+            <field name="name">House Allowance</field>
+            <field name="code">UG_HOUSE_ALW</field>
+            <field name="sequence">5</field>
+            <field name="category_id" ref="category_ug_allowance"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_house_allowance and contract.ug_house_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_house_allowance or 0</field>
+        </record>
+
+        <!-- Transport Allowance -->
+        <record id="rule_ug_transport_allowance" model="hr.salary.rule">
+            <field name="name">Transport Allowance</field>
+            <field name="code">UG_TRANS_ALW</field>
+            <field name="sequence">6</field>
+            <field name="category_id" ref="category_ug_allowance"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_transport_allowance and contract.ug_transport_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_transport_allowance or 0</field>
+        </record>
+
+        <!-- Medical Allowance -->
+        <record id="rule_ug_medical_allowance" model="hr.salary.rule">
+            <field name="name">Medical Allowance</field>
+            <field name="code">UG_MED_ALW</field>
+            <field name="sequence">7</field>
+            <field name="category_id" ref="category_ug_allowance"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_medical_allowance and contract.ug_medical_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_medical_allowance or 0</field>
+        </record>
+
+        <!-- Lunch Allowance -->
+        <record id="rule_ug_lunch_allowance" model="hr.salary.rule">
+            <field name="name">Lunch Allowance</field>
+            <field name="code">UG_LUNCH_ALW</field>
+            <field name="sequence">8</field>
+            <field name="category_id" ref="category_ug_allowance"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_lunch_allowance and contract.ug_lunch_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_lunch_allowance or 0</field>
+        </record>
+
+        <!-- Other Allowances -->
+        <record id="rule_ug_other_allowances" model="hr.salary.rule">
+            <field name="name">Other Allowances</field>
+            <field name="code">UG_OTHER_ALW</field>
+            <field name="sequence">9</field>
+            <field name="category_id" ref="category_ug_allowance"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_other_allowances and contract.ug_other_allowances > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_other_allowances or 0</field>
+        </record>
+
+        <!-- Non-Cash Benefits -->
+        <record id="rule_ug_housing_benefit" model="hr.salary.rule">
+            <field name="name">Housing Benefit</field>
+            <field name="code">UG_HOUSING_BEN</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="category_ug_benefit"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ug_housing_benefit and contract.ug_housing_benefit > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ug_housing_benefit or 0</field>
+        </record>
+
+        <!-- Gross Salary -->
+        <record id="rule_ug_gross" model="hr.salary.rule">
+            <field name="name">Gross Salary</field>
+            <field name="code">UG_GROSS</field>
+            <field name="sequence">15</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.BASIC + categories.UG_ALW + categories.UG_BEN
+            </field>
+        </record>
+
+        <!-- ==================== STATUTORY DEDUCTIONS ==================== -->
+
+        <!-- NSSF Employee Contribution -->
+        <record id="rule_ug_nssf" model="hr.salary.rule">
+            <field name="name">NSSF Contribution</field>
+            <field name="code">UG_NSSF</field>
+            <field name="sequence">20</field>
+            <field name="category_id" ref="category_ug_statutory"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = not contract.ug_nssf_opt_out</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['uganda.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = -config.calculate_nssf_employee(gross)
+            </field>
+        </record>
+
+        <!-- Taxable Income (Gross - NSSF) -->
+        <record id="rule_ug_taxable_income" model="hr.salary.rule">
+            <field name="name">Taxable Income</field>
+            <field name="code">UG_TAXABLE</field>
+            <field name="sequence">25</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="appears_on_payslip">False</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+gross = categories.GROSS
+nssf = abs(categories.UG_DED) if categories.UG_DED else 0
+result = gross - nssf
+            </field>
+        </record>
+
+        <!-- PAYE -->
+        <record id="rule_ug_paye" model="hr.salary.rule">
+            <field name="name">PAYE</field>
+            <field name="code">UG_PAYE</field>
+            <field name="sequence">30</field>
+            <field name="category_id" ref="category_ug_statutory"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+taxable = rules.UG_TAXABLE
+resident_type = contract.ug_resident_status or 'resident'
+paye = env['uganda.paye.tax.band'].calculate_paye(taxable, resident_type, 'monthly')
+result = -paye
+            </field>
+        </record>
+
+        <!-- LST (Local Service Tax) - Only July to October -->
+        <record id="rule_ug_lst" model="hr.salary.rule">
+            <field name="name">Local Service Tax (LST)</field>
+            <field name="code">UG_LST</field>
+            <field name="sequence">35</field>
+            <field name="category_id" ref="category_ug_statutory"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">
+# LST is deducted July-October only
+from datetime import datetime
+month = payslip.date_from.month if payslip.date_from else datetime.now().month
+result = month in [7, 8, 9, 10] and not contract.ug_lst_exempt
+            </field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['uganda.statutory.config'].get_config(payslip.company_id)
+annual_gross = categories.GROSS * 12
+lst_monthly = config.calculate_lst_monthly(annual_gross)
+result = -lst_monthly
+            </field>
+        </record>
+
+        <!-- Net Salary -->
+        <record id="rule_ug_net" model="hr.salary.rule">
+            <field name="name">Net Salary</field>
+            <field name="code">UG_NET</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="om_hr_payroll.NET"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.GROSS + categories.UG_DED
+            </field>
+        </record>
+
+        <!-- ==================== EMPLOYER CONTRIBUTIONS ==================== -->
+
+        <!-- NSSF Employer Contribution -->
+        <record id="rule_ug_nssf_employer" model="hr.salary.rule">
+            <field name="name">NSSF (Employer)</field>
+            <field name="code">UG_NSSF_ER</field>
+            <field name="sequence">110</field>
+            <field name="category_id" ref="category_ug_employer"/>
+            <field name="struct_id" ref="structure_ug_employee"/>
+            <field name="appears_on_payslip">True</field>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = not contract.ug_nssf_opt_out</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['uganda.statutory.config'].get_config(payslip.company_id)
+gross = categories.GROSS
+result = config.calculate_nssf_employer(gross)
+            </field>
+        </record>
+    </data>
+</odoo>

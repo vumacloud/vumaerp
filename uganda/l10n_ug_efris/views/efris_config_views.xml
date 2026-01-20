@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- EFRIS Configuration Form View -->
+    <record id="view_efris_config_form" model="ir.ui.view">
+        <field name="name">efris.config.form</field>
+        <field name="model">efris.config</field>
+        <field name="arch" type="xml">
+            <form string="EFRIS Configuration">
+                <header>
+                    <button name="action_test_connection"
+                            string="Test Connection"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not tin or not device_no"/>
+                    <button name="action_register_device"
+                            string="Register Device"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="device_status != 'unregistered'"/>
+                    <field name="device_status" widget="statusbar"
+                           statusbar_visible="unregistered,registered,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(l10n_ug_efris.action_efris_device)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-server">
+                            <field name="device_no" widget="statinfo" string="Device"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Sandbox" bg_color="text-bg-warning"
+                            invisible="environment != 'sandbox'"/>
+                    <widget name="web_ribbon" title="Production" bg_color="text-bg-success"
+                            invisible="environment != 'production'"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="company_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="URA Registration">
+                            <field name="tin" placeholder="e.g., 1000000000"/>
+                            <field name="device_no"/>
+                            <field name="device_id" readonly="1"/>
+                        </group>
+                        <group string="Environment">
+                            <field name="environment" widget="radio"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="last_sync" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="API Credentials" name="credentials">
+                            <group>
+                                <group string="Private Key">
+                                    <field name="private_key" nolabel="1"
+                                           placeholder="Paste your private key here..."
+                                           widget="ace" options="{'mode': 'text'}"/>
+                                </group>
+                                <group string="Public Key">
+                                    <field name="public_key" nolabel="1"
+                                           placeholder="Paste your public key here..."
+                                           widget="ace" options="{'mode': 'text'}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Help" name="help">
+                            <div class="alert alert-info" role="alert">
+                                <h4>EFRIS Setup Instructions</h4>
+                                <ol>
+                                    <li><strong>Register with URA:</strong> Obtain your TIN and EFRIS device credentials from Uganda Revenue Authority.</li>
+                                    <li><strong>Configure API Keys:</strong> Enter your private and public keys provided by URA.</li>
+                                    <li><strong>Test Connection:</strong> Use sandbox mode first to verify your setup.</li>
+                                    <li><strong>Register Device:</strong> Complete device registration with URA.</li>
+                                    <li><strong>Go Live:</strong> Switch to production mode when ready.</li>
+                                </ol>
+                                <p><strong>EFRIS Sandbox URL:</strong> https://efristest.ura.go.ug/efrisws/ws</p>
+                                <p><strong>EFRIS Production URL:</strong> https://efris.ura.go.ug/efrisws/ws</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- EFRIS Configuration Tree View -->
+    <record id="view_efris_config_tree" model="ir.ui.view">
+        <field name="name">efris.config.tree</field>
+        <field name="model">efris.config</field>
+        <field name="arch" type="xml">
+            <tree string="EFRIS Configurations">
+                <field name="company_id"/>
+                <field name="tin"/>
+                <field name="device_no"/>
+                <field name="environment" widget="badge"
+                       decoration-warning="environment == 'sandbox'"
+                       decoration-success="environment == 'production'"/>
+                <field name="device_status" widget="badge"
+                       decoration-danger="device_status == 'unregistered'"
+                       decoration-warning="device_status == 'registered'"
+                       decoration-success="device_status == 'active'"/>
+                <field name="last_sync"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- EFRIS Configuration Action -->
+    <record id="action_efris_config" model="ir.actions.act_window">
+        <field name="name">EFRIS Configuration</field>
+        <field name="res_model">efris.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure EFRIS for your company
+            </p>
+            <p>
+                Set up your URA EFRIS credentials to enable electronic invoicing
+                and fiscal receipting as required by Uganda Revenue Authority.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Tax Codes Views                              -->
+    <!-- ============================================= -->
+
+    <record id="view_efris_tax_code_tree" model="ir.ui.view">
+        <field name="name">efris.tax.code.tree</field>
+        <field name="model">efris.tax.code</field>
+        <field name="arch" type="xml">
+            <tree string="EFRIS Tax Codes" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="rate"/>
+                <field name="tax_type"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_efris_tax_code" model="ir.actions.act_window">
+        <field name="name">EFRIS Tax Codes</field>
+        <field name="res_model">efris.tax.code</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Goods Codes Views                            -->
+    <!-- ============================================= -->
+
+    <record id="view_efris_goods_code_tree" model="ir.ui.view">
+        <field name="name">efris.goods.code.tree</field>
+        <field name="model">efris.goods.code</field>
+        <field name="arch" type="xml">
+            <tree string="EFRIS Goods Codes">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category"/>
+                <field name="parent_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_efris_goods_code" model="ir.actions.act_window">
+        <field name="name">EFRIS Goods/Services Codes</field>
+        <field name="res_model">efris.goods.code</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Document Types Views                         -->
+    <!-- ============================================= -->
+
+    <record id="view_efris_document_type_tree" model="ir.ui.view">
+        <field name="name">efris.document.type.tree</field>
+        <field name="model">efris.document.type</field>
+        <field name="arch" type="xml">
+            <tree string="EFRIS Document Types">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="move_type"/>
+                <field name="description"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_efris_document_type" model="ir.actions.act_window">
+        <field name="name">EFRIS Document Types</field>
+        <field name="res_model">efris.document.type</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Menu Items                                   -->
+    <!-- ============================================= -->
+
+    <menuitem id="menu_efris_root"
+        name="EFRIS"
+        parent="account.menu_finance"
+        sequence="90"/>
+
+    <menuitem id="menu_efris_config"
+        name="Configuration"
+        parent="menu_efris_root"
+        action="action_efris_config"
+        sequence="100"/>
+
+    <menuitem id="menu_efris_tax_codes"
+        name="Tax Codes"
+        parent="menu_efris_root"
+        action="action_efris_tax_code"
+        sequence="110"/>
+
+    <menuitem id="menu_efris_goods_codes"
+        name="Goods/Services Codes"
+        parent="menu_efris_root"
+        action="action_efris_goods_code"
+        sequence="120"/>
+
+    <menuitem id="menu_efris_document_types"
+        name="Document Types"
+        parent="menu_efris_root"
+        action="action_efris_document_type"
+        sequence="130"/>
+</odoo>

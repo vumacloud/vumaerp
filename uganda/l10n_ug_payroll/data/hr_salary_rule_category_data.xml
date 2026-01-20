@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Uganda Salary Rule Categories -->
+        <record id="category_ug_allowance" model="hr.salary.rule.category">
+            <field name="name">Uganda Allowances</field>
+            <field name="code">UG_ALW</field>
+        </record>
+
+        <record id="category_ug_benefit" model="hr.salary.rule.category">
+            <field name="name">Uganda Benefits (Non-Cash)</field>
+            <field name="code">UG_BEN</field>
+        </record>
+
+        <record id="category_ug_statutory" model="hr.salary.rule.category">
+            <field name="name">Uganda Statutory Deductions</field>
+            <field name="code">UG_DED</field>
+        </record>
+
+        <record id="category_ug_employer" model="hr.salary.rule.category">
+            <field name="name">Uganda Employer Contributions</field>
+            <field name="code">UG_ER</field>
+        </record>
+    </data>
+</odoo>

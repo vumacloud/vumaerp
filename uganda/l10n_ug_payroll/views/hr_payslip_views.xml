@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit hr.payslip form view to add Uganda statutory summary -->
+    <record id="hr_payslip_view_form_uganda" model="ir.ui.view">
+        <field name="name">hr.payslip.form.uganda</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Add Uganda Statutory Summary page -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Uganda Statutory Summary" name="uganda_statutory_summary">
+                    <group>
+                        <group string="Gross Earnings">
+                            <field name="uganda_gross_income" readonly="1"/>
+                        </group>
+                        <group string="Statutory Deductions">
+                            <field name="uganda_paye_amount" readonly="1"/>
+                            <field name="uganda_nssf_employee" readonly="1"/>
+                            <field name="uganda_nssf_employer" readonly="1"/>
+                            <field name="uganda_lst_amount" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Computation Details">
+                        <field name="uganda_taxable_income" readonly="1"/>
+                        <field name="uganda_total_deductions" readonly="1"/>
+                        <field name="uganda_net_pay" readonly="1"/>
+                    </group>
+                    <group string="Notes" col="1">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Uganda Statutory Rates:</strong>
+                            <ul>
+                                <li><strong>PAYE:</strong> Progressive rates from 0% to 40%</li>
+                                <li><strong>NSSF:</strong> Employee 5% + Employer 10% of gross</li>
+                                <li><strong>LST:</strong> Annual amount paid in 4 monthly installments (July-Oct)</li>
+                            </ul>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree view with Uganda summary columns -->
+    <record id="hr_payslip_view_tree_uganda" model="ir.ui.view">
+        <field name="name">hr.payslip.tree.uganda</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="uganda_gross_income" optional="show" sum="Total Gross"/>
+                <field name="uganda_paye_amount" optional="show" sum="Total PAYE"/>
+                <field name="uganda_nssf_employee" optional="hide" sum="Total NSSF (Emp)"/>
+                <field name="uganda_net_pay" optional="show" sum="Total Net"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view with Uganda filters -->
+    <record id="hr_payslip_view_search_uganda" model="ir.ui.view">
+        <field name="name">hr.payslip.search.uganda</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_filter"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Has PAYE" name="has_paye" domain="[('uganda_paye_amount', '>', 0)]"/>
+                <filter string="Has LST" name="has_lst" domain="[('uganda_lst_amount', '>', 0)]"/>
+                <separator/>
+                <group string="Uganda Reports">
+                    <filter string="By PAYE Amount" name="group_paye" context="{'group_by': 'uganda_paye_amount'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Uganda Payslip Batch List Action -->
+    <record id="action_hr_payslip_uganda" model="ir.actions.act_window">
+        <field name="name">Uganda Payslips</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{'search_default_group_by_employee': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new payslip for Uganda employees
+            </p>
+            <p>
+                Uganda payslips automatically calculate PAYE, NSSF (5% employee + 10% employer),
+                and Local Service Tax based on current statutory rates.
+            </p>
+        </field>
+    </record>
+</odoo>

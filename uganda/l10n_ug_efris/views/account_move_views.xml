@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit account.move form view for EFRIS -->
+    <record id="view_move_form_efris" model="ir.ui.view">
+        <field name="name">account.move.form.efris</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Add EFRIS button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_to_efris"
+                        string="Submit to EFRIS"
+                        type="object"
+                        class="btn-primary"
+                        invisible="efris_submitted or state != 'posted' or move_type not in ['out_invoice', 'out_refund']"
+                        groups="account.group_account_invoice"/>
+                <button name="action_view_efris_response"
+                        string="View EFRIS Response"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not efris_submitted"
+                        groups="account.group_account_invoice"/>
+            </xpath>
+
+            <!-- Add EFRIS status indicator -->
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <div class="alert alert-success" role="alert"
+                     invisible="not efris_submitted">
+                    <strong>EFRIS:</strong> Submitted - FDN: <field name="efris_fdn" readonly="1"/>
+                </div>
+                <div class="alert alert-danger" role="alert"
+                     invisible="efris_status != 'rejected'">
+                    <strong>EFRIS Error:</strong> <field name="efris_error_message" readonly="1"/>
+                </div>
+            </xpath>
+
+            <!-- Add EFRIS tab in notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="EFRIS" name="efris"
+                      invisible="move_type not in ['out_invoice', 'out_refund']">
+                    <group>
+                        <group string="EFRIS Status">
+                            <field name="efris_status" readonly="1"/>
+                            <field name="efris_submitted" readonly="1"/>
+                            <field name="efris_submission_date" readonly="1"/>
+                        </group>
+                        <group string="Fiscal Information">
+                            <field name="efris_fdn" readonly="1"/>
+                            <field name="efris_verification_code" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Buyer Information">
+                            <field name="efris_buyer_tin"
+                                   readonly="efris_submitted"/>
+                            <field name="efris_buyer_legal_name"
+                                   readonly="efris_submitted"/>
+                            <field name="efris_buyer_type"
+                                   readonly="efris_submitted"/>
+                        </group>
+                        <group string="Credit Note Reference"
+                               invisible="move_type != 'out_refund'">
+                            <field name="efris_original_fdn"
+                                   readonly="efris_submitted"/>
+                        </group>
+                    </group>
+                    <group string="Error Details" invisible="not efris_error_message">
+                        <field name="efris_error_message" readonly="1" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree view with EFRIS status -->
+    <record id="view_move_tree_efris" model="ir.ui.view">
+        <field name="name">account.move.tree.efris</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="efris_status" widget="badge" optional="show"
+                       decoration-muted="efris_status == 'not_submitted'"
+                       decoration-info="efris_status == 'pending'"
+                       decoration-success="efris_status in ['submitted', 'accepted']"
+                       decoration-danger="efris_status == 'rejected'"/>
+                <field name="efris_fdn" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view with EFRIS filters -->
+    <record id="view_account_invoice_filter_efris" model="ir.ui.view">
+        <field name="name">account.move.search.efris</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="EFRIS Submitted" name="efris_submitted"
+                        domain="[('efris_submitted', '=', True)]"/>
+                <filter string="EFRIS Pending" name="efris_pending"
+                        domain="[('efris_submitted', '=', False), ('state', '=', 'posted'), ('move_type', 'in', ['out_invoice', 'out_refund'])]"/>
+                <filter string="EFRIS Rejected" name="efris_rejected"
+                        domain="[('efris_status', '=', 'rejected')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- EFRIS Response popup form -->
+    <record id="view_move_efris_response_form" model="ir.ui.view">
+        <field name="name">account.move.efris.response.form</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <form string="EFRIS Response">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="efris_fdn" readonly="1"/>
+                            <field name="efris_status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="efris_verification_code" readonly="1"/>
+                            <field name="efris_submission_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Response Data">
+                            <field name="efris_response" readonly="1"
+                                   widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Error" invisible="not efris_error_message">
+                            <field name="efris_error_message" readonly="1" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for EFRIS pending invoices -->
+    <record id="action_efris_pending_invoices" model="ir.actions.act_window">
+        <field name="name">Pending EFRIS Submission</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('move_type', 'in', ['out_invoice', 'out_refund']),
+            ('state', '=', 'posted'),
+            ('efris_submitted', '=', False)
+        ]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No invoices pending EFRIS submission
+            </p>
+            <p>All posted invoices have been submitted to EFRIS.</p>
+        </field>
+    </record>
+
+    <!-- Add to EFRIS menu -->
+    <menuitem id="menu_efris_pending_invoices"
+        name="Pending Invoices"
+        parent="menu_efris_root"
+        action="action_efris_pending_invoices"
+        sequence="10"/>
+</odoo>
