@@ -75,8 +75,8 @@ echo "  Country:  $COUNTRY_NAME"
 echo "  Email:    $ADMIN_EMAIL"
 echo ""
 
-# Check if database exists
-EXISTING=$(docker compose exec -T db psql -U "$POSTGRES_USER" -t -c \
+# Check if database exists (connect to postgres db, which always exists)
+EXISTING=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -t -c \
     "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | tr -d ' ')
 
 if [ "$EXISTING" == "1" ]; then
@@ -85,7 +85,7 @@ fi
 
 # Create database
 log "Creating PostgreSQL database..."
-docker compose exec -T db psql -U "$POSTGRES_USER" -c "CREATE DATABASE \"$DB_NAME\" ENCODING 'UTF8' TEMPLATE template0;"
+docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE \"$DB_NAME\" ENCODING 'UTF8' TEMPLATE template0;"
 
 # Initialize Odoo database with modules
 log "Initializing Odoo database with $COUNTRY_NAME modules..."
@@ -122,8 +122,6 @@ echo "Database:     $DB_NAME"
 echo "Country:      $COUNTRY_NAME"
 echo "Currency:     $CURRENCY"
 echo ""
-# Generate subdomain (replace underscores with dashes)
-SUBDOMAIN=$(echo "$DB_NAME" | tr '_' '-')
 
 echo "Admin Login:"
 echo "  URL:      https://${SUBDOMAIN}.vumaerp.com"
