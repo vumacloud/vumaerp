@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nigeria_firs_config_user,nigeria.firs.config.user,model_nigeria_firs_config,account.group_account_invoice,1,0,0,0
+access_nigeria_firs_config_manager,nigeria.firs.config.manager,model_nigeria_firs_config,account.group_account_manager,1,1,1,1
+access_nigeria_tax_code_user,nigeria.tax.code.user,model_nigeria_tax_code,account.group_account_invoice,1,0,0,0
+access_nigeria_tax_code_manager,nigeria.tax.code.manager,model_nigeria_tax_code,account.group_account_manager,1,1,1,1

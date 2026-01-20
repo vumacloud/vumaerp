@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ghana Payslip Form View Extension -->
+    <record id="view_hr_payslip_form_ghana" model="ir.ui.view">
+        <field name="name">hr.payslip.form.ghana</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='payslip_info']" position="after">
+                <group string="Ghana Statutory Summary" name="ghana_summary">
+                    <group>
+                        <field name="gh_gross_salary"/>
+                        <field name="gh_taxable_income"/>
+                        <field name="gh_paye"/>
+                    </group>
+                    <group>
+                        <field name="gh_ssnit_employee"/>
+                        <field name="gh_ssnit_employer"/>
+                        <field name="gh_tier2"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ghana Payslip Tree View -->
+    <record id="view_hr_payslip_tree_ghana" model="ir.ui.view">
+        <field name="name">hr.payslip.tree.ghana</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="gh_gross_salary" optional="hide"/>
+                <field name="gh_paye" optional="hide"/>
+                <field name="gh_ssnit_employee" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action for Ghana Payslips -->
+    <record id="action_hr_payslip_ghana" model="ir.actions.act_window">
+        <field name="name">Ghana Payslips</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">[('struct_id', '=', %(l10n_gh_payroll.structure_ghana_employee)d)]</field>
+        <field name="context">{'default_struct_id': %(l10n_gh_payroll.structure_ghana_employee)d}</field>
+    </record>
+</odoo>

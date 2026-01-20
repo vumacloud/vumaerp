@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Nigeria Contract Form View Extension -->
+    <record id="view_hr_contract_form_nigeria" model="ir.ui.view">
+        <field name="name">hr.contract.form.nigeria</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='notes']" position="before">
+                <group string="Nigeria Statutory Information" name="nigeria_statutory">
+                    <group>
+                        <field name="ng_tin"/>
+                        <field name="ng_pension_pin"/>
+                        <field name="ng_nhf_number"/>
+                    </group>
+                    <group>
+                        <field name="ng_pfa_id"/>
+                        <field name="ng_pfa_name"/>
+                        <field name="ng_nhis_enrolled"/>
+                    </group>
+                </group>
+                <group string="Nigeria Allowances" name="nigeria_allowances">
+                    <group>
+                        <field name="ng_transport_allowance"/>
+                        <field name="ng_housing_allowance"/>
+                        <field name="ng_meal_allowance"/>
+                        <field name="ng_utility_allowance"/>
+                    </group>
+                    <group>
+                        <field name="ng_furniture_allowance"/>
+                        <field name="ng_leave_allowance"/>
+                        <field name="ng_other_allowance"/>
+                        <field name="ng_gross_salary" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Nigeria Pension Rates" name="nigeria_pension">
+                    <group>
+                        <field name="ng_pension_employee_rate" widget="percentage"/>
+                    </group>
+                    <group>
+                        <field name="ng_pension_employer_rate" widget="percentage"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

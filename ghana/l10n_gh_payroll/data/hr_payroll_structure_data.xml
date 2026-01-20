@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ghana Payroll Structure Type -->
+        <record id="structure_type_ghana_employee" model="hr.payroll.structure.type">
+            <field name="name">Ghana Employee</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <!-- Ghana Payroll Structure -->
+        <record id="structure_ghana_employee" model="hr.payroll.structure">
+            <field name="name">Ghana Employee Salary</field>
+            <field name="type_id" ref="structure_type_ghana_employee"/>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+    </data>
+</odoo>

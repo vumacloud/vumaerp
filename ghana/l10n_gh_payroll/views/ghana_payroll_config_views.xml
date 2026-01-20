@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================= -->
+    <!-- Ghana Statutory Configuration Views          -->
+    <!-- ============================================= -->
+
+    <!-- Statutory Config Form View -->
+    <record id="view_ghana_statutory_config_form" model="ir.ui.view">
+        <field name="name">ghana.statutory.config.form</field>
+        <field name="model">ghana.statutory.config</field>
+        <field name="arch" type="xml">
+            <form string="Ghana Statutory Configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="SSNIT (Tier 1) Rates">
+                            <field name="ssnit_employee_rate" widget="percentage"/>
+                            <field name="ssnit_employer_rate" widget="percentage"/>
+                            <field name="ssnit_employer_portion" widget="percentage"/>
+                        </group>
+                        <group string="Tier 2 Pension">
+                            <field name="tier2_rate" widget="percentage"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Ghana Pension Structure:</strong>
+                                <ul>
+                                    <li><b>Tier 1 (SSNIT):</b> 5.5% employee + 8% employer = 13.5% to SSNIT</li>
+                                    <li><b>Tier 2:</b> 5% from employer contribution (managed by trustees)</li>
+                                    <li><b>Total Employer:</b> 13% (8% SSNIT + 5% Tier 2)</li>
+                                    <li><b>Tier 3:</b> Voluntary provident fund (up to 16.5%)</li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Statutory Config Tree View -->
+    <record id="view_ghana_statutory_config_tree" model="ir.ui.view">
+        <field name="name">ghana.statutory.config.tree</field>
+        <field name="model">ghana.statutory.config</field>
+        <field name="arch" type="xml">
+            <tree string="Ghana Statutory Configurations">
+                <field name="name"/>
+                <field name="ssnit_employee_rate"/>
+                <field name="ssnit_employer_rate"/>
+                <field name="tier2_rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Statutory Config Action -->
+    <record id="action_ghana_statutory_config" model="ir.actions.act_window">
+        <field name="name">Statutory Configuration</field>
+        <field name="res_model">ghana.statutory.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- PAYE Tax Bands Views                         -->
+    <!-- ============================================= -->
+
+    <!-- PAYE Tax Band Form View -->
+    <record id="view_ghana_paye_tax_band_form" model="ir.ui.view">
+        <field name="name">ghana.paye.tax.band.form</field>
+        <field name="model">ghana.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <form string="PAYE Tax Band">
+                <sheet>
+                    <group>
+                        <group string="Income Range (Monthly GHS)">
+                            <field name="name"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                        </group>
+                        <group string="Tax Rate">
+                            <field name="rate" widget="percentage"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Tree View -->
+    <record id="view_ghana_paye_tax_band_tree" model="ir.ui.view">
+        <field name="name">ghana.paye.tax.band.tree</field>
+        <field name="model">ghana.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <tree string="PAYE Tax Bands" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Action -->
+    <record id="action_ghana_paye_tax_band" model="ir.actions.act_window">
+        <field name="name">PAYE Tax Bands</field>
+        <field name="res_model">ghana.paye.tax.band</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Menu Items                                   -->
+    <!-- ============================================= -->
+
+    <menuitem id="menu_ghana_payroll_root"
+        name="Ghana Payroll"
+        parent="om_hr_payroll.menu_hr_payroll_root"
+        sequence="91"/>
+
+    <menuitem id="menu_ghana_payroll_config"
+        name="Configuration"
+        parent="menu_ghana_payroll_root"
+        sequence="100"/>
+
+    <menuitem id="menu_ghana_statutory_config"
+        name="Statutory Configuration"
+        parent="menu_ghana_payroll_config"
+        action="action_ghana_statutory_config"
+        sequence="10"/>
+
+    <menuitem id="menu_ghana_paye_tax_bands"
+        name="PAYE Tax Bands"
+        parent="menu_ghana_payroll_config"
+        action="action_ghana_paye_tax_band"
+        sequence="20"/>
+
+    <menuitem id="menu_ghana_payslips"
+        name="Ghana Payslips"
+        parent="menu_ghana_payroll_root"
+        action="action_hr_payslip_ghana"
+        sequence="10"/>
+</odoo>

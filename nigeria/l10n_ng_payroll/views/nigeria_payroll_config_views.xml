@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================= -->
+    <!-- Nigeria Statutory Configuration Views        -->
+    <!-- ============================================= -->
+
+    <!-- Statutory Config Form View -->
+    <record id="view_nigeria_statutory_config_form" model="ir.ui.view">
+        <field name="name">nigeria.statutory.config.form</field>
+        <field name="model">nigeria.statutory.config</field>
+        <field name="arch" type="xml">
+            <form string="Nigeria Statutory Configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Pension Rates">
+                            <field name="pension_employee_rate" widget="percentage"/>
+                            <field name="pension_employer_rate" widget="percentage"/>
+                        </group>
+                        <group string="Other Deductions">
+                            <field name="nhf_rate" widget="percentage"/>
+                            <field name="nhis_employee_rate" widget="percentage"/>
+                            <field name="nhis_employer_rate" widget="percentage"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="CRA (Consolidated Relief Allowance)">
+                            <field name="cra_fixed"/>
+                            <field name="cra_percentage" widget="percentage"/>
+                            <field name="cra_gross_threshold" widget="percentage"/>
+                        </group>
+                        <group string="Status">
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Nigeria Statutory Deductions:</strong>
+                                <ul>
+                                    <li><b>Pension:</b> 8% employee + 10% employer (minimum)</li>
+                                    <li><b>NHF:</b> 2.5% of basic salary</li>
+                                    <li><b>NHIS:</b> 1.75% employee + 3.25% employer</li>
+                                    <li><b>CRA:</b> Higher of (NGN 200,000 OR 1% of Gross) + 20% of Gross</li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Statutory Config Tree View -->
+    <record id="view_nigeria_statutory_config_tree" model="ir.ui.view">
+        <field name="name">nigeria.statutory.config.tree</field>
+        <field name="model">nigeria.statutory.config</field>
+        <field name="arch" type="xml">
+            <tree string="Nigeria Statutory Configurations">
+                <field name="name"/>
+                <field name="pension_employee_rate"/>
+                <field name="pension_employer_rate"/>
+                <field name="nhf_rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Statutory Config Action -->
+    <record id="action_nigeria_statutory_config" model="ir.actions.act_window">
+        <field name="name">Statutory Configuration</field>
+        <field name="res_model">nigeria.statutory.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- PAYE Tax Bands Views                         -->
+    <!-- ============================================= -->
+
+    <!-- PAYE Tax Band Form View -->
+    <record id="view_nigeria_paye_tax_band_form" model="ir.ui.view">
+        <field name="name">nigeria.paye.tax.band.form</field>
+        <field name="model">nigeria.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <form string="PAYE Tax Band">
+                <sheet>
+                    <group>
+                        <group string="Income Range (Annual NGN)">
+                            <field name="name"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                        </group>
+                        <group string="Tax Rate">
+                            <field name="rate" widget="percentage"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Tree View -->
+    <record id="view_nigeria_paye_tax_band_tree" model="ir.ui.view">
+        <field name="name">nigeria.paye.tax.band.tree</field>
+        <field name="model">nigeria.paye.tax.band</field>
+        <field name="arch" type="xml">
+            <tree string="PAYE Tax Bands" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="rate"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- PAYE Tax Band Action -->
+    <record id="action_nigeria_paye_tax_band" model="ir.actions.act_window">
+        <field name="name">PAYE Tax Bands</field>
+        <field name="res_model">nigeria.paye.tax.band</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- Menu Items                                   -->
+    <!-- ============================================= -->
+
+    <menuitem id="menu_nigeria_payroll_root"
+        name="Nigeria Payroll"
+        parent="om_hr_payroll.menu_hr_payroll_root"
+        sequence="92"/>
+
+    <menuitem id="menu_nigeria_payroll_config"
+        name="Configuration"
+        parent="menu_nigeria_payroll_root"
+        sequence="100"/>
+
+    <menuitem id="menu_nigeria_statutory_config"
+        name="Statutory Configuration"
+        parent="menu_nigeria_payroll_config"
+        action="action_nigeria_statutory_config"
+        sequence="10"/>
+
+    <menuitem id="menu_nigeria_paye_tax_bands"
+        name="PAYE Tax Bands"
+        parent="menu_nigeria_payroll_config"
+        action="action_nigeria_paye_tax_band"
+        sequence="20"/>
+
+    <menuitem id="menu_nigeria_payslips"
+        name="Nigeria Payslips"
+        parent="menu_nigeria_payroll_root"
+        action="action_hr_payslip_nigeria"
+        sequence="10"/>
+</odoo>

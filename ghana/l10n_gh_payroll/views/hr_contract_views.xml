@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ghana Contract Form View Extension -->
+    <record id="view_hr_contract_form_ghana" model="ir.ui.view">
+        <field name="name">hr.contract.form.ghana</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='notes']" position="before">
+                <group string="Ghana Statutory Information" name="ghana_statutory">
+                    <group>
+                        <field name="gh_tin"/>
+                        <field name="gh_ssnit_number"/>
+                    </group>
+                    <group>
+                        <field name="gh_tier2_provider"/>
+                        <field name="gh_tier3_provider"/>
+                    </group>
+                </group>
+                <group string="Ghana Allowances" name="ghana_allowances">
+                    <group>
+                        <field name="gh_transport_allowance"/>
+                        <field name="gh_housing_allowance"/>
+                        <field name="gh_risk_allowance"/>
+                    </group>
+                    <group>
+                        <field name="gh_responsibility_allowance"/>
+                        <field name="gh_other_allowance"/>
+                        <field name="gh_gross_salary" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Ghana Tier 3 (Voluntary)" name="ghana_tier3">
+                    <group>
+                        <field name="gh_tier3_employee" widget="percentage"/>
+                    </group>
+                    <group>
+                        <field name="gh_tier3_employer" widget="percentage"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

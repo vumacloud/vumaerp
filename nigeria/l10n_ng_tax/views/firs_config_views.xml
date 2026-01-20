@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FIRS Config Form View -->
+    <record id="view_nigeria_firs_config_form" model="ir.ui.view">
+        <field name="name">nigeria.firs.config.form</field>
+        <field name="model">nigeria.firs.config</field>
+        <field name="arch" type="xml">
+            <form string="FIRS Configuration">
+                <sheet>
+                    <widget name="web_ribbon" title="TCC Valid" bg_color="text-bg-success"
+                            invisible="not tcc_valid"/>
+                    <widget name="web_ribbon" title="TCC Expired" bg_color="text-bg-danger"
+                            invisible="tcc_valid or not tcc_number"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="FIRS Registration">
+                            <field name="tin"/>
+                            <field name="rc_number"/>
+                            <field name="vat_registered"/>
+                            <field name="vat_reg_number" invisible="not vat_registered"/>
+                        </group>
+                        <group string="Company Classification">
+                            <field name="company_size" widget="radio"/>
+                            <field name="cit_rate" readonly="1" widget="percentage"/>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Tax Clearance Certificate (TCC)">
+                        <group>
+                            <field name="tcc_number"/>
+                            <field name="tcc_expiry"/>
+                            <field name="tcc_valid" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Nigeria Tax Rates (2025):</strong>
+                                <ul>
+                                    <li><b>VAT:</b> 7.5%</li>
+                                    <li><b>WHT:</b> 5-10% depending on transaction type</li>
+                                    <li><b>CIT:</b> Small (0%), Medium (20%), Large (30%)</li>
+                                    <li><b>Education Tax:</b> 2% of assessable profit</li>
+                                </ul>
+                                <p><b>VAT Registration:</b> Required for turnover > NGN 25 million</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- FIRS Config Tree View -->
+    <record id="view_nigeria_firs_config_tree" model="ir.ui.view">
+        <field name="name">nigeria.firs.config.tree</field>
+        <field name="model">nigeria.firs.config</field>
+        <field name="arch" type="xml">
+            <tree string="FIRS Configurations">
+                <field name="name"/>
+                <field name="tin"/>
+                <field name="company_size"/>
+                <field name="vat_registered" widget="boolean"/>
+                <field name="tcc_valid" widget="boolean"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- FIRS Config Action -->
+    <record id="action_nigeria_firs_config" model="ir.actions.act_window">
+        <field name="name">FIRS Configuration</field>
+        <field name="res_model">nigeria.firs.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Tax Codes Tree View -->
+    <record id="view_nigeria_tax_code_tree" model="ir.ui.view">
+        <field name="name">nigeria.tax.code.tree</field>
+        <field name="model">nigeria.tax.code</field>
+        <field name="arch" type="xml">
+            <tree string="Tax Codes" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="tax_type"/>
+                <field name="rate"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tax Code Action -->
+    <record id="action_nigeria_tax_code" model="ir.actions.act_window">
+        <field name="name">Tax Codes</field>
+        <field name="res_model">nigeria.tax.code</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_nigeria_tax_root"
+        name="Nigeria Tax"
+        parent="account.menu_finance_configuration"
+        sequence="91"/>
+
+    <menuitem id="menu_nigeria_firs_config"
+        name="FIRS Configuration"
+        parent="menu_nigeria_tax_root"
+        action="action_nigeria_firs_config"
+        sequence="10"/>
+
+    <menuitem id="menu_nigeria_tax_codes"
+        name="Tax Codes"
+        parent="menu_nigeria_tax_root"
+        action="action_nigeria_tax_code"
+        sequence="20"/>
+</odoo>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ghana E-VAT Tax Codes -->
+
+        <!-- VAT 15% -->
+        <record id="evat_tax_vat_standard" model="ghana.evat.tax.code">
+            <field name="code">VAT-STD</field>
+            <field name="name">VAT Standard Rate</field>
+            <field name="description">Standard VAT rate of 15%</field>
+            <field name="rate">15.0</field>
+            <field name="tax_type">vat</field>
+        </record>
+
+        <!-- NHIL 2.5% -->
+        <record id="evat_tax_nhil" model="ghana.evat.tax.code">
+            <field name="code">NHIL</field>
+            <field name="name">National Health Insurance Levy</field>
+            <field name="description">NHIL at 2.5%</field>
+            <field name="rate">2.5</field>
+            <field name="tax_type">nhil</field>
+        </record>
+
+        <!-- GETFund 2.5% -->
+        <record id="evat_tax_getfund" model="ghana.evat.tax.code">
+            <field name="code">GETF</field>
+            <field name="name">GETFund Levy</field>
+            <field name="description">Ghana Education Trust Fund Levy at 2.5%</field>
+            <field name="rate">2.5</field>
+            <field name="tax_type">getfund</field>
+        </record>
+
+        <!-- COVID-19 Levy 1% -->
+        <record id="evat_tax_covid" model="ghana.evat.tax.code">
+            <field name="code">COVID</field>
+            <field name="name">COVID-19 Health Recovery Levy</field>
+            <field name="description">COVID-19 Levy at 1%</field>
+            <field name="rate">1.0</field>
+            <field name="tax_type">covid</field>
+        </record>
+
+        <!-- VAT Exempt -->
+        <record id="evat_tax_exempt" model="ghana.evat.tax.code">
+            <field name="code">VAT-EXE</field>
+            <field name="name">VAT Exempt</field>
+            <field name="description">Exempt from VAT</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">exempt</field>
+        </record>
+
+        <!-- Zero Rated -->
+        <record id="evat_tax_zero" model="ghana.evat.tax.code">
+            <field name="code">VAT-ZERO</field>
+            <field name="name">Zero Rated</field>
+            <field name="description">Zero rated supplies (exports, etc.)</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">zero</field>
+        </record>
+
+        <!-- Communication Service Levy -->
+        <record id="evat_tax_csl" model="ghana.evat.tax.code">
+            <field name="code">CSL</field>
+            <field name="name">Communication Service Levy</field>
+            <field name="description">CSL on electronic communications</field>
+            <field name="rate">5.0</field>
+            <field name="tax_type">csl</field>
+        </record>
+    </data>
+</odoo>

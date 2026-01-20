@@ -20,6 +20,16 @@ vumaerp/
 │   ├── l10n_ug_efris/       # URA EFRIS e-invoicing integration
 │   └── l10n_ug_payroll/     # Uganda payroll (PAYE, NSSF, LST)
 │
+├── ghana/                   # Ghana-specific modules
+│   ├── l10n_gh/             # Ghana base localization
+│   ├── l10n_gh_evat/        # GRA E-VAT integration
+│   └── l10n_gh_payroll/     # Ghana payroll (PAYE, SSNIT, Tier 2)
+│
+├── nigeria/                 # Nigeria-specific modules
+│   ├── l10n_ng/             # Nigeria base localization
+│   ├── l10n_ng_tax/         # FIRS tax integration (VAT, WHT)
+│   └── l10n_ng_payroll/     # Nigeria payroll (PAYE, Pension, NHF)
+│
 ├── ethiopia/                # Ethiopia-specific modules (planned)
 ├── tanzania/                # Tanzania-specific modules (planned)
 └── rwanda/                  # Rwanda-specific modules (planned)
@@ -98,6 +108,80 @@ URA EFRIS (Electronic Fiscal Receipting and Invoicing System) integration:
 - Goods/Services code mapping
 - Tax code management (VAT 18%, Exempt, Zero-rated)
 
+## Ghana Modules
+
+| Module | Description |
+|--------|-------------|
+| `l10n_gh` | Base Ghana localization (country data, 16 regions) |
+| `l10n_gh_evat` | GRA E-VAT e-invoicing integration |
+| `l10n_gh_payroll` | Ghana statutory payroll |
+
+### Ghana Payroll (l10n_gh_payroll)
+
+Statutory deductions (2025 rates):
+
+| Deduction | Rate | Notes |
+|-----------|------|-------|
+| **PAYE** | 0-35% | Progressive tax bands (GHS 490 threshold) |
+| **SSNIT Tier 1** | 5.5% + 8% | Employee 5.5% + Employer 8% to SSNIT |
+| **Tier 2** | 5% | Employer contribution to trustees |
+| **Tier 3** | Up to 16.5% | Voluntary provident fund |
+
+PAYE Tax Bands (Monthly - GHS):
+- GHS 0 - 490: 0%
+- GHS 491 - 600: 5%
+- GHS 601 - 730: 10%
+- GHS 731 - 3,896: 17.5%
+- GHS 3,897 - 20,000: 25%
+- GHS 20,001 - 50,000: 30%
+- Above GHS 50,000: 35%
+
+### Ghana E-VAT (l10n_gh_evat)
+
+GRA (Ghana Revenue Authority) E-VAT integration:
+- Device registration
+- Real-time invoice submission
+- Tax codes (VAT 15%, NHIL 2.5%, GETFund 2.5%, COVID 1%)
+- Exempt and zero-rated supplies
+
+## Nigeria Modules
+
+| Module | Description |
+|--------|-------------|
+| `l10n_ng` | Base Nigeria localization (country data, 36 states + FCT) |
+| `l10n_ng_tax` | FIRS tax integration (VAT, WHT, CIT) |
+| `l10n_ng_payroll` | Nigeria statutory payroll |
+
+### Nigeria Payroll (l10n_ng_payroll)
+
+Statutory deductions (2025 rates):
+
+| Deduction | Rate | Notes |
+|-----------|------|-------|
+| **PAYE** | 7-24% | Progressive tax with CRA relief |
+| **Pension** | 8% + 10% | Employee 8% + Employer 10% (minimum) |
+| **NHF** | 2.5% | National Housing Fund |
+| **NHIS** | 1.75% + 3.25% | Employee + Employer health insurance |
+
+PAYE Tax Bands (Annual - NGN):
+- NGN 0 - 300,000: 7%
+- NGN 300,001 - 600,000: 11%
+- NGN 600,001 - 1,100,000: 15%
+- NGN 1,100,001 - 1,600,000: 19%
+- NGN 1,600,001 - 3,200,000: 21%
+- Above NGN 3,200,000: 24%
+
+CRA (Consolidated Relief Allowance): Higher of NGN 200,000 or 1% of gross + 20% of gross
+
+### Nigeria Tax (l10n_ng_tax)
+
+FIRS (Federal Inland Revenue Service) tax integration:
+- VAT management (7.5%)
+- Withholding Tax (5-10% by transaction type)
+- Company Income Tax (0-30% by company size)
+- Tax code management
+- TCC (Tax Clearance Certificate) tracking
+
 ## Installation
 
 1. Clone this repository:
@@ -117,9 +201,14 @@ URA EFRIS (Electronic Fiscal Receipting and Invoicing System) integration:
    addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/uganda
    ```
 
-   **Ethiopia:**
+   **Ghana:**
    ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/ethiopia
+   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/ghana
+   ```
+
+   **Nigeria:**
+   ```ini
+   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/nigeria
    ```
 
 3. Update apps list and install required modules.

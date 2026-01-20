@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- E-VAT Invoice Submission Wizard Form -->
+    <record id="view_evat_invoice_wizard_form" model="ir.ui.view">
+        <field name="name">evat.invoice.wizard.form</field>
+        <field name="model">evat.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Submit to E-VAT">
+                <group>
+                    <field name="include_all_pending"/>
+                </group>
+                <group string="Invoices to Submit">
+                    <field name="move_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_date"/>
+                            <field name="amount_total"/>
+                            <field name="currency_id"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_submit" string="Submit to E-VAT"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- E-VAT Wizard Action -->
+    <record id="action_evat_invoice_wizard" model="ir.actions.act_window">
+        <field name="name">Submit to E-VAT</field>
+        <field name="res_model">evat.invoice.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ghana Salary Rule Categories -->
+
+        <record id="category_gh_allowance" model="hr.salary.rule.category">
+            <field name="name">Ghana Allowances</field>
+            <field name="code">GH_ALW</field>
+            <field name="parent_id" ref="om_hr_payroll.ALW"/>
+        </record>
+
+        <record id="category_gh_pension" model="hr.salary.rule.category">
+            <field name="name">Ghana Pension</field>
+            <field name="code">GH_PENSION</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_gh_tax" model="hr.salary.rule.category">
+            <field name="name">Ghana Tax</field>
+            <field name="code">GH_TAX</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_gh_deduction" model="hr.salary.rule.category">
+            <field name="name">Ghana Deductions</field>
+            <field name="code">GH_DED</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_gh_employer" model="hr.salary.rule.category">
+            <field name="name">Ghana Employer Contributions</field>
+            <field name="code">GH_ERC</field>
+        </record>
+    </data>
+</odoo>
