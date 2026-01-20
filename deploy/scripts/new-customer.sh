@@ -122,6 +122,9 @@ echo "Database:     $DB_NAME"
 echo "Country:      $COUNTRY_NAME"
 echo "Currency:     $CURRENCY"
 echo ""
+# Generate subdomain (replace underscores with dashes)
+SUBDOMAIN=$(echo "$DB_NAME" | tr '_' '-')
+
 echo "Admin Login:"
 echo "  URL:      https://${SUBDOMAIN}.vumaerp.com"
 echo "  Email:    $ADMIN_EMAIL"
