@@ -1,0 +1,83 @@
+// ===========================================
+// VumaERP Branding Styles
+// ===========================================
+
+// Brand Colors
+$vumaerp-primary: #1a5f7a;      // Deep teal
+$vumaerp-secondary: #159895;    // Lighter teal
+$vumaerp-accent: #57c5b6;       // Accent teal
+$vumaerp-light: #f8f9fa;
+
+// Override Odoo primary color
+:root {
+    --primary: #{$vumaerp-primary};
+    --o-brand-primary: #{$vumaerp-primary};
+    --o-brand-odoo: #{$vumaerp-primary};
+}
+
+// Navbar logo replacement
+.o_main_navbar {
+    .o_menu_brand {
+        &::before {
+            content: "VumaERP";
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+    }
+}
+
+// Hide default Odoo branding where possible
+.o_odoo_icon,
+.o_odoo_logo {
+    display: none !important;
+}
+
+// Login page styling
+.o_web_client.o_login {
+    background: linear-gradient(135deg, $vumaerp-primary 0%, $vumaerp-secondary 100%);
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+        background-color: $vumaerp-primary;
+        border-color: $vumaerp-primary;
+
+        &:hover {
+            background-color: darken($vumaerp-primary, 10%);
+            border-color: darken($vumaerp-primary, 10%);
+        }
+    }
+}
+
+// Loading screen
+.o_loading {
+    background-color: $vumaerp-primary !important;
+}
+
+// About dialog - hide Odoo references
+.o_dialog {
+    .modal-title:contains("Odoo") {
+        visibility: hidden;
+        &::after {
+            content: "VumaERP";
+            visibility: visible;
+        }
+    }
+}
+
+// Footer styling
+.o_brand_promotion {
+    a {
+        color: $vumaerp-primary !important;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

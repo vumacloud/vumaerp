@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- ============================================= -->
+    <!-- Override Navbar Brand                        -->
+    <!-- ============================================= -->
+    <t t-name="vumaerp_branding.NavbarBrand" t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//a[hasclass('o_menu_brand')]" position="replace">
+            <a href="#" class="o_menu_brand d-flex align-items-center" t-on-click.prevent="() => this.env.bus.trigger('TOGGLE-HOME-MENU')">
+                <img src="/vumaerp_branding/static/src/img/logo_white.png"
+                     alt="VumaERP"
+                     height="28"
+                     style="margin-right: 8px;"/>
+            </a>
+        </xpath>
+    </t>
+
+    <!-- ============================================= -->
+    <!-- Override User Menu                           -->
+    <!-- ============================================= -->
+    <t t-name="vumaerp_branding.UserMenu" t-inherit="web.UserMenu" t-inherit-mode="extension">
+        <xpath expr="//span[hasclass('oe_topbar_name')]" position="after">
+            <!-- Any user menu customizations -->
+        </xpath>
+    </t>
+
+    <!-- ============================================= -->
+    <!-- Override Home Menu                           -->
+    <!-- ============================================= -->
+    <t t-name="vumaerp_branding.HomeMenu" t-inherit="web_enterprise.HomeMenu" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_home_menu')]" position="attributes">
+            <attribute name="style">background: linear-gradient(135deg, #1a5f7a 0%, #159895 100%);</attribute>
+        </xpath>
+    </t>
+
+</templates>

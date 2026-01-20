@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <!-- V Icon -->
+  <path d="M10 10 L25 50 L40 10" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Text: umaERP -->
+  <text x="50" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white">uma</text>
+  <text x="118" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#57c5b6">ERP</text>
+</svg>
