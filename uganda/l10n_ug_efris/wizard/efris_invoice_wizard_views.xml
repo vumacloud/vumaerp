@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- EFRIS Invoice Submission Wizard Form -->
+    <record id="view_efris_invoice_wizard_form" model="ir.ui.view">
+        <field name="name">efris.invoice.wizard.form</field>
+        <field name="model">efris.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Submit to EFRIS">
+                <group>
+                    <field name="buyer_type"/>
+                    <field name="include_all_pending"/>
+                </group>
+                <group string="Invoices to Submit">
+                    <field name="move_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_date"/>
+                            <field name="amount_total"/>
+                            <field name="currency_id"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_submit" string="Submit to EFRIS"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- EFRIS Invoice Wizard Action -->
+    <record id="action_efris_invoice_wizard" model="ir.actions.act_window">
+        <field name="name">Submit to EFRIS</field>
+        <field name="res_model">efris.invoice.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+    <!-- EFRIS Goods Registration Wizard Form -->
+    <record id="view_efris_goods_registration_wizard_form" model="ir.ui.view">
+        <field name="name">efris.goods.registration.wizard.form</field>
+        <field name="model">efris.goods.registration.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Register Products with EFRIS">
+                <group>
+                    <field name="goods_code_id"/>
+                </group>
+                <group string="Products">
+                    <field name="product_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="default_code"/>
+                            <field name="type"/>
+                            <field name="efris_goods_code"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_register" string="Assign EFRIS Code"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- EFRIS Goods Registration Wizard Action -->
+    <record id="action_efris_goods_registration_wizard" model="ir.actions.act_window">
+        <field name="name">Assign EFRIS Code</field>
+        <field name="res_model">efris.goods.registration.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

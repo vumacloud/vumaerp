@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_uganda_statutory_config_user,uganda.statutory.config.user,model_uganda_statutory_config,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_uganda_statutory_config_manager,uganda.statutory.config.manager,model_uganda_statutory_config,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_uganda_paye_tax_band_user,uganda.paye.tax.band.user,model_uganda_paye_tax_band,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_uganda_paye_tax_band_manager,uganda.paye.tax.band.manager,model_uganda_paye_tax_band,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_uganda_lst_rate_user,uganda.lst.rate.user,model_uganda_lst_rate,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_uganda_lst_rate_manager,uganda.lst.rate.manager,model_uganda_lst_rate,om_hr_payroll.group_hr_payroll_manager,1,1,1,1

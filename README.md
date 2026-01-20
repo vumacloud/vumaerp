@@ -15,8 +15,12 @@ vumaerp/
 │   ├── l10n_ke_etims/       # KRA eTIMS OSCU integration
 │   └── l10n_ke_payroll/     # Kenya payroll (PAYE, SHIF, NSSF, Housing Levy)
 │
+├── uganda/                  # Uganda-specific modules
+│   ├── l10n_ug/             # Uganda base localization
+│   ├── l10n_ug_efris/       # URA EFRIS e-invoicing integration
+│   └── l10n_ug_payroll/     # Uganda payroll (PAYE, NSSF, LST)
+│
 ├── ethiopia/                # Ethiopia-specific modules (planned)
-├── uganda/                  # Uganda-specific modules (planned)
 ├── tanzania/                # Tanzania-specific modules (planned)
 └── rwanda/                  # Rwanda-specific modules (planned)
 ```
@@ -59,6 +63,41 @@ KRA eTIMS OSCU (Online Sales Control Unit) integration:
 - Stock movement reporting
 - Purchase transaction submission
 
+## Uganda Modules
+
+| Module | Description |
+|--------|-------------|
+| `l10n_ug` | Base Uganda localization (country data, formats) |
+| `l10n_ug_efris` | URA EFRIS e-invoicing integration |
+| `l10n_ug_payroll` | Uganda statutory payroll |
+
+### Uganda Payroll (l10n_ug_payroll)
+
+Statutory deductions (2025 rates):
+
+| Deduction | Rate | Notes |
+|-----------|------|-------|
+| **PAYE** | 0-40% | Progressive tax bands (UGX 235,000 threshold) |
+| **NSSF** | 5% + 10% | Employee 5% + Employer 10% of gross |
+| **LST** | Varies | Local Service Tax, paid in 4 installments (July-Oct) |
+
+PAYE Tax Bands (Monthly - Residents):
+- UGX 0 - 235,000: 0%
+- UGX 235,001 - 335,000: 10%
+- UGX 335,001 - 410,000: 20%
+- UGX 410,001 - 10,000,000: 30%
+- Above UGX 10,000,000: 40%
+
+### Uganda EFRIS (l10n_ug_efris)
+
+URA EFRIS (Electronic Fiscal Receipting and Invoicing System) integration:
+- Device registration and management
+- Real-time invoice submission to URA
+- Automatic FDN (Fiscal Document Number) generation
+- Credit note handling
+- Goods/Services code mapping
+- Tax code management (VAT 18%, Exempt, Zero-rated)
+
 ## Installation
 
 1. Clone this repository:
@@ -71,6 +110,11 @@ KRA eTIMS OSCU (Online Sales Control Unit) integration:
    **Kenya:**
    ```ini
    addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/kenya
+   ```
+
+   **Uganda:**
+   ```ini
+   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/uganda
    ```
 
    **Ethiopia:**
