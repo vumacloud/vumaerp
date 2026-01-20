@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Nigeria Tax Codes -->
+
+        <!-- VAT 7.5% -->
+        <record id="tax_code_vat_standard" model="nigeria.tax.code">
+            <field name="code">VAT-STD</field>
+            <field name="name">VAT Standard Rate</field>
+            <field name="description">Standard VAT rate of 7.5%</field>
+            <field name="rate">7.5</field>
+            <field name="tax_type">vat</field>
+        </record>
+
+        <!-- VAT Exempt -->
+        <record id="tax_code_vat_exempt" model="nigeria.tax.code">
+            <field name="code">VAT-EXE</field>
+            <field name="name">VAT Exempt</field>
+            <field name="description">Exempt from VAT (basic food items, medical services, etc.)</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">exempt</field>
+        </record>
+
+        <!-- VAT Zero Rated -->
+        <record id="tax_code_vat_zero" model="nigeria.tax.code">
+            <field name="code">VAT-ZERO</field>
+            <field name="name">Zero Rated</field>
+            <field name="description">Zero rated supplies (exports, diplomatic goods)</field>
+            <field name="rate">0.0</field>
+            <field name="tax_type">zero</field>
+        </record>
+
+        <!-- WHT - Dividends -->
+        <record id="tax_code_wht_dividend" model="nigeria.tax.code">
+            <field name="code">WHT-DIV</field>
+            <field name="name">WHT - Dividends</field>
+            <field name="description">Withholding tax on dividends</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- WHT - Interest -->
+        <record id="tax_code_wht_interest" model="nigeria.tax.code">
+            <field name="code">WHT-INT</field>
+            <field name="name">WHT - Interest</field>
+            <field name="description">Withholding tax on interest payments</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- WHT - Rent -->
+        <record id="tax_code_wht_rent" model="nigeria.tax.code">
+            <field name="code">WHT-RENT</field>
+            <field name="name">WHT - Rent</field>
+            <field name="description">Withholding tax on rent payments</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- WHT - Royalties -->
+        <record id="tax_code_wht_royalty" model="nigeria.tax.code">
+            <field name="code">WHT-ROY</field>
+            <field name="name">WHT - Royalties</field>
+            <field name="description">Withholding tax on royalty payments</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- WHT - Professional Services -->
+        <record id="tax_code_wht_professional" model="nigeria.tax.code">
+            <field name="code">WHT-PRO</field>
+            <field name="name">WHT - Professional Services</field>
+            <field name="description">WHT on professional services (consultancy, technical)</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- WHT - Contract/Supply -->
+        <record id="tax_code_wht_contract" model="nigeria.tax.code">
+            <field name="code">WHT-CON</field>
+            <field name="name">WHT - Contracts</field>
+            <field name="description">WHT on contracts and supplies</field>
+            <field name="rate">5.0</field>
+            <field name="tax_type">wht</field>
+        </record>
+
+        <!-- Education Tax -->
+        <record id="tax_code_edt" model="nigeria.tax.code">
+            <field name="code">EDT</field>
+            <field name="name">Education Tax</field>
+            <field name="description">Tertiary Education Tax (2% of assessable profit)</field>
+            <field name="rate">2.0</field>
+            <field name="tax_type">edt</field>
+        </record>
+
+        <!-- Capital Gains Tax -->
+        <record id="tax_code_cgt" model="nigeria.tax.code">
+            <field name="code">CGT</field>
+            <field name="name">Capital Gains Tax</field>
+            <field name="description">Tax on capital gains from asset disposal</field>
+            <field name="rate">10.0</field>
+            <field name="tax_type">cgt</field>
+        </record>
+    </data>
+</odoo>

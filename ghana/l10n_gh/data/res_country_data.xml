@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ghana Country Data -->
+        <record id="base.gh" model="res.country">
+            <field name="name">Ghana</field>
+            <field name="code">GH</field>
+            <field name="phone_code">233</field>
+            <field name="currency_id" ref="base.GHS"/>
+            <field name="address_format">%(street)s
+%(street2)s
+%(city)s
+%(country_name)s</field>
+            <field name="vat_label">TIN</field>
+        </record>
+
+        <!-- Ghana Regions -->
+        <record id="state_gh_greater_accra" model="res.country.state">
+            <field name="name">Greater Accra</field>
+            <field name="code">AA</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_ashanti" model="res.country.state">
+            <field name="name">Ashanti</field>
+            <field name="code">AH</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_western" model="res.country.state">
+            <field name="name">Western</field>
+            <field name="code">WP</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_eastern" model="res.country.state">
+            <field name="name">Eastern</field>
+            <field name="code">EP</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_central" model="res.country.state">
+            <field name="name">Central</field>
+            <field name="code">CP</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_northern" model="res.country.state">
+            <field name="name">Northern</field>
+            <field name="code">NP</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_volta" model="res.country.state">
+            <field name="name">Volta</field>
+            <field name="code">TV</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_upper_east" model="res.country.state">
+            <field name="name">Upper East</field>
+            <field name="code">UE</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_upper_west" model="res.country.state">
+            <field name="name">Upper West</field>
+            <field name="code">UW</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_bono" model="res.country.state">
+            <field name="name">Bono</field>
+            <field name="code">BO</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_bono_east" model="res.country.state">
+            <field name="name">Bono East</field>
+            <field name="code">BE</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_ahafo" model="res.country.state">
+            <field name="name">Ahafo</field>
+            <field name="code">AF</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_north_east" model="res.country.state">
+            <field name="name">North East</field>
+            <field name="code">NE</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_savannah" model="res.country.state">
+            <field name="name">Savannah</field>
+            <field name="code">SV</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_oti" model="res.country.state">
+            <field name="name">Oti</field>
+            <field name="code">OT</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+        <record id="state_gh_western_north" model="res.country.state">
+            <field name="name">Western North</field>
+            <field name="code">WN</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+    </data>
+</odoo>

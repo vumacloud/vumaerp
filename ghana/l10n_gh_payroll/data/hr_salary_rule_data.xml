@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ============================================= -->
+        <!-- Ghana Salary Rules                           -->
+        <!-- ============================================= -->
+
+        <!-- Basic Salary -->
+        <record id="rule_gh_basic" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">GH_BASIC</field>
+            <field name="sequence">1</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage</field>
+        </record>
+
+        <!-- Transport Allowance -->
+        <record id="rule_gh_transport" model="hr.salary.rule">
+            <field name="name">Transport Allowance</field>
+            <field name="code">GH_TRANSPORT</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="category_gh_allowance"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.gh_transport_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.gh_transport_allowance</field>
+        </record>
+
+        <!-- Housing Allowance -->
+        <record id="rule_gh_housing" model="hr.salary.rule">
+            <field name="name">Housing Allowance</field>
+            <field name="code">GH_HOUSING</field>
+            <field name="sequence">11</field>
+            <field name="category_id" ref="category_gh_allowance"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.gh_housing_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.gh_housing_allowance</field>
+        </record>
+
+        <!-- Risk Allowance -->
+        <record id="rule_gh_risk" model="hr.salary.rule">
+            <field name="name">Risk Allowance</field>
+            <field name="code">GH_RISK</field>
+            <field name="sequence">12</field>
+            <field name="category_id" ref="category_gh_allowance"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.gh_risk_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.gh_risk_allowance</field>
+        </record>
+
+        <!-- Responsibility Allowance -->
+        <record id="rule_gh_responsibility" model="hr.salary.rule">
+            <field name="name">Responsibility Allowance</field>
+            <field name="code">GH_RESP</field>
+            <field name="sequence">13</field>
+            <field name="category_id" ref="category_gh_allowance"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.gh_responsibility_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.gh_responsibility_allowance</field>
+        </record>
+
+        <!-- Other Allowance -->
+        <record id="rule_gh_other_allowance" model="hr.salary.rule">
+            <field name="name">Other Allowance</field>
+            <field name="code">GH_OTHER</field>
+            <field name="sequence">14</field>
+            <field name="category_id" ref="category_gh_allowance"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.gh_other_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.gh_other_allowance</field>
+        </record>
+
+        <!-- Gross Salary -->
+        <record id="rule_gh_gross" model="hr.salary.rule">
+            <field name="name">Gross Salary</field>
+            <field name="code">GH_GROSS</field>
+            <field name="sequence">50</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.BASIC + categories.GH_ALW
+            </field>
+        </record>
+
+        <!-- SSNIT Employee Contribution (5.5%) -->
+        <record id="rule_gh_ssnit_employee" model="hr.salary.rule">
+            <field name="name">SSNIT Tier 1 (Employee 5.5%)</field>
+            <field name="code">GH_SSNIT_EE</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="category_gh_pension"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['ghana.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = -config.calculate_ssnit_employee(contract.wage)
+else:
+    result = -(contract.wage * 0.055)
+            </field>
+        </record>
+
+        <!-- SSNIT Employer Contribution (8% to SSNIT) -->
+        <record id="rule_gh_ssnit_employer" model="hr.salary.rule">
+            <field name="name">SSNIT Tier 1 (Employer 8%)</field>
+            <field name="code">GH_SSNIT_ER</field>
+            <field name="sequence">101</field>
+            <field name="category_id" ref="category_gh_employer"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['ghana.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = config.calculate_ssnit_employer(contract.wage)
+else:
+    result = contract.wage * 0.08
+            </field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+
+        <!-- Tier 2 Pension (5% Employer) -->
+        <record id="rule_gh_tier2" model="hr.salary.rule">
+            <field name="name">Tier 2 Pension (5%)</field>
+            <field name="code">GH_TIER2</field>
+            <field name="sequence">102</field>
+            <field name="category_id" ref="category_gh_employer"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['ghana.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = config.calculate_tier2(contract.wage)
+else:
+    result = contract.wage * 0.05
+            </field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+
+        <!-- PAYE (Income Tax) -->
+        <record id="rule_gh_paye" model="hr.salary.rule">
+            <field name="name">PAYE (Income Tax)</field>
+            <field name="code">GH_PAYE</field>
+            <field name="sequence">110</field>
+            <field name="category_id" ref="category_gh_tax"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+# Taxable income = Gross - SSNIT Employee
+taxable = categories.GROSS + categories.GH_PENSION  # pension is negative
+PAYEBand = env['ghana.paye.tax.band']
+result = -PAYEBand.calculate_paye(taxable, payslip.company_id)
+            </field>
+        </record>
+
+        <!-- Net Salary -->
+        <record id="rule_gh_net" model="hr.salary.rule">
+            <field name="name">Net Salary</field>
+            <field name="code">GH_NET</field>
+            <field name="sequence">200</field>
+            <field name="category_id" ref="om_hr_payroll.NET"/>
+            <field name="struct_id" ref="structure_ghana_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.GROSS + categories.GH_DED
+            </field>
+        </record>
+    </data>
+</odoo>

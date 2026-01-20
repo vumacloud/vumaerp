@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ============================================= -->
+        <!-- Nigeria Salary Rules                         -->
+        <!-- ============================================= -->
+
+        <!-- Basic Salary -->
+        <record id="rule_ng_basic" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">NG_BASIC</field>
+            <field name="sequence">1</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.wage</field>
+        </record>
+
+        <!-- Transport Allowance -->
+        <record id="rule_ng_transport" model="hr.salary.rule">
+            <field name="name">Transport Allowance</field>
+            <field name="code">NG_TRANSPORT</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_transport_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_transport_allowance</field>
+        </record>
+
+        <!-- Housing Allowance -->
+        <record id="rule_ng_housing" model="hr.salary.rule">
+            <field name="name">Housing Allowance</field>
+            <field name="code">NG_HOUSING</field>
+            <field name="sequence">11</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_housing_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_housing_allowance</field>
+        </record>
+
+        <!-- Meal Allowance -->
+        <record id="rule_ng_meal" model="hr.salary.rule">
+            <field name="name">Meal/Feeding Allowance</field>
+            <field name="code">NG_MEAL</field>
+            <field name="sequence">12</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_meal_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_meal_allowance</field>
+        </record>
+
+        <!-- Utility Allowance -->
+        <record id="rule_ng_utility" model="hr.salary.rule">
+            <field name="name">Utility Allowance</field>
+            <field name="code">NG_UTILITY</field>
+            <field name="sequence">13</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_utility_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_utility_allowance</field>
+        </record>
+
+        <!-- Furniture Allowance -->
+        <record id="rule_ng_furniture" model="hr.salary.rule">
+            <field name="name">Furniture Allowance</field>
+            <field name="code">NG_FURNITURE</field>
+            <field name="sequence">14</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_furniture_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_furniture_allowance</field>
+        </record>
+
+        <!-- Leave Allowance -->
+        <record id="rule_ng_leave" model="hr.salary.rule">
+            <field name="name">Leave Allowance</field>
+            <field name="code">NG_LEAVE</field>
+            <field name="sequence">15</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_leave_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_leave_allowance</field>
+        </record>
+
+        <!-- Other Allowance -->
+        <record id="rule_ng_other" model="hr.salary.rule">
+            <field name="name">Other Allowance</field>
+            <field name="code">NG_OTHER</field>
+            <field name="sequence">16</field>
+            <field name="category_id" ref="category_ng_allowance"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_other_allowance > 0</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.ng_other_allowance</field>
+        </record>
+
+        <!-- Gross Salary -->
+        <record id="rule_ng_gross" model="hr.salary.rule">
+            <field name="name">Gross Salary</field>
+            <field name="code">NG_GROSS</field>
+            <field name="sequence">50</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.BASIC + categories.NG_ALW
+            </field>
+        </record>
+
+        <!-- Pension Employee -->
+        <record id="rule_ng_pension_employee" model="hr.salary.rule">
+            <field name="name">Pension (Employee)</field>
+            <field name="code">NG_PENSION_EE</field>
+            <field name="sequence">100</field>
+            <field name="category_id" ref="category_ng_pension"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+rate = contract.ng_pension_employee_rate or 8.0
+result = -(contract.wage * rate / 100)
+            </field>
+        </record>
+
+        <!-- Pension Employer -->
+        <record id="rule_ng_pension_employer" model="hr.salary.rule">
+            <field name="name">Pension (Employer)</field>
+            <field name="code">NG_PENSION_ER</field>
+            <field name="sequence">101</field>
+            <field name="category_id" ref="category_ng_employer"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+rate = contract.ng_pension_employer_rate or 10.0
+result = contract.wage * rate / 100
+            </field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+
+        <!-- NHF -->
+        <record id="rule_ng_nhf" model="hr.salary.rule">
+            <field name="name">NHF (National Housing Fund)</field>
+            <field name="code">NG_NHF</field>
+            <field name="sequence">102</field>
+            <field name="category_id" ref="category_ng_deduction"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['nigeria.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = -config.calculate_nhf(contract.wage)
+else:
+    result = -(contract.wage * 0.025)
+            </field>
+        </record>
+
+        <!-- NHIS Employee -->
+        <record id="rule_ng_nhis_employee" model="hr.salary.rule">
+            <field name="name">NHIS (Employee)</field>
+            <field name="code">NG_NHIS_EE</field>
+            <field name="sequence">103</field>
+            <field name="category_id" ref="category_ng_deduction"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_nhis_enrolled</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['nigeria.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = -config.calculate_nhis_employee(contract.wage)
+else:
+    result = -(contract.wage * 0.0175)
+            </field>
+        </record>
+
+        <!-- NHIS Employer -->
+        <record id="rule_ng_nhis_employer" model="hr.salary.rule">
+            <field name="name">NHIS (Employer)</field>
+            <field name="code">NG_NHIS_ER</field>
+            <field name="sequence">104</field>
+            <field name="category_id" ref="category_ng_employer"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.ng_nhis_enrolled</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+config = env['nigeria.statutory.config'].get_config(payslip.company_id)
+if config:
+    result = config.calculate_nhis_employer(contract.wage)
+else:
+    result = contract.wage * 0.0325
+            </field>
+            <field name="appears_on_payslip">False</field>
+        </record>
+
+        <!-- PAYE -->
+        <record id="rule_ng_paye" model="hr.salary.rule">
+            <field name="name">PAYE (Income Tax)</field>
+            <field name="code">NG_PAYE</field>
+            <field name="sequence">110</field>
+            <field name="category_id" ref="category_ng_tax"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+# Annual gross
+annual_gross = categories.GROSS * 12
+
+# Get pension and NHF (already negative, convert to positive for calculation)
+monthly_pension = abs(categories.NG_PENSION)
+monthly_nhf = abs(categories.NG_DED) if 'NG_DED' in dir(categories) else contract.wage * 0.025
+annual_pension = monthly_pension * 12
+annual_nhf = monthly_nhf * 12
+
+# Calculate CRA
+config = env['nigeria.statutory.config'].get_config(payslip.company_id)
+if config:
+    annual_cra = config.calculate_cra(annual_gross)
+else:
+    gross_threshold = annual_gross * 0.01
+    base_cra = max(200000, gross_threshold)
+    annual_cra = base_cra + (annual_gross * 0.20)
+
+# Taxable income
+annual_taxable = annual_gross - annual_cra - annual_pension - annual_nhf
+if annual_taxable &lt; 0:
+    annual_taxable = 0
+
+# Calculate monthly PAYE
+PAYEBand = env['nigeria.paye.tax.band']
+monthly_paye = PAYEBand.calculate_monthly_paye(annual_taxable / 12, payslip.company_id)
+result = -monthly_paye
+            </field>
+        </record>
+
+        <!-- Net Salary -->
+        <record id="rule_ng_net" model="hr.salary.rule">
+            <field name="name">Net Salary</field>
+            <field name="code">NG_NET</field>
+            <field name="sequence">200</field>
+            <field name="category_id" ref="om_hr_payroll.NET"/>
+            <field name="struct_id" ref="structure_nigeria_employee"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = categories.GROSS + categories.NG_DED
+            </field>
+        </record>
+    </data>
+</odoo>

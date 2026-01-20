@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ============================================= -->
+        <!-- Nigeria PAYE Tax Bands (2025)                -->
+        <!-- Annual amounts in NGN                        -->
+        <!-- ============================================= -->
+
+        <!-- Band 1: First NGN 300,000 = 7% -->
+        <record id="paye_band_ng_1" model="nigeria.paye.tax.band">
+            <field name="name">First NGN 300,000 (7%)</field>
+            <field name="sequence">1</field>
+            <field name="min_amount">0</field>
+            <field name="max_amount">300000</field>
+            <field name="rate">7</field>
+        </record>
+
+        <!-- Band 2: Next NGN 300,000 = 11% -->
+        <record id="paye_band_ng_2" model="nigeria.paye.tax.band">
+            <field name="name">Next NGN 300,000 (11%)</field>
+            <field name="sequence">2</field>
+            <field name="min_amount">300000</field>
+            <field name="max_amount">600000</field>
+            <field name="rate">11</field>
+        </record>
+
+        <!-- Band 3: Next NGN 500,000 = 15% -->
+        <record id="paye_band_ng_3" model="nigeria.paye.tax.band">
+            <field name="name">Next NGN 500,000 (15%)</field>
+            <field name="sequence">3</field>
+            <field name="min_amount">600000</field>
+            <field name="max_amount">1100000</field>
+            <field name="rate">15</field>
+        </record>
+
+        <!-- Band 4: Next NGN 500,000 = 19% -->
+        <record id="paye_band_ng_4" model="nigeria.paye.tax.band">
+            <field name="name">Next NGN 500,000 (19%)</field>
+            <field name="sequence">4</field>
+            <field name="min_amount">1100000</field>
+            <field name="max_amount">1600000</field>
+            <field name="rate">19</field>
+        </record>
+
+        <!-- Band 5: Next NGN 1,600,000 = 21% -->
+        <record id="paye_band_ng_5" model="nigeria.paye.tax.band">
+            <field name="name">Next NGN 1,600,000 (21%)</field>
+            <field name="sequence">5</field>
+            <field name="min_amount">1600000</field>
+            <field name="max_amount">3200000</field>
+            <field name="rate">21</field>
+        </record>
+
+        <!-- Band 6: Above NGN 3,200,000 = 24% -->
+        <record id="paye_band_ng_6" model="nigeria.paye.tax.band">
+            <field name="name">Above NGN 3,200,000 (24%)</field>
+            <field name="sequence">6</field>
+            <field name="min_amount">3200000</field>
+            <field name="max_amount">0</field>
+            <field name="rate">24</field>
+        </record>
+
+        <!-- ============================================= -->
+        <!-- Default Statutory Configuration              -->
+        <!-- ============================================= -->
+
+        <record id="statutory_config_ng_default" model="nigeria.statutory.config">
+            <field name="name">Nigeria Default 2025</field>
+            <field name="pension_employee_rate">8.0</field>
+            <field name="pension_employer_rate">10.0</field>
+            <field name="nhf_rate">2.5</field>
+            <field name="nhis_employee_rate">1.75</field>
+            <field name="nhis_employer_rate">3.25</field>
+            <field name="cra_fixed">200000</field>
+            <field name="cra_percentage">20.0</field>
+            <field name="cra_gross_threshold">1.0</field>
+        </record>
+    </data>
+</odoo>

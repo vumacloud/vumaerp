@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nigeria_paye_tax_band_user,nigeria.paye.tax.band.user,model_nigeria_paye_tax_band,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_nigeria_paye_tax_band_manager,nigeria.paye.tax.band.manager,model_nigeria_paye_tax_band,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_nigeria_statutory_config_user,nigeria.statutory.config.user,model_nigeria_statutory_config,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_nigeria_statutory_config_manager,nigeria.statutory.config.manager,model_nigeria_statutory_config,om_hr_payroll.group_hr_payroll_manager,1,1,1,1

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Nigeria Payslip Form View Extension -->
+    <record id="view_hr_payslip_form_nigeria" model="ir.ui.view">
+        <field name="name">hr.payslip.form.nigeria</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='payslip_info']" position="after">
+                <group string="Nigeria Statutory Summary" name="nigeria_summary">
+                    <group>
+                        <field name="ng_gross_salary"/>
+                        <field name="ng_cra"/>
+                        <field name="ng_taxable_income"/>
+                        <field name="ng_paye"/>
+                    </group>
+                    <group>
+                        <field name="ng_pension_employee"/>
+                        <field name="ng_pension_employer"/>
+                        <field name="ng_nhf"/>
+                        <field name="ng_nhis_employee"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Nigeria Payslip Tree View -->
+    <record id="view_hr_payslip_tree_nigeria" model="ir.ui.view">
+        <field name="name">hr.payslip.tree.nigeria</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="ng_gross_salary" optional="hide"/>
+                <field name="ng_paye" optional="hide"/>
+                <field name="ng_pension_employee" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action for Nigeria Payslips -->
+    <record id="action_hr_payslip_nigeria" model="ir.actions.act_window">
+        <field name="name">Nigeria Payslips</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">[('struct_id', '=', %(l10n_ng_payroll.structure_nigeria_employee)d)]</field>
+        <field name="context">{'default_struct_id': %(l10n_ng_payroll.structure_nigeria_employee)d}</field>
+    </record>
+</odoo>

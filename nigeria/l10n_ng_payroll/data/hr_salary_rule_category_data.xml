@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Nigeria Salary Rule Categories -->
+
+        <record id="category_ng_allowance" model="hr.salary.rule.category">
+            <field name="name">Nigeria Allowances</field>
+            <field name="code">NG_ALW</field>
+            <field name="parent_id" ref="om_hr_payroll.ALW"/>
+        </record>
+
+        <record id="category_ng_pension" model="hr.salary.rule.category">
+            <field name="name">Nigeria Pension</field>
+            <field name="code">NG_PENSION</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_ng_tax" model="hr.salary.rule.category">
+            <field name="name">Nigeria Tax</field>
+            <field name="code">NG_TAX</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_ng_deduction" model="hr.salary.rule.category">
+            <field name="name">Nigeria Deductions</field>
+            <field name="code">NG_DED</field>
+            <field name="parent_id" ref="om_hr_payroll.DED"/>
+        </record>
+
+        <record id="category_ng_employer" model="hr.salary.rule.category">
+            <field name="name">Nigeria Employer Contributions</field>
+            <field name="code">NG_ERC</field>
+        </record>
+    </data>
+</odoo>
