@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================= -->
+    <!-- Override Web Client Title                    -->
+    <!-- ============================================= -->
+    <template id="webclient_title" inherit_id="web.webclient_bootstrap" name="VumaERP Title">
+        <xpath expr="//title" position="replace">
+            <title>VumaERP</title>
+        </xpath>
+    </template>
+
+    <!-- ============================================= -->
+    <!-- Override Favicon                             -->
+    <!-- ============================================= -->
+    <template id="webclient_favicon" inherit_id="web.webclient_bootstrap" name="VumaERP Favicon">
+        <xpath expr="//link[@rel='shortcut icon']" position="replace">
+            <link rel="shortcut icon" href="/vumaerp_branding/static/src/img/favicon.ico" type="image/x-icon"/>
+        </xpath>
+        <xpath expr="//link[@rel='icon']" position="replace">
+            <link rel="icon" href="/vumaerp_branding/static/src/img/favicon.ico" type="image/x-icon"/>
+        </xpath>
+    </template>
+
+    <!-- ============================================= -->
+    <!-- Override Layout Brand                        -->
+    <!-- ============================================= -->
+    <template id="brand_promotion" inherit_id="web.brand_promotion" name="VumaERP Brand">
+        <xpath expr="//t[@t-call='web.brand_promotion_message']" position="replace">
+            <div class="o_brand_promotion">
+                Powered by <a href="https://vumacloud.com" target="_blank">VumaERP</a>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="brand_promotion_message" inherit_id="web.brand_promotion_message" name="VumaERP Promotion">
+        <xpath expr="//t[@t-set='odoo_logo']" position="replace">
+            <t t-set="odoo_logo">
+                <a href="https://vumacloud.com" target="_blank" class="o_brand_promotion_link">
+                    <img src="/vumaerp_branding/static/src/img/logo_small.png" alt="VumaERP" height="20"/>
+                </a>
+            </t>
+        </xpath>
+    </template>
+</odoo>

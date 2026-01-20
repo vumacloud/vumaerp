@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a5f7a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#159895;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- V Icon -->
+  <path d="M10 10 L25 50 L40 10" stroke="url(#grad1)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Text: umaERP -->
+  <text x="50" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1a5f7a">uma</text>
+  <text x="118" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#159895">ERP</text>
+</svg>

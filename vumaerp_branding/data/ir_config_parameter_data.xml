@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- System Parameters for Branding -->
+
+        <!-- Website/Portal Name -->
+        <record id="config_web_base_url_name" model="ir.config_parameter">
+            <field name="key">web.base.url.name</field>
+            <field name="value">VumaERP</field>
+        </record>
+
+        <!-- Support URL -->
+        <record id="config_support_url" model="ir.config_parameter">
+            <field name="key">support_url</field>
+            <field name="value">https://portal.vumacloud.com/support</field>
+        </record>
+
+        <!-- Documentation URL -->
+        <record id="config_documentation_url" model="ir.config_parameter">
+            <field name="key">documentation_url</field>
+            <field name="value">https://docs.vumacloud.com</field>
+        </record>
+
+        <!-- Disable Odoo Enterprise Upgrade Prompts -->
+        <record id="config_disable_enterprise_prompt" model="ir.config_parameter">
+            <field name="key">disable_enterprise_prompt</field>
+            <field name="value">True</field>
+        </record>
+    </data>
+</odoo>
