@@ -113,15 +113,18 @@ if [ ! -f .env ]; then
     # Generate secure passwords
     POSTGRES_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)
     ODOO_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    WHMCS_TOKEN=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)
 
     sed -i "s/CHANGE_ME_STRONG_PASSWORD_HERE/$POSTGRES_PASS/" .env
     sed -i "s/CHANGE_ME_MASTER_PASSWORD/$ODOO_PASS/" .env
+    sed -i "s/generate_a_secure_token_here/$WHMCS_TOKEN/" .env
 
     log "Generated secure passwords in .env"
     warn "IMPORTANT: Save these passwords!"
     echo ""
     echo "PostgreSQL Password: $POSTGRES_PASS"
     echo "Odoo Master Password: $ODOO_PASS"
+    echo "WHMCS API Token: $WHMCS_TOKEN"
     echo ""
 fi
 
@@ -140,14 +143,14 @@ if [ ! -f nginx/ssl/selfsigned.crt ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout nginx/ssl/selfsigned.key \
         -out nginx/ssl/selfsigned.crt \
-        -subj "/C=US/ST=State/L=City/O=VumaCloud/CN=vuma.cloud"
+        -subj "/C=US/ST=State/L=City/O=VumaCloud/CN=vumaerp.com"
 fi
 
 # Create dummy Let's Encrypt directory structure for initial startup
-mkdir -p /etc/letsencrypt/live/vuma.cloud
-if [ ! -f /etc/letsencrypt/live/vuma.cloud/fullchain.pem ]; then
-    cp nginx/ssl/selfsigned.crt /etc/letsencrypt/live/vuma.cloud/fullchain.pem
-    cp nginx/ssl/selfsigned.key /etc/letsencrypt/live/vuma.cloud/privkey.pem
+mkdir -p /etc/letsencrypt/live/vumaerp.com
+if [ ! -f /etc/letsencrypt/live/vumaerp.com/fullchain.pem ]; then
+    cp nginx/ssl/selfsigned.crt /etc/letsencrypt/live/vumaerp.com/fullchain.pem
+    cp nginx/ssl/selfsigned.key /etc/letsencrypt/live/vumaerp.com/privkey.pem
 fi
 
 # ===========================================
@@ -175,15 +178,22 @@ done
 # ===========================================
 # Done
 # ===========================================
+SERVER_IP=$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo "YOUR_SERVER_IP")
+
 echo ""
 echo "=========================================="
 echo -e "${GREEN}VumaERP Deployment Complete!${NC}"
 echo "=========================================="
 echo ""
 echo "Next steps:"
-echo "1. Point your domain DNS to this server: $(curl -s ifconfig.me)"
+echo "1. Register vumaerp.com and point DNS:"
+echo "   A    vumaerp.com     → $SERVER_IP"
+echo "   A    *.vumaerp.com   → $SERVER_IP"
+echo ""
 echo "2. Run SSL setup: cd /opt/vumaerp/deploy && ./scripts/setup-ssl.sh"
-echo "3. Access Odoo at: https://vuma.cloud"
+echo ""
+echo "3. Create first customer:"
+echo "   ./scripts/new-customer.sh mycompany ke admin@example.com"
 echo ""
 echo "Useful commands:"
 echo "  Logs:    docker compose logs -f odoo"

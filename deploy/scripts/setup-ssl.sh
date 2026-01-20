@@ -20,7 +20,7 @@ cd /opt/vumaerp/deploy
 # Load environment
 source .env
 
-DOMAIN=${DOMAIN:-vuma.cloud}
+DOMAIN=${DOMAIN:-vumaerp.com}
 EMAIL=${LETSENCRYPT_EMAIL:-admin@$DOMAIN}
 
 log "Setting up SSL for $DOMAIN..."

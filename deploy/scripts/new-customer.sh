@@ -110,6 +110,9 @@ docker compose exec -T db psql -U "$POSTGRES_USER" -d "$DB_NAME" -c \
 # Create the company with correct country/currency would require more Odoo API calls
 # For now, admin can set this in the UI
 
+# Generate subdomain (replace underscores with dashes)
+SUBDOMAIN=$(echo "$DB_NAME" | tr '_' '-')
+
 echo ""
 echo "=========================================="
 echo -e "${GREEN}Customer Database Created!${NC}"
@@ -120,7 +123,7 @@ echo "Country:      $COUNTRY_NAME"
 echo "Currency:     $CURRENCY"
 echo ""
 echo "Admin Login:"
-echo "  URL:      https://vuma.cloud/web?db=$DB_NAME"
+echo "  URL:      https://${SUBDOMAIN}.vumaerp.com"
 echo "  Email:    $ADMIN_EMAIL"
 echo "  Password: $ADMIN_PASSWORD"
 echo ""
