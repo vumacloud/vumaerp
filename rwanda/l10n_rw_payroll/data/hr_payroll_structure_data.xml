@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Rwanda Payroll Structure Type -->
+        <record id="structure_type_rw_employee" model="hr.payroll.structure.type">
+            <field name="name">Rwanda Employee</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+
+        <!-- Rwanda Base Payroll Structure -->
+        <record id="structure_rw_base" model="hr.payroll.structure">
+            <field name="name">Rwanda: Standard Employee</field>
+            <field name="type_id" ref="structure_type_rw_employee"/>
+            <field name="country_id" ref="base.rw"/>
+            <field name="rule_ids" eval="[
+                (4, ref('rule_rw_basic')),
+                (4, ref('rule_rw_housing')),
+                (4, ref('rule_rw_transport')),
+                (4, ref('rule_rw_responsibility')),
+                (4, ref('rule_rw_communication')),
+                (4, ref('rule_rw_other_allowances')),
+                (4, ref('rule_rw_gross')),
+                (4, ref('rule_rw_rssb_pension_ee')),
+                (4, ref('rule_rw_paye')),
+                (4, ref('rule_rw_rssb_pension_er')),
+                (4, ref('rule_rw_rssb_maternity')),
+                (4, ref('rule_rw_rssb_hazards')),
+                (4, ref('rule_rw_rssb_employer_total')),
+                (4, ref('rule_rw_net')),
+            ]"/>
+        </record>
+    </data>
+</odoo>

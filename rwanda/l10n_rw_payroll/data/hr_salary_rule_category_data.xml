@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Rwanda-specific Salary Rule Categories -->
+        <record id="category_rw_allowance" model="hr.salary.rule.category">
+            <field name="name">Allowances (Rwanda)</field>
+            <field name="code">RW_ALW</field>
+        </record>
+
+        <record id="category_rw_statutory" model="hr.salary.rule.category">
+            <field name="name">Statutory Deductions (Rwanda)</field>
+            <field name="code">RW_STAT</field>
+        </record>
+
+        <record id="category_rw_employer" model="hr.salary.rule.category">
+            <field name="name">Employer Contributions (Rwanda)</field>
+            <field name="code">RW_ER</field>
+        </record>
+    </data>
+</odoo>

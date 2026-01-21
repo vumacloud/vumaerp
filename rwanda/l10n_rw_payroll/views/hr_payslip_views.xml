@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_payslip_form_rw" model="ir.ui.view">
+        <field name="name">hr.payslip.form.rw</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Rwanda Tax Summary" name="rwanda_summary">
+                    <group>
+                        <field name="rw_gross_income" widget="monetary"/>
+                        <field name="rw_paye_amount" widget="monetary"/>
+                    </group>
+                    <group>
+                        <field name="rw_rssb_employee" widget="monetary"/>
+                        <field name="rw_rssb_employer" widget="monetary"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

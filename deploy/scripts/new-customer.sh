@@ -23,12 +23,13 @@ usage() {
     echo ""
     echo "Arguments:"
     echo "  database_name  Unique name for the customer database (e.g., acme_ltd)"
-    echo "  country_code   Country code: ke (Kenya), ng (Nigeria), gh (Ghana)"
+    echo "  country_code   Country code: ke (Kenya), ng (Nigeria), gh (Ghana), rw (Rwanda)"
     echo "  admin_email    Optional admin email (default: admin@example.com)"
     echo ""
     echo "Examples:"
     echo "  $0 acme_ltd ke admin@acme.co.ke"
     echo "  $0 widgets_ng ng"
+    echo "  $0 kigali_co rw admin@kigali.rw"
     exit 1
 }
 
@@ -64,8 +65,13 @@ case "$COUNTRY" in
         MODULES="l10n_ug,l10n_ug_efris,l10n_ug_payroll"
         CURRENCY="UGX"
         ;;
+    rw|RW)
+        COUNTRY_NAME="Rwanda"
+        MODULES="l10n_rw,l10n_rw_ebm,l10n_rw_payroll"
+        CURRENCY="RWF"
+        ;;
     *)
-        error "Unknown country code: $COUNTRY. Use: ke, ng, gh, ug"
+        error "Unknown country code: $COUNTRY. Use: ke, ng, gh, ug, rw"
         ;;
 esac
 
