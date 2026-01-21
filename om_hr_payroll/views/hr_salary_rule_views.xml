@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Salary Rule Category Views -->
+    <record id="view_hr_salary_rule_category_form" model="ir.ui.view">
+        <field name="name">hr.salary.rule.category.form</field>
+        <field name="model">hr.salary.rule.category</field>
+        <field name="arch" type="xml">
+            <form string="Salary Rule Category">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="parent_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Description..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_salary_rule_category_tree" model="ir.ui.view">
+        <field name="name">hr.salary.rule.category.tree</field>
+        <field name="model">hr.salary.rule.category</field>
+        <field name="arch" type="xml">
+            <tree string="Salary Rule Categories">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_salary_rule_category" model="ir.actions.act_window">
+        <field name="name">Salary Rule Categories</field>
+        <field name="res_model">hr.salary.rule.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Salary Rule Views -->
+    <record id="view_hr_salary_rule_form" model="ir.ui.view">
+        <field name="name">hr.salary.rule.form</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="arch" type="xml">
+            <form string="Salary Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Rule Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="category_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="appears_on_payslip"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="General" name="general">
+                            <group string="Conditions">
+                                <field name="condition_select"/>
+                                <field name="condition_range"
+                                    invisible="condition_select != 'range'"/>
+                                <field name="condition_range_min"
+                                    invisible="condition_select != 'range'"/>
+                                <field name="condition_range_max"
+                                    invisible="condition_select != 'range'"/>
+                                <field name="condition_python"
+                                    invisible="condition_select != 'python'" widget="code"/>
+                            </group>
+                            <group string="Computation">
+                                <field name="amount_select"/>
+                                <field name="amount_fix"
+                                    invisible="amount_select != 'fix'"/>
+                                <field name="amount_percentage"
+                                    invisible="amount_select != 'percentage'"/>
+                                <field name="amount_percentage_base"
+                                    invisible="amount_select != 'percentage'"/>
+                                <field name="amount_python_compute"
+                                    invisible="amount_select != 'code'" widget="code"/>
+                                <field name="quantity"/>
+                            </group>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_salary_rule_tree" model="ir.ui.view">
+        <field name="name">hr.salary.rule.tree</field>
+        <field name="model">hr.salary.rule</field>
+        <field name="arch" type="xml">
+            <tree string="Salary Rules">
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <field name="amount_select"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_salary_rule" model="ir.actions.act_window">
+        <field name="name">Salary Rules</field>
+        <field name="res_model">hr.salary.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Contribution Register Views -->
+    <record id="view_hr_contribution_register_form" model="ir.ui.view">
+        <field name="name">hr.contribution.register.form</field>
+        <field name="model">hr.contribution.register</field>
+        <field name="arch" type="xml">
+            <form string="Contribution Register">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Description..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_contribution_register_tree" model="ir.ui.view">
+        <field name="name">hr.contribution.register.tree</field>
+        <field name="model">hr.contribution.register</field>
+        <field name="arch" type="xml">
+            <tree string="Contribution Registers">
+                <field name="name"/>
+                <field name="partner_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_contribution_register" model="ir.actions.act_window">
+        <field name="name">Contribution Registers</field>
+        <field name="res_model">hr.contribution.register</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

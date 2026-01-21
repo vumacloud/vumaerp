@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Payroll Menu -->
+    <menuitem id="menu_hr_payroll_root"
+        name="Payroll"
+        sequence="30"
+        web_icon="om_hr_payroll,static/description/icon.png"
+        groups="group_hr_payroll_user"/>
+
+    <!-- Payslips Menu -->
+    <menuitem id="menu_hr_payroll_payslips"
+        name="Payslips"
+        parent="menu_hr_payroll_root"
+        sequence="1"/>
+
+    <menuitem id="menu_hr_payslip_all"
+        name="All Payslips"
+        parent="menu_hr_payroll_payslips"
+        action="action_hr_payslip"
+        sequence="1"/>
+
+    <menuitem id="menu_hr_payslip_run"
+        name="Batches"
+        parent="menu_hr_payroll_payslips"
+        action="action_hr_payslip_run"
+        sequence="2"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_hr_payroll_configuration"
+        name="Configuration"
+        parent="menu_hr_payroll_root"
+        sequence="10"
+        groups="group_hr_payroll_manager"/>
+
+    <menuitem id="menu_hr_payroll_structure"
+        name="Structures"
+        parent="menu_hr_payroll_configuration"
+        action="action_hr_payroll_structure"
+        sequence="1"/>
+
+    <menuitem id="menu_hr_salary_rule"
+        name="Salary Rules"
+        parent="menu_hr_payroll_configuration"
+        action="action_hr_salary_rule"
+        sequence="2"/>
+
+    <menuitem id="menu_hr_salary_rule_category"
+        name="Rule Categories"
+        parent="menu_hr_payroll_configuration"
+        action="action_hr_salary_rule_category"
+        sequence="3"/>
+
+    <menuitem id="menu_hr_contribution_register"
+        name="Contribution Registers"
+        parent="menu_hr_payroll_configuration"
+        action="action_hr_contribution_register"
+        sequence="4"/>
+</odoo>
