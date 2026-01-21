@@ -143,14 +143,14 @@ if [ ! -f nginx/ssl/selfsigned.crt ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout nginx/ssl/selfsigned.key \
         -out nginx/ssl/selfsigned.crt \
-        -subj "/C=US/ST=State/L=City/O=VumaCloud/CN=vumaerp.com"
+        -subj "/C=US/ST=State/L=City/O=VumaCloud/CN=erp.vumacloud.com"
 fi
 
 # Create dummy Let's Encrypt directory structure for initial startup
-mkdir -p /etc/letsencrypt/live/vumaerp.com
-if [ ! -f /etc/letsencrypt/live/vumaerp.com/fullchain.pem ]; then
-    cp nginx/ssl/selfsigned.crt /etc/letsencrypt/live/vumaerp.com/fullchain.pem
-    cp nginx/ssl/selfsigned.key /etc/letsencrypt/live/vumaerp.com/privkey.pem
+mkdir -p /etc/letsencrypt/live/vumacloud.com
+if [ ! -f /etc/letsencrypt/live/vumacloud.com/fullchain.pem ]; then
+    cp nginx/ssl/selfsigned.crt /etc/letsencrypt/live/vumacloud.com/fullchain.pem
+    cp nginx/ssl/selfsigned.key /etc/letsencrypt/live/vumacloud.com/privkey.pem
 fi
 
 # ===========================================

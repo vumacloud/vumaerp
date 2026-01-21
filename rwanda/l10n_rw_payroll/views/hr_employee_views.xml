@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_rw" model="ir.ui.view">
+        <field name="name">hr.employee.form.rw</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='personal_information']" position="after">
+                <page string="Rwanda Statutory" name="rwanda_statutory">
+                    <group>
+                        <group string="Identification">
+                            <field name="rw_national_id"/>
+                            <field name="tin_number"/>
+                            <field name="rssb_number"/>
+                        </group>
+                        <group string="CBHI (Health Insurance)">
+                            <field name="cbhi_category"/>
+                            <field name="cbhi_card_number"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Bank Details">
+                            <field name="bank_id"/>
+                            <field name="bank_account_number"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

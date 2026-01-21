@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ebm_config_user,l10n_rw.ebm.config.user,model_l10n_rw_ebm_config,account.group_account_user,1,0,0,0
+access_ebm_config_manager,l10n_rw.ebm.config.manager,model_l10n_rw_ebm_config,account.group_account_manager,1,1,1,1

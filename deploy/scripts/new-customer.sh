@@ -23,12 +23,13 @@ usage() {
     echo ""
     echo "Arguments:"
     echo "  database_name  Unique name for the customer database (e.g., acme_ltd)"
-    echo "  country_code   Country code: ke (Kenya), ng (Nigeria), gh (Ghana)"
+    echo "  country_code   Country code: ke (Kenya), ng (Nigeria), gh (Ghana), rw (Rwanda)"
     echo "  admin_email    Optional admin email (default: admin@example.com)"
     echo ""
     echo "Examples:"
     echo "  $0 acme_ltd ke admin@acme.co.ke"
     echo "  $0 widgets_ng ng"
+    echo "  $0 kigali_co rw admin@kigali.rw"
     exit 1
 }
 
@@ -64,8 +65,13 @@ case "$COUNTRY" in
         MODULES="l10n_ug,l10n_ug_efris,l10n_ug_payroll"
         CURRENCY="UGX"
         ;;
+    rw|RW)
+        COUNTRY_NAME="Rwanda"
+        MODULES="l10n_rw,l10n_rw_ebm,l10n_rw_payroll"
+        CURRENCY="RWF"
+        ;;
     *)
-        error "Unknown country code: $COUNTRY. Use: ke, ng, gh, ug"
+        error "Unknown country code: $COUNTRY. Use: ke, ng, gh, ug, rw"
         ;;
 esac
 
@@ -75,8 +81,8 @@ echo "  Country:  $COUNTRY_NAME"
 echo "  Email:    $ADMIN_EMAIL"
 echo ""
 
-# Check if database exists
-EXISTING=$(docker compose exec -T db psql -U "$POSTGRES_USER" -t -c \
+# Check if database exists (connect to postgres db, which always exists)
+EXISTING=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -t -c \
     "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';" | tr -d ' ')
 
 if [ "$EXISTING" == "1" ]; then
@@ -85,7 +91,7 @@ fi
 
 # Create database
 log "Creating PostgreSQL database..."
-docker compose exec -T db psql -U "$POSTGRES_USER" -c "CREATE DATABASE \"$DB_NAME\" ENCODING 'UTF8' TEMPLATE template0;"
+docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE \"$DB_NAME\" ENCODING 'UTF8' TEMPLATE template0;"
 
 # Initialize Odoo database with modules
 log "Initializing Odoo database with $COUNTRY_NAME modules..."
@@ -122,8 +128,9 @@ echo "Database:     $DB_NAME"
 echo "Country:      $COUNTRY_NAME"
 echo "Currency:     $CURRENCY"
 echo ""
+
 echo "Admin Login:"
-echo "  URL:      https://${SUBDOMAIN}.vumaerp.com"
+echo "  URL:      https://${SUBDOMAIN}.erp.vumacloud.com"
 echo "  Email:    $ADMIN_EMAIL"
 echo "  Password: $ADMIN_PASSWORD"
 echo ""

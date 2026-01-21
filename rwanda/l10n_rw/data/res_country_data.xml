@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Rwanda Country Configuration -->
+        <record id="base.rw" model="res.country">
+            <field name="name">Rwanda</field>
+            <field name="code">RW</field>
+            <field name="currency_id" ref="base.RWF"/>
+            <field name="phone_code">250</field>
+            <field name="vat_label">TIN</field>
+        </record>
+
+        <!-- Rwanda Provinces -->
+        <record id="state_rw_kigali" model="res.country.state">
+            <field name="name">Kigali City</field>
+            <field name="code">KGL</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+        <record id="state_rw_eastern" model="res.country.state">
+            <field name="name">Eastern Province</field>
+            <field name="code">EST</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+        <record id="state_rw_northern" model="res.country.state">
+            <field name="name">Northern Province</field>
+            <field name="code">NTH</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+        <record id="state_rw_southern" model="res.country.state">
+            <field name="name">Southern Province</field>
+            <field name="code">STH</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+        <record id="state_rw_western" model="res.country.state">
+            <field name="name">Western Province</field>
+            <field name="code">WST</field>
+            <field name="country_id" ref="base.rw"/>
+        </record>
+    </data>
+</odoo>
