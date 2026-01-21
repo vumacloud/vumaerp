@@ -124,7 +124,7 @@ echo "Currency:     $CURRENCY"
 echo ""
 
 echo "Admin Login:"
-echo "  URL:      https://${SUBDOMAIN}.vumaerp.com"
+echo "  URL:      https://${SUBDOMAIN}.erp.vumacloud.com"
 echo "  Email:    $ADMIN_EMAIL"
 echo "  Password: $ADMIN_PASSWORD"
 echo ""
