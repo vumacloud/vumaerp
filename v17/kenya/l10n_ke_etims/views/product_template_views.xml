@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Template Form View -->
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.kra.etims</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_register_etims" 
+                        string="Register in e-TIMS" 
+                        type="object"
+                        invisible="kra_registered"
+                        groups="product.group_product_manager"/>
+            </xpath>
+            
+            <!-- Add e-TIMS tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="e-TIMS" name="kra_etims">
+                    <group>
+                        <group string="Classification">
+                            <field name="kra_item_class_code"/>
+                            <field name="kra_item_type_code"/>
+                            <field name="kra_origin_country_code"/>
+                        </group>
+                        <group string="Tax &amp; Packaging">
+                            <field name="kra_tax_type_code"/>
+                            <field name="kra_package_unit_code"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Registration Status">
+                            <field name="kra_registered" readonly="1"/>
+                            <field name="kra_registration_date" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

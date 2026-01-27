@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Common Item Classifications -->
+        <record id="classification_general_merchandise" model="kra.etims.classification">
+            <field name="code">01</field>
+            <field name="item_code">5020230500</field>
+            <field name="name">General Merchandise</field>
+            <field name="description">General merchandise and goods</field>
+            <field name="level">5</field>
+            <field name="parent_code">502023</field>
+            <field name="use_yn">True</field>
+        </record>
+        
+        <record id="classification_services" model="kra.etims.classification">
+            <field name="code">01</field>
+            <field name="item_code">5020240100</field>
+            <field name="name">Professional Services</field>
+            <field name="description">Professional and consulting services</field>
+            <field name="level">5</field>
+            <field name="parent_code">502024</field>
+            <field name="use_yn">True</field>
+        </record>
+    </data>
+</odoo>
