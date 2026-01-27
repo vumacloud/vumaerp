@@ -1,34 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Override Database Manager Page -->
-    <template id="database_manager" inherit_id="web.database_manager" name="VumaERP Database Manager" priority="999">
-        <!-- Replace title -->
-        <xpath expr="//head/title" position="replace">
-            <title>VumaERP - Database Manager</title>
-        </xpath>
-        <!-- Replace favicon -->
-        <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
-            <link rel="shortcut icon" href="/vumaerp_whitelabel/static/src/img/favicon.ico" type="image/x-icon"/>
-        </xpath>
-        <!-- Replace logo/header -->
-        <xpath expr="//h3[contains(., 'Odoo')]" position="replace">
-            <h3 class="text-center mb-4">
-                <img src="/vumaerp_whitelabel/static/src/img/logo.png" alt="VumaERP"
-                     style="max-height: 60px;"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"/>
-                <span style="display:none; color: #714B67; font-weight: bold;">VumaERP</span>
-                <small class="text-muted d-block">Database Manager</small>
-            </h3>
-        </xpath>
-    </template>
-
-    <!-- Override Database Selector -->
-    <template id="database_selector_vumaerp" inherit_id="web.database_selector" name="VumaERP DB Selector" priority="999">
-        <xpath expr="//head/title" position="replace">
-            <title>VumaERP - Select Database</title>
-        </xpath>
-        <xpath expr="//h3[contains(., 'Odoo')]" position="replace">
-            <h3 class="text-center mb-4" style="color: #714B67;">VumaERP</h3>
-        </xpath>
-    </template>
+    <!-- Database manager templates - simplified to avoid xpath errors -->
+    <!-- These are rarely used since list_db = False in production -->
 </odoo>
