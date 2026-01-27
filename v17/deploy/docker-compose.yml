@@ -1,6 +1,9 @@
 services:
   odoo:
-    image: odoo:17.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vumaerp-odoo17:nightly
     container_name: odoo17
     ports:
       - "8069:8069"
