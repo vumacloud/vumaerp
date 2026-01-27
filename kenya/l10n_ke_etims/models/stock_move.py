@@ -81,9 +81,7 @@ class StockMove(models.Model):
             return '04'  # Stock Movement
 
         elif picking.picking_type_code == 'outgoing':
-            if picking.sale_id:
-                return '03' if picking.sale_id.is_return else '04'
-            return '04'  # Stock Movement
+            return '04'  # Stock Movement / Sale
 
         elif picking.picking_type_code == 'internal':
             return '04'  # Internal transfer
