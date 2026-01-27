@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ghana Payroll Menu under HR Configuration -->
+    <menuitem id="menu_ghana_payroll_config"
+        name="Ghana"
+        parent="hr.menu_human_resources_configuration"
+        sequence="101"/>
+
+    <menuitem id="menu_ghana_statutory_config"
+        name="Statutory Configuration"
+        parent="menu_ghana_payroll_config"
+        action="ghana_statutory_config_action"
+        sequence="10"/>
+
+    <menuitem id="menu_ghana_paye_bands"
+        name="PAYE Tax Bands"
+        parent="menu_ghana_payroll_config"
+        action="ghana_paye_tax_band_action"
+        sequence="20"/>
+</odoo>

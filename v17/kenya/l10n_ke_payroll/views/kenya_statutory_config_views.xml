@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="kenya_statutory_config_view_form" model="ir.ui.view">
+        <field name="name">kenya.statutory.config.form</field>
+        <field name="model">kenya.statutory.config</field>
+        <field name="arch" type="xml">
+            <form string="Kenya Statutory Configuration">
+                <sheet>
+                    <group>
+                        <group string="Company">
+                            <field name="company_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="NSSF Rates">
+                            <field name="nssf_tier1_limit"/>
+                            <field name="nssf_tier2_limit"/>
+                            <field name="nssf_rate"/>
+                        </group>
+                        <group string="SHIF Rate">
+                            <field name="shif_rate"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Housing Levy">
+                            <field name="housing_levy_rate"/>
+                        </group>
+                        <group string="Tax Relief">
+                            <field name="personal_relief"/>
+                            <field name="insurance_relief_rate"/>
+                            <field name="insurance_relief_max"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="kenya_statutory_config_view_tree" model="ir.ui.view">
+        <field name="name">kenya.statutory.config.tree</field>
+        <field name="model">kenya.statutory.config</field>
+        <field name="arch" type="xml">
+            <tree string="Kenya Statutory Configuration">
+                <field name="company_id"/>
+                <field name="nssf_rate"/>
+                <field name="shif_rate"/>
+                <field name="housing_levy_rate"/>
+                <field name="personal_relief"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="kenya_statutory_config_action" model="ir.actions.act_window">
+        <field name="name">Statutory Configuration</field>
+        <field name="res_model">kenya.statutory.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

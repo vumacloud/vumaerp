@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- E-VAT Root Menu -->
+    <menuitem id="menu_evat_root"
+        name="E-VAT"
+        parent="account.menu_finance_configuration"
+        sequence="100"/>
+
+    <menuitem id="menu_evat_config"
+        name="Configuration"
+        parent="menu_evat_root"
+        action="evat_config_action"
+        sequence="10"/>
+</odoo>

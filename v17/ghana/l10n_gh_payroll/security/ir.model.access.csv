@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ghana_statutory_config_user,ghana.statutory.config.user,model_ghana_statutory_config,hr.group_hr_user,1,0,0,0
+access_ghana_statutory_config_manager,ghana.statutory.config.manager,model_ghana_statutory_config,hr.group_hr_manager,1,1,1,1
+access_ghana_paye_tax_band_user,ghana.paye.tax.band.user,model_ghana_paye_tax_band,hr.group_hr_user,1,0,0,0
+access_ghana_paye_tax_band_manager,ghana.paye.tax.band.manager,model_ghana_paye_tax_band,hr.group_hr_manager,1,1,1,1

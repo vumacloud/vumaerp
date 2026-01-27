@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Note: Salary rules depend on om_hr_payroll or hr_payroll module -->
+        <!-- These are placeholder records - actual rules configured in Odoo -->
+    </data>
+</odoo>

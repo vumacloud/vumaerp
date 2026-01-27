@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kenya_statutory_config_user,kenya.statutory.config.user,model_kenya_statutory_config,hr.group_hr_user,1,0,0,0
+access_kenya_statutory_config_manager,kenya.statutory.config.manager,model_kenya_statutory_config,hr.group_hr_manager,1,1,1,1
+access_paye_tax_band_user,kenya.paye.tax.band.user,model_kenya_paye_tax_band,hr.group_hr_user,1,0,0,0
+access_paye_tax_band_manager,kenya.paye.tax.band.manager,model_kenya_paye_tax_band,hr.group_hr_manager,1,1,1,1
