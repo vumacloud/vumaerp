@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #714B67; }
+        h2 { color: #017E84; border-bottom: 2px solid #017E84; padding-bottom: 5px; }
+        .feature-list { list-style-type: none; padding: 0; }
+        .feature-list li { padding: 8px 0; padding-left: 25px; position: relative; }
+        .feature-list li:before { content: "✓"; color: #017E84; position: absolute; left: 0; font-weight: bold; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        .highlight { background: #714B67; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>VumaERP White Label Module</h1>
+
+    <div class="highlight">
+        <strong>Complete Rebranding Solution</strong><br>
+        Replace all Odoo references with your VumaERP branding throughout the entire application.
+    </div>
+
+    <h2>Features</h2>
+    <ul class="feature-list">
+        <li>Login page branding with custom logo</li>
+        <li>Web client navbar and interface branding</li>
+        <li>Email templates with VumaERP footer</li>
+        <li>Portal and website footer replacements</li>
+        <li>Database manager branding</li>
+        <li>Browser tab title and favicon</li>
+        <li>Dynamic JavaScript text replacements</li>
+        <li>Custom color scheme</li>
+    </ul>
+
+    <h2>What Gets Replaced</h2>
+    <ul class="feature-list">
+        <li>All "Odoo" text → "VumaERP"</li>
+        <li>Powered by footers → "Powered by VumaCloud"</li>
+        <li>Login page branding</li>
+        <li>Email signatures and footers</li>
+        <li>Portal welcome messages</li>
+        <li>Error page branding</li>
+        <li>About dialogs</li>
+    </ul>
+
+    <h2>Configuration</h2>
+    <p>After installation:</p>
+    <ol>
+        <li>Replace logo files in <code>/static/src/img/</code></li>
+        <li>Customize colors in <code>primary_variables.css</code></li>
+        <li>Update URLs in <code>ir_config_parameter_data.xml</code></li>
+    </ol>
+
+    <h2>Technical Details</h2>
+    <ul class="feature-list">
+        <li>Uses template inheritance for clean overrides</li>
+        <li>JavaScript MutationObserver for dynamic content</li>
+        <li>CSS-based text replacements where possible</li>
+        <li>Fully compatible with Odoo 17.0 CE</li>
+    </ul>
+
+    <p style="margin-top: 30px; color: #666; font-size: 12px;">
+        © VumaCloud | <a href="https://vumacloud.com">vumacloud.com</a>
+    </p>
+</body>
+</html>

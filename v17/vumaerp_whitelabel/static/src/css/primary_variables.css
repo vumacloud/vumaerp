@@ -1,0 +1,9 @@
+/* VumaERP Primary Variables - Override Odoo brand colors */
+:root {
+    /* VumaERP Brand Colors */
+    --vumaerp-primary: #714B67;
+    --vumaerp-secondary: #017E84;
+    --vumaerp-accent: #E5E5E5;
+    --vumaerp-dark: #21313C;
+    --vumaerp-light: #F8F9FA;
+}
