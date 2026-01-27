@@ -24,6 +24,8 @@ class HrPayrollStructure(models.Model):
     parent_id = fields.Many2one('hr.payroll.structure', string='Parent', default=_get_parent)
     children_ids = fields.One2many('hr.payroll.structure', 'parent_id', string='Children', copy=True)
     rule_ids = fields.Many2many('hr.salary.rule', 'hr_structure_salary_rule_rel', 'struct_id', 'rule_id', string='Salary Rules')
+    country_id = fields.Many2one('res.country', string='Country')
+    active = fields.Boolean(default=True)
 
     @api.constrains('parent_id')
     def _check_parent_id(self):
