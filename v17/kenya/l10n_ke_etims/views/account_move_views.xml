@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account Move Form Inherit -->
+    <record id="account_move_view_form_etims" model="ir.ui.view">
+        <field name="name">account.move.form.etims</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Add eTIMS button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_to_etims" string="Submit to eTIMS" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('etims_submitted', '=', True), ('move_type', 'not in', ('out_invoice', 'out_refund')), ('state', '!=', 'posted')]}"
+                        groups="l10n_ke_etims.group_etims_user"/>
+            </xpath>
+
+            <!-- Add eTIMS status indicator -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_etims_details" type="object"
+                        attrs="{'invisible': [('etims_submitted', '=', False)]}"
+                        icon="fa-file-text-o">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text text-success">eTIMS Submitted</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- Add eTIMS fields in a new page -->
+            <xpath expr="//notebook" position="inside">
+                <page string="eTIMS" name="etims"
+                      attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund'))]}"
+                      groups="l10n_ke_etims.group_etims_user">
+                    <group>
+                        <group string="eTIMS Status">
+                            <field name="etims_submitted"/>
+                            <field name="etims_receipt_number"/>
+                            <field name="etims_submit_date"/>
+                            <field name="etims_error_message" attrs="{'invisible': [('etims_error_message', '=', False)]}"/>
+                        </group>
+                        <group string="Transaction Details">
+                            <field name="etims_transaction_type"/>
+                            <field name="etims_sale_type"/>
+                            <field name="etims_receipt_type"/>
+                        </group>
+                    </group>
+                    <group string="eTIMS Response" attrs="{'invisible': [('etims_submitted', '=', False)]}">
+                        <group>
+                            <field name="etims_sdc_id"/>
+                            <field name="etims_sdc_datetime"/>
+                            <field name="etims_mrc_no"/>
+                        </group>
+                        <group>
+                            <field name="etims_internal_data"/>
+                            <field name="etims_receipt_signature"/>
+                        </group>
+                    </group>
+                    <group string="QR Code" attrs="{'invisible': [('etims_qr_code', '=', False)]}">
+                        <field name="etims_qr_code" widget="image"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Account Move Tree Inherit -->
+    <record id="account_move_view_tree_etims" model="ir.ui.view">
+        <field name="name">account.move.tree.etims</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="etims_submitted" string="eTIMS" widget="boolean" optional="show"/>
+                <field name="etims_receipt_number" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search filter for eTIMS status -->
+    <record id="account_move_view_search_etims" model="ir.ui.view">
+        <field name="name">account.move.search.etims</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='posted']" position="after">
+                <separator/>
+                <filter name="etims_submitted" string="eTIMS Submitted" domain="[('etims_submitted', '=', True)]"/>
+                <filter name="etims_pending" string="eTIMS Pending" domain="[('etims_submitted', '=', False), ('move_type', 'in', ('out_invoice', 'out_refund')), ('state', '=', 'posted')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

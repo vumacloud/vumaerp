@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Taxation Types (Code Type 02) -->
+        <record id="etims_tax_type_a" model="etims.code">
+            <field name="code_type">02</field>
+            <field name="code">A</field>
+            <field name="name">Exempt (A)</field>
+            <field name="description">Tax exempt goods and services</field>
+        </record>
+        <record id="etims_tax_type_b" model="etims.code">
+            <field name="code_type">02</field>
+            <field name="code">B</field>
+            <field name="name">Standard Rate 16% (B)</field>
+            <field name="description">Standard VAT rate of 16%</field>
+        </record>
+        <record id="etims_tax_type_c" model="etims.code">
+            <field name="code_type">02</field>
+            <field name="code">C</field>
+            <field name="name">Reduced Rate 8% (C)</field>
+            <field name="description">Reduced VAT rate of 8% for petroleum products</field>
+        </record>
+        <record id="etims_tax_type_d" model="etims.code">
+            <field name="code_type">02</field>
+            <field name="code">D</field>
+            <field name="name">Zero Rated (D)</field>
+            <field name="description">Zero-rated supplies (exports, etc.)</field>
+        </record>
+        <record id="etims_tax_type_e" model="etims.code">
+            <field name="code_type">02</field>
+            <field name="code">E</field>
+            <field name="name">Exempt (E)</field>
+            <field name="description">Exempt supplies</field>
+        </record>
+
+        <!-- Packaging Unit Codes (Code Type 04) -->
+        <record id="etims_pkg_nt" model="etims.code">
+            <field name="code_type">04</field>
+            <field name="code">NT</field>
+            <field name="name">No Packaging</field>
+            <field name="description">Items without packaging</field>
+        </record>
+        <record id="etims_pkg_ct" model="etims.code">
+            <field name="code_type">04</field>
+            <field name="code">CT</field>
+            <field name="name">Carton</field>
+            <field name="description">Carton packaging</field>
+        </record>
+        <record id="etims_pkg_bx" model="etims.code">
+            <field name="code_type">04</field>
+            <field name="code">BX</field>
+            <field name="name">Box</field>
+            <field name="description">Box packaging</field>
+        </record>
+        <record id="etims_pkg_pk" model="etims.code">
+            <field name="code_type">04</field>
+            <field name="code">PK</field>
+            <field name="name">Pack</field>
+            <field name="description">Pack packaging</field>
+        </record>
+        <record id="etims_pkg_bg" model="etims.code">
+            <field name="code_type">04</field>
+            <field name="code">BG</field>
+            <field name="name">Bag</field>
+            <field name="description">Bag packaging</field>
+        </record>
+
+        <!-- Quantity Unit Codes (Code Type 05) -->
+        <record id="etims_qty_u" model="etims.code">
+            <field name="code_type">05</field>
+            <field name="code">U</field>
+            <field name="name">Unit</field>
+            <field name="description">Individual unit</field>
+        </record>
+        <record id="etims_qty_kg" model="etims.code">
+            <field name="code_type">05</field>
+            <field name="code">KG</field>
+            <field name="name">Kilogram</field>
+            <field name="description">Weight in kilograms</field>
+        </record>
+        <record id="etims_qty_lt" model="etims.code">
+            <field name="code_type">05</field>
+            <field name="code">LT</field>
+            <field name="name">Litre</field>
+            <field name="description">Volume in litres</field>
+        </record>
+        <record id="etims_qty_m" model="etims.code">
+            <field name="code_type">05</field>
+            <field name="code">M</field>
+            <field name="name">Metre</field>
+            <field name="description">Length in metres</field>
+        </record>
+        <record id="etims_qty_m2" model="etims.code">
+            <field name="code_type">05</field>
+            <field name="code">M2</field>
+            <field name="name">Square Metre</field>
+            <field name="description">Area in square metres</field>
+        </record>
+
+        <!-- Payment Types (Code Type 06) -->
+        <record id="etims_pay_01" model="etims.code">
+            <field name="code_type">06</field>
+            <field name="code">01</field>
+            <field name="name">Cash</field>
+            <field name="description">Cash payment</field>
+        </record>
+        <record id="etims_pay_02" model="etims.code">
+            <field name="code_type">06</field>
+            <field name="code">02</field>
+            <field name="name">Credit</field>
+            <field name="description">Credit payment</field>
+        </record>
+        <record id="etims_pay_03" model="etims.code">
+            <field name="code_type">06</field>
+            <field name="code">03</field>
+            <field name="name">Bank Card</field>
+            <field name="description">Credit/Debit card payment</field>
+        </record>
+        <record id="etims_pay_04" model="etims.code">
+            <field name="code_type">06</field>
+            <field name="code">04</field>
+            <field name="name">Mobile Money</field>
+            <field name="description">Mobile money payment (M-Pesa, etc.)</field>
+        </record>
+        <record id="etims_pay_05" model="etims.code">
+            <field name="code_type">06</field>
+            <field name="code">05</field>
+            <field name="name">Bank Transfer</field>
+            <field name="description">Bank transfer payment</field>
+        </record>
+
+        <!-- Transaction Types (Code Type 07) -->
+        <record id="etims_trx_01" model="etims.code">
+            <field name="code_type">07</field>
+            <field name="code">01</field>
+            <field name="name">Copy</field>
+            <field name="description">Copy transaction</field>
+        </record>
+        <record id="etims_trx_02" model="etims.code">
+            <field name="code_type">07</field>
+            <field name="code">02</field>
+            <field name="name">Normal</field>
+            <field name="description">Normal transaction</field>
+        </record>
+        <record id="etims_trx_03" model="etims.code">
+            <field name="code_type">07</field>
+            <field name="code">03</field>
+            <field name="name">Training</field>
+            <field name="description">Training/Test transaction</field>
+        </record>
+        <record id="etims_trx_04" model="etims.code">
+            <field name="code_type">07</field>
+            <field name="code">04</field>
+            <field name="name">Proforma</field>
+            <field name="description">Proforma invoice</field>
+        </record>
+
+        <!-- Stock Movement Types (Code Type 08) -->
+        <record id="etims_stk_01" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">01</field>
+            <field name="name">Import</field>
+            <field name="description">Import stock movement</field>
+        </record>
+        <record id="etims_stk_02" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">02</field>
+            <field name="name">Purchase</field>
+            <field name="description">Purchase stock movement</field>
+        </record>
+        <record id="etims_stk_03" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">03</field>
+            <field name="name">Return</field>
+            <field name="description">Return stock movement</field>
+        </record>
+        <record id="etims_stk_04" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">04</field>
+            <field name="name">Stock Movement</field>
+            <field name="description">Internal stock movement</field>
+        </record>
+        <record id="etims_stk_05" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">05</field>
+            <field name="name">Processing</field>
+            <field name="description">Processing/Manufacturing movement</field>
+        </record>
+        <record id="etims_stk_06" model="etims.code">
+            <field name="code_type">08</field>
+            <field name="code">06</field>
+            <field name="name">Adjustment</field>
+            <field name="description">Stock adjustment</field>
+        </record>
+
+        <!-- Product Types (Code Type 09) -->
+        <record id="etims_prd_1" model="etims.code">
+            <field name="code_type">09</field>
+            <field name="code">1</field>
+            <field name="name">Raw Material</field>
+            <field name="description">Raw material products</field>
+        </record>
+        <record id="etims_prd_2" model="etims.code">
+            <field name="code_type">09</field>
+            <field name="code">2</field>
+            <field name="name">Finished Product</field>
+            <field name="description">Finished goods</field>
+        </record>
+        <record id="etims_prd_3" model="etims.code">
+            <field name="code_type">09</field>
+            <field name="code">3</field>
+            <field name="name">Service</field>
+            <field name="description">Service items</field>
+        </record>
+    </data>
+</odoo>
