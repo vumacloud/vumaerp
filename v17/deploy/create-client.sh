@@ -15,6 +15,13 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
+# Validate required env vars
+if [ -z "$DB_HOST" ] || [ -z "$DB_PORT" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
+    echo "Error: Missing database configuration in .env file"
+    echo "Required: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD"
+    exit 1
+fi
+
 if [ -z "$1" ]; then
     echo "============================================"
     echo "VumaERP - Create New Client Database"
@@ -47,7 +54,6 @@ echo ""
 
 # Check if container is running
 if ! docker compose ps --status running | grep -q "odoo"; then
-    # Fallback check for older docker compose versions
     if ! docker ps | grep -q "odoo17"; then
         echo "Error: Odoo container is not running."
         echo "Start it with: docker compose up -d"
@@ -55,8 +61,12 @@ if ! docker compose ps --status running | grep -q "odoo"; then
     fi
 fi
 
+# Database connection flags for odoo CLI
+DB_FLAGS="--db_host=$DB_HOST --db_port=$DB_PORT -r $DB_USER -w $DB_PASSWORD"
+
 echo "Step 1/3: Creating database..."
 docker compose exec -T odoo odoo \
+    $DB_FLAGS \
     --no-http \
     --stop-after-init \
     -d "$DB_NAME" \
@@ -65,7 +75,11 @@ docker compose exec -T odoo odoo \
 
 echo ""
 echo "Step 2/3: Setting admin credentials..."
-docker compose exec -T odoo odoo shell -d "$DB_NAME" --no-http --stop-after-init <<EOF
+docker compose exec -T odoo odoo shell \
+    $DB_FLAGS \
+    -d "$DB_NAME" \
+    --no-http \
+    --stop-after-init <<EOF
 user = env['res.users'].browse(2)
 user.write({
     'login': '$ADMIN_EMAIL',
@@ -78,6 +92,7 @@ EOF
 echo ""
 echo "Step 3/3: Installing VumaERP White Label..."
 docker compose exec -T odoo odoo \
+    $DB_FLAGS \
     --no-http \
     --stop-after-init \
     -d "$DB_NAME" \
