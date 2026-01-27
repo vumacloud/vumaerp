@@ -73,7 +73,7 @@ RUN useradd -ms /bin/bash -d /home/odoo odoo
 
 # Install Python dependencies
 RUN pip3 install --break-system-packages -r /opt/odoo/requirements.txt \
-    && pip3 install --break-system-packages psycopg2-binary
+    && pip3 install --break-system-packages psycopg2-binary zope.interface
 
 # Create directories and set permissions
 RUN mkdir -p /var/lib/odoo /etc/odoo /mnt/extra-addons \
