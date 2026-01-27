@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kra_etims_device_user,kra.etims.device.user,model_kra_etims_device,base.group_user,1,0,0,0
+access_kra_etims_device_manager,kra.etims.device.manager,model_kra_etims_device,account.group_account_manager,1,1,1,1
+access_kra_etims_classification_user,kra.etims.classification.user,model_kra_etims_classification,base.group_user,1,0,0,0
+access_kra_etims_classification_manager,kra.etims.classification.manager,model_kra_etims_classification,account.group_account_manager,1,1,1,1
+access_kra_etims_initialize_wizard,kra.etims.initialize.wizard,model_kra_etims_initialize_wizard,account.group_account_manager,1,1,1,1
