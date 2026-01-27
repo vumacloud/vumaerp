@@ -2,12 +2,35 @@
 from odoo import models, fields, api
 
 
+class HrPayrollStructureType(models.Model):
+    _name = 'hr.payroll.structure.type'
+    _description = 'Salary Structure Type'
+
+    name = fields.Char(string='Name', required=True)
+    default_struct_id = fields.Many2one(
+        'hr.payroll.structure',
+        string='Default Structure'
+    )
+    country_id = fields.Many2one(
+        'res.country',
+        string='Country'
+    )
+    wage_type = fields.Selection([
+        ('monthly', 'Monthly Fixed Wage'),
+        ('hourly', 'Hourly Wage'),
+    ], string='Wage Type', default='monthly')
+
+
 class HrPayrollStructure(models.Model):
     _name = 'hr.payroll.structure'
     _description = 'Salary Structure'
 
     name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Reference', required=True)
+    type_id = fields.Many2one(
+        'hr.payroll.structure.type',
+        string='Structure Type'
+    )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
