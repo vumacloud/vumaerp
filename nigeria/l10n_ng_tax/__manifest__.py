@@ -33,7 +33,7 @@ FIRS Registration:
     'website': 'https://vumacloud.com',
     'license': 'Other proprietary',
     'depends': [
-        'account',
+        'om_account_accountant',
         'l10n_ng',
     ],
     'data': [

@@ -34,7 +34,7 @@ Compliant with RRA EBM requirements for VAT-registered businesses.
     'website': 'https://vumacloud.com',
     'license': 'Other proprietary',
     'depends': [
-        'account',
+        'om_account_accountant',
         'l10n_rw',
     ],
     'data': [

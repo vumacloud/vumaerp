@@ -44,7 +44,7 @@ Configuration:
     'license': 'Other proprietary',
     'depends': [
         'base',
-        'account',
+        'om_account_accountant',
         'stock',
         'sale',
         'purchase',
