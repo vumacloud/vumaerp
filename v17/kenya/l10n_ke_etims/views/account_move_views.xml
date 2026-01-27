@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Invoice Form View -->
+    <record id="view_move_form" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.kra.etims</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Add buttons in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_etims" 
+                        string="Submit to e-TIMS" 
+                        type="object" 
+                        class="oe_highlight"
+                        invisible="kra_submission_status == 'submitted' or move_type not in ('out_invoice', 'out_refund') or state != 'posted'"
+                        groups="account.group_account_invoice"/>
+                <button name="action_retrieve_etims_status" 
+                        string="Check e-TIMS Status" 
+                        type="object"
+                        invisible="kra_submission_status != 'submitted'"
+                        groups="account.group_account_invoice"/>
+                <field name="kra_submission_status" widget="badge"
+                       decoration-success="kra_submission_status == 'submitted'"
+                       decoration-info="kra_submission_status == 'draft'"
+                       decoration-danger="kra_submission_status == 'rejected'"
+                       invisible="move_type not in ('out_invoice', 'out_refund')"/>
+            </xpath>
+            
+            <!-- Add e-TIMS tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="e-TIMS" name="kra_etims" 
+                      invisible="move_type not in ('out_invoice', 'out_refund')">
+                    <group>
+                        <group string="e-TIMS Information">
+                            <field name="kra_invoice_no" readonly="1"/>
+                            <field name="kra_invoice_counter" readonly="1"/>
+                            <field name="kra_submission_date" readonly="1"/>
+                            <field name="kra_payment_type"/>
+                        </group>
+                        <group string="e-TIMS Response Data">
+                            <field name="kra_internal_data" readonly="1"/>
+                            <field name="kra_receipt_signature" readonly="1"/>
+                            <field name="kra_sdc_datetime" readonly="1"/>
+                            <field name="kra_cu_serial" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="QR Code">
+                        <field name="kra_qr_code" readonly="1" widget="text"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Invoice Tree View -->
+    <record id="view_invoice_tree" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit.kra.etims</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="kra_submission_status" 
+                       optional="show"
+                       widget="badge"
+                       decoration-success="kra_submission_status == 'submitted'"
+                       decoration-info="kra_submission_status == 'draft'"
+                       decoration-danger="kra_submission_status == 'rejected'"/>
+                <field name="kra_invoice_no" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_kra_etims_root"
+              name="e-TIMS"
+              sequence="65"
+              web_icon="kra_etims,static/description/icon.png"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_kra_etims_config"
+              name="Configuration"
+              parent="menu_kra_etims_root"
+              sequence="90"/>
+    
+    <!-- Devices Menu -->
+    <menuitem id="menu_kra_etims_devices"
+              name="Devices"
+              parent="menu_kra_etims_config"
+              action="kra_etims_device_action"
+              sequence="10"/>
+    
+    <!-- Classifications Menu -->
+    <menuitem id="menu_kra_etims_classifications"
+              name="Item Classifications"
+              parent="menu_kra_etims_config"
+              action="kra_etims_classification_action"
+              sequence="20"/>
+</odoo>

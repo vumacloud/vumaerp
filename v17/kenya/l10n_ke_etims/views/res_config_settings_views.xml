@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.kra.etims</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Kenya Revenue Authority e-TIMS" name="kra_etims_setting">
+                    <setting id="kra_etims_enabled_setting" string="Enable KRA e-TIMS" help="Enable integration with Kenya Revenue Authority e-TIMS system">
+                        <field name="kra_etims_enabled"/>
+                    </setting>
+                    
+                    <setting id="kra_etims_base_url_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_base_url" string="e-TIMS API URL"/>
+                        <div class="text-muted">
+                            Sandbox: https://etims-sbx.kra.go.ke/etims-api<br/>
+                            Production: https://etims.kra.go.ke/etims-api
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_base_url" placeholder="https://etims-sbx.kra.go.ke/etims-api" class="oe_inline"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="kra_etims_tin_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_tin" string="Company TIN"/>
+                        <div class="text-muted">
+                            Tax Identification Number registered with KRA
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_tin" placeholder="P000000000A" class="oe_inline"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="kra_etims_bhf_id_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_bhf_id" string="Branch ID"/>
+                        <div class="text-muted">
+                            Branch Identification Code (00 for main branch)
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_bhf_id" placeholder="00" class="oe_inline"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="kra_etims_device_serial_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_device_serial" string="Device Serial Number"/>
+                        <div class="text-muted">
+                            Serial number of the registered OSCU device
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_device_serial" placeholder="SN0000000001" class="oe_inline"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="kra_etims_cmc_key_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_cmc_key" string="CMC Key"/>
+                        <div class="text-muted">
+                            Communication Key obtained from KRA during OSCU initialization
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_cmc_key" placeholder="Communication Key" class="oe_inline" password="True"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="kra_etims_auto_submit_setting" invisible="not kra_etims_enabled" string="Auto-Submit Invoices" help="Automatically submit invoices to e-TIMS when validated">
+                        <field name="kra_etims_auto_submit"/>
+                    </setting>
+                    
+                    <setting id="kra_etims_invoice_counter_setting" invisible="not kra_etims_enabled">
+                        <label for="kra_etims_invoice_counter" string="Invoice Counter"/>
+                        <div class="text-muted">
+                            Current invoice counter for e-TIMS submission
+                        </div>
+                        <div class="content-group">
+                            <field name="kra_etims_invoice_counter" class="oe_inline"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
