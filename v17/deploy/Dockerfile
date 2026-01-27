@@ -1,9 +1,8 @@
-# Odoo 17 Nightly Build
+# Odoo 17 Nightly Build (from GitHub)
 FROM debian:bookworm-slim
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
-# Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG=C.UTF-8
 
 # Install dependencies
@@ -14,6 +13,7 @@ RUN apt-get update && \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
+        git \
         libssl-dev \
         node-less \
         npm \
@@ -43,12 +43,15 @@ RUN apt-get update && \
         libxslt1-dev \
         zlib1g-dev \
         libjpeg-dev \
-        wkhtmltopdf \
-    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install wkhtmltopdf
+RUN curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && apt-get update \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
     && rm -rf wkhtmltox.deb /var/lib/apt/lists/*
 
-# Install rtlcss for RTL support
+# Install rtlcss
 RUN npm install -g rtlcss
 
 # Install PostgreSQL client
@@ -58,41 +61,33 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main' > /et
     && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
     && gpg --batch --export --armor B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 | gpg --batch --dearmor > /etc/apt/trusted.gpg.d/postgresql.gpg \
     && rm -rf "$GNUPGHOME" \
-    && apt-get update  \
+    && apt-get update \
     && apt-get install --no-install-recommends -y postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Create odoo user
 RUN useradd -ms /bin/bash -d /opt/odoo odoo
 
-# Download and install latest Odoo 17 nightly
-WORKDIR /opt/odoo
-RUN curl -sSL https://nightly.odoo.com/17.0/nightly/src/odoo_17.0.latest.tar.gz -o odoo.tar.gz \
-    && tar -xzf odoo.tar.gz --strip-components=1 \
-    && rm odoo.tar.gz
+# Clone Odoo 17.0 from GitHub (latest commits)
+RUN git clone --depth 1 --branch 17.0 https://github.com/odoo/odoo.git /opt/odoo
 
 # Install Python dependencies
 RUN pip3 install --break-system-packages -r /opt/odoo/requirements.txt \
     && pip3 install --break-system-packages psycopg2-binary
 
-# Create necessary directories
+# Create directories and set permissions
 RUN mkdir -p /var/lib/odoo /etc/odoo /mnt/extra-addons \
-    && chown -R odoo:odoo /var/lib/odoo /etc/odoo /mnt/extra-addons /opt/odoo
+    && chown -R odoo:odoo /var/lib/odoo /etc/odoo /mnt/extra-addons /opt/odoo \
+    && chmod +x /opt/odoo/odoo-bin
 
-# Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set volumes
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/etc/odoo"]
-
-# Expose ports
 EXPOSE 8069 8072
 
-# Set default environment variables
 ENV ODOO_RC=/etc/odoo/odoo.conf
 
 USER odoo
-
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo"]
