@@ -50,7 +50,7 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='phone']" position="after">
+            <xpath expr="//list" position="inside">
                 <field name="etims_pin" optional="hide"/>
             </xpath>
         </field>
@@ -67,7 +67,7 @@
                 <filter name="pin_validated" string="PIN Validated" domain="[('etims_pin_validated', '=', True)]"/>
                 <filter name="has_pin" string="Has KRA PIN" domain="[('etims_pin', '!=', False)]"/>
             </xpath>
-            <xpath expr="//field[@name='phone']" position="after">
+            <xpath expr="//search" position="inside">
                 <field name="etims_pin" string="KRA PIN"/>
             </xpath>
         </field>
