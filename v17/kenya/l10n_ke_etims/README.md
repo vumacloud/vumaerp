@@ -1,8 +1,8 @@
-# KRA e-TIMS Integration for Odoo v18
+# KRA e-TIMS Integration for Odoo v17
 
 ## Overview
 
-This module provides comprehensive integration with Kenya Revenue Authority's e-TIMS (Tax Invoice Management System) through the OSCU (Online Sales Control Unit) interface for Odoo v18 Community Edition.
+This module provides comprehensive integration with Kenya Revenue Authority's e-TIMS (Tax Invoice Management System) through the OSCU (Online Sales Control Unit) interface for Odoo v17 Community Edition.
 
 ## Features
 
