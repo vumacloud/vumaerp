@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_view_form_gh" model="ir.ui.view">
+        <field name="name">hr.contract.form.ghana</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='notes']" position="before">
+                <group string="Ghana Allowances" name="gh_allowances">
+                    <group>
+                        <field name="gh_housing_allowance"/>
+                        <field name="gh_transport_allowance"/>
+                    </group>
+                    <group>
+                        <field name="gh_risk_allowance"/>
+                        <field name="gh_other_allowances"/>
+                    </group>
+                </group>
+                <group string="Ghana Pension &amp; Tax" name="gh_pension">
+                    <group>
+                        <field name="gh_tier3_contribution"/>
+                        <field name="gh_ssnit_opt_out"/>
+                    </group>
+                    <group>
+                        <field name="gh_tax_relief"/>
+                        <field name="gh_gross_salary" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

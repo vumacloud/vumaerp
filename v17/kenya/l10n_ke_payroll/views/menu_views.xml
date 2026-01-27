@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kenya Payroll Menu under Payroll Configuration -->
+    <menuitem id="menu_kenya_payroll_config"
+        name="Kenya"
+        parent="hr.menu_human_resources_configuration"
+        sequence="100"/>
+
+    <menuitem id="menu_kenya_statutory_config"
+        name="Statutory Configuration"
+        parent="menu_kenya_payroll_config"
+        action="kenya_statutory_config_action"
+        sequence="10"/>
+
+    <menuitem id="menu_kenya_paye_bands"
+        name="PAYE Tax Bands"
+        parent="menu_kenya_payroll_config"
+        action="paye_tax_band_action"
+        sequence="20"/>
+</odoo>
