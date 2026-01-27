@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
-        <!-- Nigeria Payroll Structure Type -->
-        <record id="structure_type_nigeria_employee" model="hr.payroll.structure.type">
-            <field name="name">Nigeria Employee</field>
-            <field name="country_id" ref="base.ng"/>
-        </record>
-
+    <data noupdate="0">
         <!-- Nigeria Payroll Structure -->
         <record id="structure_nigeria_employee" model="hr.payroll.structure">
             <field name="name">Nigeria Employee Salary</field>
-            <field name="type_id" ref="structure_type_nigeria_employee"/>
+            <field name="code">NG_EMP</field>
             <field name="country_id" ref="base.ng"/>
         </record>
     </data>
