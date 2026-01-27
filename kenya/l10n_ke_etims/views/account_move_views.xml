@@ -68,7 +68,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_out_invoice_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="after">
+            <xpath expr="//list" position="inside">
                 <field name="etims_submitted" string="eTIMS" widget="boolean" optional="show"/>
                 <field name="etims_receipt_number" optional="hide"/>
             </xpath>
