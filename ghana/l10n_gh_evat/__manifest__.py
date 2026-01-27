@@ -30,7 +30,7 @@ Note: Effective combined rate is 21% for standard-rated supplies.
     'website': 'https://vumacloud.com',
     'license': 'Other proprietary',
     'depends': [
-        'account',
+        'om_account_accountant',
         'l10n_gh',
     ],
     'data': [
