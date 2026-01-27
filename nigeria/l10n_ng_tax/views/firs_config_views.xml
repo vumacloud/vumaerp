@@ -61,14 +61,14 @@
         <field name="name">nigeria.firs.config.tree</field>
         <field name="model">nigeria.firs.config</field>
         <field name="arch" type="xml">
-            <tree string="FIRS Configurations">
+            <list string="FIRS Configurations">
                 <field name="name"/>
                 <field name="tin"/>
                 <field name="company_size"/>
                 <field name="vat_registered" widget="boolean"/>
                 <field name="tcc_valid" widget="boolean"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -84,13 +84,13 @@
         <field name="name">nigeria.tax.code.tree</field>
         <field name="model">nigeria.tax.code</field>
         <field name="arch" type="xml">
-            <tree string="Tax Codes" editable="bottom">
+            <list string="Tax Codes" editable="bottom">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_type"/>
                 <field name="rate"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 

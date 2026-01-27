@@ -58,7 +58,7 @@
         <field name="name">efris.device.tree</field>
         <field name="model">efris.device</field>
         <field name="arch" type="xml">
-            <tree string="EFRIS Devices">
+            <list string="EFRIS Devices">
                 <field name="device_no"/>
                 <field name="device_id"/>
                 <field name="branch_name"/>
@@ -69,7 +69,7 @@
                 <field name="last_invoice_no"/>
                 <field name="last_activity"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 

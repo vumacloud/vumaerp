@@ -61,14 +61,14 @@
         <field name="name">nigeria.statutory.config.tree</field>
         <field name="model">nigeria.statutory.config</field>
         <field name="arch" type="xml">
-            <tree string="Nigeria Statutory Configurations">
+            <list string="Nigeria Statutory Configurations">
                 <field name="name"/>
                 <field name="pension_employee_rate"/>
                 <field name="pension_employer_rate"/>
                 <field name="nhf_rate"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -112,14 +112,14 @@
         <field name="name">nigeria.paye.tax.band.tree</field>
         <field name="model">nigeria.paye.tax.band</field>
         <field name="arch" type="xml">
-            <tree string="PAYE Tax Bands" editable="bottom">
+            <list string="PAYE Tax Bands" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="min_amount"/>
                 <field name="max_amount"/>
                 <field name="rate"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 

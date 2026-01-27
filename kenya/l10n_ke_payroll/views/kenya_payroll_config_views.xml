@@ -48,11 +48,11 @@
         <field name="name">kenya.nhif.rate.tree</field>
         <field name="model">kenya.nhif.rate</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="min_salary"/>
                 <field name="max_salary"/>
                 <field name="contribution"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -67,11 +67,11 @@
         <field name="name">kenya.paye.tax.band.tree</field>
         <field name="model">kenya.paye.tax.band</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="min_amount"/>
                 <field name="max_amount"/>
                 <field name="rate"/>
-            </tree>
+            </list>
         </field>
     </record>
 

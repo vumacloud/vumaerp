@@ -68,13 +68,13 @@
         <field name="name">etims.item.class.tree</field>
         <field name="model">etims.item.class</field>
         <field name="arch" type="xml">
-            <tree string="Item Classifications">
+            <list string="Item Classifications">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_type"/>
                 <field name="tax_rate"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
