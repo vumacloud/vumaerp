@@ -46,10 +46,13 @@ echo "============================================"
 echo ""
 
 # Check if container is running
-if ! docker compose ps | grep -q "odoo17.*running"; then
-    echo "Error: Odoo container is not running."
-    echo "Start it with: docker compose up -d"
-    exit 1
+if ! docker compose ps --status running | grep -q "odoo"; then
+    # Fallback check for older docker compose versions
+    if ! docker ps | grep -q "odoo17"; then
+        echo "Error: Odoo container is not running."
+        echo "Start it with: docker compose up -d"
+        exit 1
+    fi
 fi
 
 echo "Step 1/3: Creating database..."
