@@ -51,7 +51,7 @@
         <field name="name">etims.device.tree</field>
         <field name="model">etims.device</field>
         <field name="arch" type="xml">
-            <tree string="eTIMS Devices">
+            <list string="eTIMS Devices">
                 <field name="name"/>
                 <field name="serial_number"/>
                 <field name="device_id"/>
@@ -61,7 +61,7 @@
                        decoration-success="state == 'active'"/>
                 <field name="last_request_date"/>
                 <field name="config_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -58,7 +58,7 @@
         <field name="name">ghana.evat.config.tree</field>
         <field name="model">ghana.evat.config</field>
         <field name="arch" type="xml">
-            <tree string="E-VAT Configurations">
+            <list string="E-VAT Configurations">
                 <field name="name"/>
                 <field name="tin"/>
                 <field name="environment" widget="badge"
@@ -67,7 +67,7 @@
                 <field name="is_registered" widget="boolean"/>
                 <field name="last_sync"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -83,13 +83,13 @@
         <field name="name">ghana.evat.tax.code.tree</field>
         <field name="model">ghana.evat.tax.code</field>
         <field name="arch" type="xml">
-            <tree string="E-VAT Tax Codes" editable="bottom">
+            <list string="E-VAT Tax Codes" editable="bottom">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_type"/>
                 <field name="rate"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 

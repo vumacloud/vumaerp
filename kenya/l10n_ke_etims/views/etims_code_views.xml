@@ -5,13 +5,13 @@
         <field name="name">etims.code.tree</field>
         <field name="model">etims.code</field>
         <field name="arch" type="xml">
-            <tree string="eTIMS Codes">
+            <list string="eTIMS Codes">
                 <field name="code_type"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -64,14 +64,14 @@
         <field name="name">etims.config.tree</field>
         <field name="model">etims.config</field>
         <field name="arch" type="xml">
-            <tree string="eTIMS Configurations">
+            <list string="eTIMS Configurations">
                 <field name="name"/>
                 <field name="environment" widget="badge" decoration-info="environment == 'sandbox'" decoration-success="environment == 'production'"/>
                 <field name="tin"/>
                 <field name="branch_id"/>
                 <field name="is_active"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 

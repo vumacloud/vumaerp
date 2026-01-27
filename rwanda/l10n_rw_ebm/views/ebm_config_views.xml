@@ -48,14 +48,14 @@
         <field name="name">l10n_rw.ebm.config.tree</field>
         <field name="model">l10n_rw.ebm.config</field>
         <field name="arch" type="xml">
-            <tree string="EBM Configurations">
+            <list string="EBM Configurations">
                 <field name="name"/>
                 <field name="device_id"/>
                 <field name="environment"/>
                 <field name="status"/>
                 <field name="last_sync"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -23,13 +23,13 @@
                     <notebook>
                         <page string="Salary Rules" name="salary_rules">
                             <field name="rule_ids">
-                                <tree>
+                                <list>
                                     <field name="sequence"/>
                                     <field name="name"/>
                                     <field name="code"/>
                                     <field name="category_id"/>
                                     <field name="amount_select"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Description" name="note">
@@ -45,11 +45,11 @@
         <field name="name">hr.payroll.structure.tree</field>
         <field name="model">hr.payroll.structure</field>
         <field name="arch" type="xml">
-            <tree string="Salary Structure">
+            <list string="Salary Structure">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
