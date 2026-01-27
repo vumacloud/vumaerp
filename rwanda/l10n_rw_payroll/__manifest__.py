@@ -35,6 +35,7 @@ Complete payroll solution for Rwanda including:
     'depends': [
         'hr',
         'om_hr_payroll',
+        'om_hr_payroll_account',
         'l10n_rw',
     ],
     'data': [
