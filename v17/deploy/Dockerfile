@@ -65,11 +65,11 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main' > /et
     && apt-get install --no-install-recommends -y postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Create odoo user
-RUN useradd -ms /bin/bash -d /opt/odoo odoo
-
 # Clone Odoo 17.0 from GitHub (latest commits)
 RUN git clone --depth 1 --branch 17.0 https://github.com/odoo/odoo.git /opt/odoo
+
+# Create odoo user
+RUN useradd -ms /bin/bash -d /home/odoo odoo
 
 # Install Python dependencies
 RUN pip3 install --break-system-packages -r /opt/odoo/requirements.txt \
