@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Override Login Page Title and Branding -->
+    <!-- Override Login Page Title -->
     <template id="login_layout" inherit_id="web.login_layout" name="VumaERP Login Layout" priority="999">
-        <!-- Replace title -->
         <xpath expr="//head/title" position="replace">
             <title>VumaERP - Login</title>
         </xpath>
@@ -10,15 +9,6 @@
 
     <!-- Override Login Page Content -->
     <template id="login" inherit_id="web.login" name="VumaERP Login Page" priority="999">
-        <!-- Replace the logo/brand on login page -->
-        <xpath expr="//div[hasclass('o_login_brand')]" position="replace">
-            <div class="o_login_brand text-center mb-4">
-                <img src="/vumaerp_whitelabel/static/src/img/logo.svg" alt="VumaERP"
-                     style="max-height: 80px; max-width: 250px;"
-                     onerror="this.onerror=null; this.src='/vumaerp_whitelabel/static/src/img/logo.png'; this.onerror=function(){this.style.display='none'; this.nextElementSibling.style.display='block';}"/>
-                <h2 style="display:none; color: #714B67; font-weight: 600;">VumaERP</h2>
-            </div>
-        </xpath>
         <!-- Replace footer -->
         <xpath expr="//footer" position="replace">
             <footer class="text-center text-muted small o_footer o_login_footer pt-3 pb-4">
@@ -26,13 +16,6 @@
                     Powered by <a href="https://vumacloud.com" target="_blank" class="text-muted">VumaCloud</a>
                 </div>
             </footer>
-        </xpath>
-    </template>
-
-    <!-- Override Password Reset Page -->
-    <template id="reset_password" inherit_id="web.reset_password" name="VumaERP Reset Password" priority="999">
-        <xpath expr="//head/title" position="replace">
-            <title>VumaERP - Reset Password</title>
         </xpath>
     </template>
 </odoo>

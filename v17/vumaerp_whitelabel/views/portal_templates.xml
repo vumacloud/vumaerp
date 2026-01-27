@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Override Portal Layout Title -->
-    <template id="portal_layout" inherit_id="portal.portal_layout" name="VumaERP Portal Layout" priority="999">
-        <xpath expr="//head/title" position="replace">
-            <title><t t-esc="title or 'VumaERP Portal'"/></title>
-        </xpath>
-    </template>
-
-    <!-- Override Portal My Home - safer xpath -->
-    <template id="portal_my_home" inherit_id="portal.portal_my_home" name="VumaERP Portal Home" priority="999">
-        <xpath expr="//div[hasclass('o_portal_my_home')]//h3" position="attributes">
-            <attribute name="t-attf-data-brand">VumaERP</attribute>
-        </xpath>
-    </template>
-
-    <!-- Override Portal Footer -->
-    <template id="portal_footer" name="VumaERP Portal Footer">
-        <footer class="o_portal_footer text-center text-muted py-3">
-            <div class="container">
-                <small>
-                    Powered by <a href="https://vumacloud.com" target="_blank" class="text-muted">VumaCloud</a>
-                </small>
-            </div>
-        </footer>
-    </template>
+    <!-- Portal templates - minimal to avoid xpath errors -->
+    <!-- Branding is primarily handled via CSS and JavaScript -->
 </odoo>
