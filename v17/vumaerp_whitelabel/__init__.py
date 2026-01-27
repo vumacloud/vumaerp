@@ -2,12 +2,8 @@
 from . import models
 
 
-def _post_init_hook(cr, registry):
+def _post_init_hook(env):
     """Post-installation hook to set up VumaERP branding."""
-    from odoo import api, SUPERUSER_ID
-
-    env = api.Environment(cr, SUPERUSER_ID, {})
-
     # Update system parameters for branding
     IrConfigParam = env['ir.config_parameter'].sudo()
 
