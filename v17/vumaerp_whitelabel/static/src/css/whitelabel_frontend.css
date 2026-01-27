@@ -1,0 +1,107 @@
+/* VumaERP White Label CSS - Frontend/Portal */
+
+/* ==========================================================================
+   LOGIN PAGE
+   ========================================================================== */
+
+/* Login page styling */
+.oe_login_form h1,
+.o_login_form h1 {
+    font-size: 0;
+}
+
+.oe_login_form h1::after,
+.o_login_form h1::after {
+    content: 'VumaERP';
+    font-size: 2rem;
+    color: #714B67;
+    font-weight: 600;
+}
+
+/* Login footer */
+.o_login_footer a[href*="odoo.com"] {
+    font-size: 0 !important;
+}
+
+.o_login_footer a[href*="odoo.com"]::after {
+    content: 'VumaCloud';
+    font-size: inherit;
+}
+
+/* ==========================================================================
+   PORTAL
+   ========================================================================== */
+
+/* Portal branding */
+.o_portal_navbar .navbar-brand {
+    font-weight: 600;
+}
+
+/* Portal footer */
+.o_portal_footer a[href*="odoo.com"] {
+    font-size: 0 !important;
+}
+
+.o_portal_footer a[href*="odoo.com"]::after {
+    content: 'VumaERP by VumaCloud';
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   WEBSITE (if installed)
+   ========================================================================== */
+
+/* Website footer powered by */
+#o_footer a[href*="odoo.com"],
+.o_footer_copyright a[href*="odoo.com"] {
+    font-size: 0 !important;
+}
+
+#o_footer a[href*="odoo.com"]::after,
+.o_footer_copyright a[href*="odoo.com"]::after {
+    content: 'VumaERP';
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   DATABASE MANAGER
+   ========================================================================== */
+
+/* DB Manager page */
+.o_database_manager h1,
+.o_database_manager h2,
+.o_database_manager h3 {
+    color: #714B67;
+}
+
+/* Replace any Odoo text in DB manager */
+.o_database_manager *:contains("Odoo") {
+    /* handled by templates */
+}
+
+/* ==========================================================================
+   ERROR PAGES
+   ========================================================================== */
+
+/* 404, 500 error pages */
+.o_error_page .container h1 {
+    color: #714B67;
+}
+
+/* ==========================================================================
+   GENERAL FRONTEND
+   ========================================================================== */
+
+/* Links that go to odoo.com */
+a[href*="odoo.com"]:not([href*="apps.odoo.com"]) {
+    /* Optionally hide or restyle */
+}
+
+/* Brand color for VumaERP */
+.vumaerp-brand {
+    color: #714B67 !important;
+}
+
+.vumaerp-bg {
+    background-color: #714B67 !important;
+}

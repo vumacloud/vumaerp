@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override Web Client Title -->
+    <template id="web_layout_title" inherit_id="web.layout" name="VumaERP Web Layout Title">
+        <xpath expr="//head/title" position="replace">
+            <title>VumaERP</title>
+        </xpath>
+        <!-- Replace favicon -->
+        <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
+            <link rel="shortcut icon" href="/vumaerp_whitelabel/static/src/img/favicon.ico" type="image/x-icon"/>
+        </xpath>
+    </template>
+
+    <!-- Override the main layout meta -->
+    <template id="web_layout_meta" inherit_id="web.layout" name="VumaERP Meta Tags">
+        <xpath expr="//head/meta[@name='description']" position="replace">
+            <meta name="description" content="VumaERP - Enterprise Resource Planning by VumaCloud"/>
+        </xpath>
+    </template>
+
+    <!-- Override Brand Name in Navbar - Method 1: via template -->
+    <template id="navbar_brand" inherit_id="web.navbar" name="VumaERP Navbar Brand" priority="999">
+        <xpath expr="//nav//a[hasclass('o_main_navbar_link')]" position="attributes">
+            <attribute name="title">VumaERP</attribute>
+        </xpath>
+    </template>
+
+    <!-- Override Web Client - Powered by text -->
+    <template id="web_assets_backend" inherit_id="web.assets_backend" name="VumaERP Backend Assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript">
+                // Replace Odoo branding in JavaScript
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Update page title
+                    if (document.title.includes('Odoo')) {
+                        document.title = document.title.replace(/Odoo/g, 'VumaERP');
+                    }
+                });
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Override Loading Screen -->
+    <template id="web_loading" inherit_id="web.web_editor_frontend_js" name="VumaERP Loading">
+        <!-- Loading screen customizations -->
+    </template>
+
+    <!-- Database Selector Title -->
+    <template id="database_selector" inherit_id="web.database_selector" name="VumaERP Database Selector" priority="999">
+        <xpath expr="//title" position="replace">
+            <title>VumaERP</title>
+        </xpath>
+    </template>
+</odoo>

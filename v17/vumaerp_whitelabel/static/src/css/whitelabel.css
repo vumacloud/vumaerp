@@ -1,0 +1,120 @@
+/* VumaERP White Label CSS - Backend */
+
+/* ==========================================================================
+   NAVBAR BRANDING
+   ========================================================================== */
+
+/* Hide Odoo logo in navbar and replace with VumaERP */
+.o_main_navbar .o_menu_brand::before {
+    content: 'VumaERP' !important;
+}
+
+/* Navbar brand styling */
+.o_main_navbar .o_menu_brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   LOADING SCREEN
+   ========================================================================== */
+
+/* Override loading screen text */
+.o_loading .o_loading_indicator::after {
+    content: 'Loading VumaERP...' !important;
+}
+
+/* ==========================================================================
+   ABOUT DIALOG / SETTINGS
+   ========================================================================== */
+
+/* Hide Odoo references in about dialog */
+.o_dialog .modal-body:has(a[href*="odoo.com"]) a[href*="odoo.com"] {
+    display: none !important;
+}
+
+/* Override version display text */
+.o_home_menu_wrapper .o_app_info,
+.o_settings_container .o_app_info {
+    font-size: 0;
+}
+
+.o_home_menu_wrapper .o_app_info::after,
+.o_settings_container .o_app_info::after {
+    content: 'VumaERP 17.0';
+    font-size: 12px;
+    color: #666;
+}
+
+/* ==========================================================================
+   FOOTER / POWERED BY
+   ========================================================================== */
+
+/* Replace powered by text */
+.o_footer a[href*="odoo.com"],
+footer a[href*="odoo.com"] {
+    font-size: 0 !important;
+}
+
+.o_footer a[href*="odoo.com"]::after,
+footer a[href*="odoo.com"]::after {
+    content: 'VumaCloud';
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   ERROR PAGES
+   ========================================================================== */
+
+/* Override error page branding */
+.o_error_page h1:contains("Odoo"),
+.o_error_detail h1:contains("Odoo") {
+    font-size: 0;
+}
+
+.o_error_page h1:contains("Odoo")::after,
+.o_error_detail h1:contains("Odoo")::after {
+    content: 'VumaERP';
+    font-size: 2rem;
+}
+
+/* ==========================================================================
+   TOOLTIP / HELP
+   ========================================================================== */
+
+/* Override any Odoo references in tooltips */
+.o_tooltip:contains("Odoo") {
+    visibility: hidden;
+}
+
+/* ==========================================================================
+   APP SWITCHER / HOME MENU
+   ========================================================================== */
+
+/* Home menu branding */
+.o_home_menu .o_app_name::after {
+    /* VumaERP styling for app names if needed */
+}
+
+/* ==========================================================================
+   CHAT / DISCUSS
+   ========================================================================== */
+
+/* Override OdooBot name if present */
+.o_discuss_sidebar .o_DiscussSidebarCategory_item[data-name="OdooBot"] {
+    display: none !important;
+}
+
+/* ==========================================================================
+   GENERAL BRANDING
+   ========================================================================== */
+
+/* Any element containing "Odoo" text - use with caution */
+[title*="Odoo"] {
+    /* Override titles */
+}
+
+/* Watermark / Background branding removal */
+.o_web_client::before {
+    content: none !important;
+}
