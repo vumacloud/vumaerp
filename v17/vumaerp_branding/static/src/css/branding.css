@@ -1,0 +1,16 @@
+/* VumaERP Branding - Hide Odoo references */
+
+/* Hide "Powered by Odoo" in login footer */
+.o_login_footer a[href*="odoo.com"],
+footer a[href*="odoo.com"] {
+    visibility: hidden;
+    position: relative;
+}
+
+.o_login_footer a[href*="odoo.com"]::after,
+footer a[href*="odoo.com"]::after {
+    content: "VumaERP";
+    visibility: visible;
+    position: absolute;
+    left: 0;
+}
