@@ -54,7 +54,6 @@ to customize company-specific branding options.
             ('prepend', 'vumaerp_whitelabel/static/src/css/primary_variables.css'),
         ],
     },
-    'images': ['static/description/banner.png'],
     'installable': True,
     'auto_install': False,
     'application': False,

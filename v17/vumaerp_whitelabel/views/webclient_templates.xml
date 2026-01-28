@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Override Web Client Title -->
-    <template id="web_layout_title" inherit_id="web.layout" name="VumaERP Web Layout Title">
-        <xpath expr="//head/title" position="replace">
-            <title>VumaERP</title>
-        </xpath>
-    </template>
+    <!-- Web client branding handled via CSS and JavaScript -->
+    <!-- Avoiding xpath modifications to prevent compatibility issues -->
 </odoo>

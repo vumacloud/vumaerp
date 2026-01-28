@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override default email footer -->
+    <record id="mail.mail_notification_layout" model="ir.ui.view">
+        <field name="name">mail.mail_notification_layout.vumaerp</field>
+        <field name="model"></field>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <t t-name="mail.mail_notification_layout">
+                <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+                    <tr>
+                        <td align="center">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                                <tbody>
+                                    <tr>
+                                        <td align="center" style="min-width: 590px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                                                <tr>
+                                                    <td valign="middle">
+                                                        <span style="font-size: 10px;">Sent by</span>
+                                                        <t t-if="company">
+                                                            <t t-if="company.website">
+                                                                <a t-att-href="company.website" style="text-decoration:none; color: #875A7B; font-size: 10px;">
+                                                                    <t t-out="company.name"/>
+                                                                </a>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span style="font-size: 10px;"><t t-out="company.name"/></span>
+                                                            </t>
+                                                        </t>
+                                                        <span style="font-size: 10px;"> using </span>
+                                                        <a href="https://vumacloud.com" style="text-decoration:none; color: #875A7B; font-size: 10px;">VumaERP</a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <t t-out="message.body"/>
+                                    <t t-if="signature">
+                                        <tr>
+                                            <td align="center" style="min-width: 590px;">
+                                                <t t-out="signature"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="min-width: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;">
+                                <tr>
+                                    <td style="text-align: center; font-size: 11px;">
+                                        Powered by <a href="https://vumacloud.com" style="text-decoration:none; color: #875A7B;">VumaERP</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </t>
+        </field>
+    </record>
+</odoo>
