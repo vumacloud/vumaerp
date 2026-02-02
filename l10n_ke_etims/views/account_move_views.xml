@@ -15,7 +15,7 @@
             </xpath>
 
             <!-- Add eTIMS tab -->
-            <xpath expr="//page[@id='other_tab']" position="after">
+            <xpath expr="//notebook" position="inside">
                 <page string="eTIMS" name="etims_tab"
                       invisible="move_type not in ('out_invoice', 'out_refund')">
                     <group>
