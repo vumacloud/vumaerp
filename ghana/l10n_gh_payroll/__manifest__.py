@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Ghana - Payroll',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Ghana Payroll with PAYE, SSNIT, and Tier 2/3 Pension',
     'description': """

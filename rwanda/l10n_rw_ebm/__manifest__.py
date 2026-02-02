@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Rwanda - EBM Integration',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations',
     'summary': 'Electronic Billing Machine (EBM) integration for Rwanda',
     'description': """
