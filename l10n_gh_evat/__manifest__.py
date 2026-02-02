@@ -47,7 +47,7 @@ For more information, visit: https://gra.gov.gh/e-services/e-vat/
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
     'license': 'LGPL-3',
-    'depends': ['account'],
+    'depends': ['l10n_gh'],
     'data': [
         'security/ir.model.access.csv',
         'data/evat_tax_code_data.xml',

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+        Account Tags for Ghana Tax Reporting
+        Used for GRA VAT return categorization
+        -->
+
+        <!-- Tax Report Tags -->
+        <record id="account_tag_gh_vat_sales" model="account.account.tag">
+            <field name="name">VAT Sales (Output)</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_vat_purchases" model="account.account.tag">
+            <field name="name">VAT Purchases (Input)</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_nhil_sales" model="account.account.tag">
+            <field name="name">NHIL Sales</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_nhil_purchases" model="account.account.tag">
+            <field name="name">NHIL Purchases</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_getfund_sales" model="account.account.tag">
+            <field name="name">GETFund Sales</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_getfund_purchases" model="account.account.tag">
+            <field name="name">GETFund Purchases</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_exempt" model="account.account.tag">
+            <field name="name">Exempt Supplies</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_zero_rated" model="account.account.tag">
+            <field name="name">Zero-Rated (Export)</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <!-- Base Amount Tags -->
+        <record id="account_tag_gh_base_sales" model="account.account.tag">
+            <field name="name">Sales Base</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+
+        <record id="account_tag_gh_base_purchases" model="account.account.tag">
+            <field name="name">Purchases Base</field>
+            <field name="applicability">taxes</field>
+            <field name="country_id" ref="base.gh"/>
+        </record>
+    </data>
+</odoo>
