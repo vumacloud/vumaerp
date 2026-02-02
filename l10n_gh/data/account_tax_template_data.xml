@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+        Ghana Tax Templates
+        VAT Act 1151 (effective January 2026)
+
+        Tax Structure:
+        - VAT: 15%
+        - NHIL: 2.5% (National Health Insurance Levy) - Input deductible
+        - GETFund: 2.5% (Ghana Education Trust Fund) - Input deductible
+        - Total effective rate: 20%
+
+        COVID-19 Levy: ABOLISHED
+        NHIL and GETFund: Now re-coupled to VAT base (input deductible)
+        -->
+
+        <!-- ==================== -->
+        <!-- SALES TAXES          -->
+        <!-- ==================== -->
+
+        <!-- VAT 15% on Sales -->
+        <record id="tax_sale_vat_15" model="account.tax.template">
+            <field name="name">VAT 15% (Sales)</field>
+            <field name="description">VAT</field>
+            <field name="amount">15</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_vat_15"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_base_sales')])],'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2210'), 'tag_ids': [(6, 0, [ref('account_tag_gh_vat_sales')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_base_sales')])],'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2210'), 'tag_ids': [(6, 0, [ref('account_tag_gh_vat_sales')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- NHIL 2.5% on Sales -->
+        <record id="tax_sale_nhil" model="account.tax.template">
+            <field name="name">NHIL 2.5% (Sales)</field>
+            <field name="description">NHIL</field>
+            <field name="amount">2.5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_nhil"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2220'), 'tag_ids': [(6, 0, [ref('account_tag_gh_nhil_sales')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2220'), 'tag_ids': [(6, 0, [ref('account_tag_gh_nhil_sales')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- GETFund 2.5% on Sales -->
+        <record id="tax_sale_getfund" model="account.tax.template">
+            <field name="name">GETFund 2.5% (Sales)</field>
+            <field name="description">GETFund</field>
+            <field name="amount">2.5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_getfund"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2230'), 'tag_ids': [(6, 0, [ref('account_tag_gh_getfund_sales')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2230'), 'tag_ids': [(6, 0, [ref('account_tag_gh_getfund_sales')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Combined VAT 20% on Sales (VAT + NHIL + GETFund) -->
+        <record id="tax_sale_vat_combined" model="account.tax.template">
+            <field name="name">VAT 20% Combined (Sales)</field>
+            <field name="description">VAT+NHIL+GETFund</field>
+            <field name="amount">0</field>
+            <field name="amount_type">group</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_vat_15"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="children_tax_ids" eval="[(6, 0, [ref('tax_sale_vat_15'), ref('tax_sale_nhil'), ref('tax_sale_getfund')])]"/>
+        </record>
+
+        <!-- Zero Rated Sales (Exports) -->
+        <record id="tax_sale_zero" model="account.tax.template">
+            <field name="name">Zero Rated (Sales)</field>
+            <field name="description">0%</field>
+            <field name="amount">0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_zero"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_zero_rated')])], 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_zero_rated')])], 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Exempt Sales -->
+        <record id="tax_sale_exempt" model="account.tax.template">
+            <field name="name">Exempt (Sales)</field>
+            <field name="description">Exempt</field>
+            <field name="amount">0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_exempt"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_exempt')])], 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_exempt')])], 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Tourism Levy 1% on Sales -->
+        <record id="tax_sale_tourism" model="account.tax.template">
+            <field name="name">Tourism Levy 1% (Sales)</field>
+            <field name="description">Tourism</field>
+            <field name="amount">1</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_tourism"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2200'), 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2200'), 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- CST 5% on Sales (Communication Service Tax) -->
+        <record id="tax_sale_cst" model="account.tax.template">
+            <field name="name">CST 5% (Sales)</field>
+            <field name="description">CST</field>
+            <field name="amount">5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="tax_group_id" ref="tax_group_cst"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2200'), 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2200'), 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- ==================== -->
+        <!-- PURCHASE TAXES       -->
+        <!-- ==================== -->
+
+        <!-- VAT 15% on Purchases -->
+        <record id="tax_purchase_vat_15" model="account.tax.template">
+            <field name="name">VAT 15% (Purchases)</field>
+            <field name="description">VAT</field>
+            <field name="amount">15</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_vat_15"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_base_purchases')])],'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1610'), 'tag_ids': [(6, 0, [ref('account_tag_gh_vat_purchases')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'tag_ids': [(6, 0, [ref('account_tag_gh_base_purchases')])],'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1610'), 'tag_ids': [(6, 0, [ref('account_tag_gh_vat_purchases')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- NHIL 2.5% on Purchases (Input deductible under Act 1151) -->
+        <record id="tax_purchase_nhil" model="account.tax.template">
+            <field name="name">NHIL 2.5% (Purchases)</field>
+            <field name="description">NHIL</field>
+            <field name="amount">2.5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_nhil"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1620'), 'tag_ids': [(6, 0, [ref('account_tag_gh_nhil_purchases')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1620'), 'tag_ids': [(6, 0, [ref('account_tag_gh_nhil_purchases')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- GETFund 2.5% on Purchases (Input deductible under Act 1151) -->
+        <record id="tax_purchase_getfund" model="account.tax.template">
+            <field name="name">GETFund 2.5% (Purchases)</field>
+            <field name="description">GETFund</field>
+            <field name="amount">2.5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_getfund"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1630'), 'tag_ids': [(6, 0, [ref('account_tag_gh_getfund_purchases')])], 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_1630'), 'tag_ids': [(6, 0, [ref('account_tag_gh_getfund_purchases')])], 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Combined VAT 20% on Purchases (VAT + NHIL + GETFund) -->
+        <record id="tax_purchase_vat_combined" model="account.tax.template">
+            <field name="name">VAT 20% Combined (Purchases)</field>
+            <field name="description">VAT+NHIL+GETFund</field>
+            <field name="amount">0</field>
+            <field name="amount_type">group</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_vat_15"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="children_tax_ids" eval="[(6, 0, [ref('tax_purchase_vat_15'), ref('tax_purchase_nhil'), ref('tax_purchase_getfund')])]"/>
+        </record>
+
+        <!-- Zero Rated Purchases -->
+        <record id="tax_purchase_zero" model="account.tax.template">
+            <field name="name">Zero Rated (Purchases)</field>
+            <field name="description">0%</field>
+            <field name="amount">0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_zero"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Exempt Purchases -->
+        <record id="tax_purchase_exempt" model="account.tax.template">
+            <field name="name">Exempt (Purchases)</field>
+            <field name="description">Exempt</field>
+            <field name="amount">0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_exempt"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- ==================== -->
+        <!-- WITHHOLDING TAXES    -->
+        <!-- ==================== -->
+
+        <!-- Withholding Tax 3% (Services) -->
+        <record id="tax_withholding_3" model="account.tax.template">
+            <field name="name">Withholding Tax 3%</field>
+            <field name="description">WHT 3%</field>
+            <field name="amount">-3</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_withholding"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Withholding Tax 5% (Goods) -->
+        <record id="tax_withholding_5" model="account.tax.template">
+            <field name="name">Withholding Tax 5%</field>
+            <field name="description">WHT 5%</field>
+            <field name="amount">-5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_withholding"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+        <!-- Withholding Tax 7.5% (Rent) -->
+        <record id="tax_withholding_7_5" model="account.tax.template">
+            <field name="name">Withholding Tax 7.5% (Rent)</field>
+            <field name="description">WHT 7.5%</field>
+            <field name="amount">-7.5</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="tax_group_id" ref="tax_group_withholding"/>
+            <field name="chart_template_id" ref="gh_chart_template"/>
+            <field name="invoice_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+            <field name="refund_repartition_line_ids" eval="[
+                (0, 0, {'repartition_type': 'base', 'factor_percent': 100}),
+                (0, 0, {'repartition_type': 'tax', 'account_id': ref('account_gh_2250'), 'factor_percent': 100}),
+            ]"/>
+        </record>
+
+    </data>
+</odoo>
