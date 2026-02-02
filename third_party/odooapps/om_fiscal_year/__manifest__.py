@@ -1,9 +1,9 @@
 {
-    'name': 'Odoo 18 Fiscal Year & Lock Date',
-    'version': '1.0.1',
+    'name': 'Odoo 17 Fiscal Year & Lock Date',
+    'version': '17.0.1.0.1',
     'category': 'Accounting',
-    'summary': 'Odoo 18 Fiscal Year, Fiscal Year in Odoo 18, Lock Date in Odoo 18',
-    'description': 'Odoo 18 Fiscal Year, Fiscal Year in Odoo 18',
+    'summary': 'Odoo 17 Fiscal Year, Fiscal Year in Odoo 17, Lock Date in Odoo 17',
+    'description': 'Odoo 17 Fiscal Year, Fiscal Year in Odoo 17',
     'live_test_url': 'https://www.youtube.com/watch?v=Kj4hR7_uNs4',
     'sequence': '1',
     'website': 'https://www.odoomates.tech',
