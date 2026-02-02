@@ -1,12 +1,12 @@
 {
-    'name': 'Odoo 18 HR Payroll',
+    'name': 'Odoo 17 HR Payroll',
     'category': 'Generic Modules/Human Resources',
-    'version': '1.0.0',
+    'version': '17.0.1.0.0',
     'sequence': 1,
     'author': 'Odoo Mates, Odoo SA',
-    'summary': 'Payroll For Odoo 18 Community Edition',
+    'summary': 'Payroll For Odoo 17 Community Edition',
     'live_test_url': 'https://www.youtube.com/watch?v=0kaHMTtn7oY',
-    'description': "Odoo 18 Payroll, Payroll Odoo 18, Odoo Community Payroll",
+    'description': "Odoo 17 Payroll, Payroll Odoo 17, Odoo Community Payroll",
     'website': 'https://www.odoomates.tech',
     'license': 'LGPL-3',
     'depends': [
