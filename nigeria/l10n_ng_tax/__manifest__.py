@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Nigeria - FIRS Tax Integration',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations',
     'summary': 'Federal Inland Revenue Service Tax Integration',
     'description': """

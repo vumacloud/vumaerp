@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Kenya - eTIMS OSCU Integration',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations',
     'summary': 'KRA eTIMS Online Sales Control Unit (OSCU) Integration',
     'description': """
@@ -51,8 +51,8 @@ Configuration:
         'l10n_ke',
     ],
     'data': [
-        'security/etims_security.xml',
         'security/ir.model.access.csv',
+        'security/etims_security.xml',
         'data/etims_code_data.xml',
         'views/etims_config_views.xml',
         'views/etims_device_views.xml',

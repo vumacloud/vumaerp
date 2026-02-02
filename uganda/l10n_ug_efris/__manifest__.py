@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Uganda - EFRIS Integration',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations/EDI',
     'summary': 'URA EFRIS Electronic Fiscal Receipting and Invoicing System',
     'description': """
