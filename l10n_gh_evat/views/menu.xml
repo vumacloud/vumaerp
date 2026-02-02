@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ghana E-VAT Menu under Invoicing > Configuration -->
+    <menuitem
+        id="menu_evat_root"
+        name="Ghana E-VAT"
+        parent="account.menu_finance_configuration"
+        sequence="100"
+    />
+
+    <menuitem
+        id="menu_evat_config"
+        name="E-VAT Configuration"
+        parent="menu_evat_root"
+        action="action_evat_config"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_evat_tax_codes"
+        name="Tax Codes"
+        parent="menu_evat_root"
+        action="action_evat_tax_code"
+        sequence="20"
+    />
+</odoo>
