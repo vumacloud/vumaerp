@@ -3,7 +3,7 @@ services:
   # Odoo Application
   # ===========================================
   odoo:
-    image: odoo:18
+    image: odoo:17
     container_name: vumaerp-odoo
     restart: unless-stopped
     depends_on:

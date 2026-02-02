@@ -1,1 +1,1 @@
-# Odoo 18 African Localization
+# Odoo 17 African Localization
