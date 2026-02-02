@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Odoo HR Payroll Community',
-    'version': '18.0.1.0.0',
+    'version': '17.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Manage employee payroll',
     'description': """
@@ -14,7 +14,7 @@ This module provides payroll management functionality including:
 - Contribution registers
 - Payroll reports
 
-Based on OCA hr_payroll module, adapted for Odoo 18.
+Based on OCA hr_payroll module, adapted for Odoo 17.
     """,
     'author': 'VumaCloud, Odoo Community Association (OCA)',
     'website': 'https://vumacloud.com',

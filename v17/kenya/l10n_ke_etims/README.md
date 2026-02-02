@@ -160,8 +160,8 @@ For support and issues:
 
 ## Requirements
 
-- Odoo v18 Community Edition
-- om_account_accountant module (https://apps.odoo.com/apps/modules/18.0/om_account_accountant)
+- Odoo v17 Community Edition
+- om_account_accountant module (https://apps.odoo.com/apps/modules/17.0/om_account_accountant)
 - Valid KRA e-TIMS registration and OSCU device
 
 ## License
@@ -170,7 +170,7 @@ LGPL-3
 
 ## Credits
 
-Developed for Odoo v18 Community Edition with KRA e-TIMS OSCU integration.
+Developed for Odoo v17 Community Edition with KRA e-TIMS OSCU integration.
 
 ## Changelog
 
