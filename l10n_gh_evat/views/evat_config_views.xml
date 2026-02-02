@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- E-VAT Configuration Form View -->
+    <record id="view_evat_config_form" model="ir.ui.view">
+        <field name="name">ghana.evat.config.form</field>
+        <field name="model">ghana.evat.config</field>
+        <field name="arch" type="xml">
+            <form string="E-VAT Configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="company_id" readonly="1" options="{'no_open': True}"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Environment">
+                            <field name="environment" widget="radio"/>
+                            <field name="api_url" readonly="1"/>
+                        </group>
+                        <group string="GRA Credentials">
+                            <field name="tin" placeholder="C00XXXXXXXX"/>
+                            <field name="company_name" placeholder="Company name as registered with GRA"/>
+                            <field name="security_key" password="True"/>
+                        </group>
+                    </group>
+                    <group string="Status">
+                        <group>
+                            <field name="last_request_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Last Response" name="response">
+                            <field name="last_response" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_test_connection"
+                            string="Test Connection"
+                            type="object"
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- E-VAT Configuration Tree View -->
+    <record id="view_evat_config_tree" model="ir.ui.view">
+        <field name="name">ghana.evat.config.tree</field>
+        <field name="model">ghana.evat.config</field>
+        <field name="arch" type="xml">
+            <tree string="E-VAT Configurations">
+                <field name="company_id"/>
+                <field name="environment"/>
+                <field name="tin"/>
+                <field name="last_request_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- E-VAT Configuration Action -->
+    <record id="action_evat_config" model="ir.actions.act_window">
+        <field name="name">E-VAT Configuration</field>
+        <field name="res_model">ghana.evat.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Ghana E-VAT Integration
+            </p>
+            <p>
+                Set up your GRA E-VAT credentials to submit invoices electronically.
+                You will need your TIN, company name (as registered with GRA), and
+                the security key provided during E-VAT onboarding.
+            </p>
+            <p>
+                For more information, visit:
+                <a href="https://gra.gov.gh/e-services/e-vat/" target="_blank">
+                    GRA E-VAT Portal
+                </a>
+            </p>
+        </field>
+    </record>
+
+    <!-- E-VAT Tax Code Form View -->
+    <record id="view_evat_tax_code_form" model="ir.ui.view">
+        <field name="name">ghana.evat.tax.code.form</field>
+        <field name="model">ghana.evat.tax.code</field>
+        <field name="arch" type="xml">
+            <form string="E-VAT Tax Code">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="code_type"/>
+                        </group>
+                        <group>
+                            <field name="rate"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- E-VAT Tax Code Tree View -->
+    <record id="view_evat_tax_code_tree" model="ir.ui.view">
+        <field name="name">ghana.evat.tax.code.tree</field>
+        <field name="model">ghana.evat.tax.code</field>
+        <field name="arch" type="xml">
+            <tree string="E-VAT Tax Codes">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="code_type"/>
+                <field name="rate"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- E-VAT Tax Code Action -->
+    <record id="action_evat_tax_code" model="ir.actions.act_window">
+        <field name="name">E-VAT Tax Codes</field>
+        <field name="res_model">ghana.evat.tax.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                GRA E-VAT Tax Codes
+            </p>
+            <p>
+                These are the official GRA tax codes used for E-VAT submissions.
+                Tax codes are pre-configured based on VAT Act 1151.
+            </p>
+        </field>
+    </record>
+</odoo>
