@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-1. Odoo v18 Community Edition installed
+1. Odoo v17 Community Edition installed
 2. om_account_accountant module installed
 3. Valid KRA e-TIMS registration
 4. OSCU device registered with KRA
@@ -240,7 +240,7 @@ For issues:
 
 - [KRA e-TIMS Portal](https://itax.kra.go.ke/KRA-Portal/)
 - [KRA e-TIMS Documentation](https://www.kra.go.ke/en/taxes/etims)
-- Odoo v18 Documentation
+- Odoo v17 Documentation
 
 ## Updates
 
@@ -252,6 +252,6 @@ Check for module updates regularly for:
 
 ---
 
-**Module Version**: 1.0.0  
-**Odoo Version**: 18.0  
+**Module Version**: 1.0.0
+**Odoo Version**: 17.0
 **Last Updated**: 2025
