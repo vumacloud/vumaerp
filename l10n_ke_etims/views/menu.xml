@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu under Invoicing > Configuration -->
+    <menuitem id="menu_etims_config"
+              name="eTIMS Configuration"
+              parent="account.menu_finance_configuration"
+              action="etims_config_action"
+              sequence="100"/>
+</odoo>
