@@ -1,3 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_etims_config_user,etims.config user,model_etims_config,account.group_account_invoice,1,0,0,0
 access_etims_config_manager,etims.config manager,model_etims_config,account.group_account_manager,1,1,1,1
+access_etims_code_user,etims.code user,model_etims_code,account.group_account_invoice,1,0,0,0
+access_etims_code_manager,etims.code manager,model_etims_code,account.group_account_manager,1,1,1,1
+access_etims_item_class_user,etims.item.class user,model_etims_item_class,account.group_account_invoice,1,0,0,0
+access_etims_item_class_manager,etims.item.class manager,model_etims_item_class,account.group_account_manager,1,1,1,1
+access_etims_code_sync_user,etims.code.sync user,model_etims_code_sync,account.group_account_invoice,1,0,0,0
+access_etims_code_sync_manager,etims.code.sync manager,model_etims_code_sync,account.group_account_manager,1,1,1,1
