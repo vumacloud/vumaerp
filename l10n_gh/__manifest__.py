@@ -1,36 +1,24 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Ghana - Accounting',
+    'name': 'Ghana - Base',
     'version': '17.0.1.0.0',
-    'category': 'Accounting/Localizations',
-    'summary': 'Ghana base localization',
+    'category': 'Localization',
+    'summary': 'Ghana base data (regions)',
     'description': """
-Ghana Accounting Localization
-=============================
+Ghana Base Localization
+=======================
 
-Base localization for Ghana including:
-- Ghana regions data
-- TIN validation support
-- Currency: GHS (Ghana Cedi)
+Base data for Ghana including:
+- Ghana's 16 administrative regions
 
-Tax rates under VAT Act 1151 (effective January 2026):
-- VAT: 15%
-- NHIL: 2.5% (input deductible)
-- GETFund: 2.5% (input deductible)
-- Total effective rate: 20%
-
-References:
-- GRA: https://gra.gov.gh
-- ICAG: https://icagh.com
+This module provides foundational data for other Ghana-specific modules.
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
     'license': 'LGPL-3',
-    'depends': ['account'],
+    'depends': ['base'],
     'data': [
         'data/res_country_data.xml',
-        'data/template/account.group-gh.csv',
-        'data/template/account.account-gh.csv',
     ],
     'installable': True,
     'auto_install': False,
