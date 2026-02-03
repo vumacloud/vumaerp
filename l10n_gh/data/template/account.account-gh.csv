@@ -1,37 +1,37 @@
 id,code,name,account_type,reconcile
-gh_1100,1100,Trade Receivables,asset_receivable,TRUE
-gh_1200,1200,Bank,asset_cash,FALSE
-gh_1210,1210,Cash,asset_cash,FALSE
-gh_1300,1300,VAT Input,asset_current,FALSE
-gh_1310,1310,NHIL Input,asset_current,FALSE
-gh_1320,1320,GETFund Input,asset_current,FALSE
-gh_1400,1400,Inventory,asset_current,FALSE
-gh_1500,1500,Prepaid Expenses,asset_current,FALSE
-gh_1600,1600,Fixed Assets,asset_fixed,FALSE
-gh_1690,1690,Accumulated Depreciation,asset_fixed,FALSE
-gh_2100,2100,Trade Payables,liability_payable,TRUE
-gh_2200,2200,Short-term Loans,liability_current,FALSE
-gh_2300,2300,VAT Payable,liability_current,FALSE
-gh_2310,2310,NHIL Payable,liability_current,FALSE
-gh_2320,2320,GETFund Payable,liability_current,FALSE
-gh_2330,2330,Withholding Tax Payable,liability_current,FALSE
-gh_2340,2340,PAYE Payable,liability_current,FALSE
-gh_2350,2350,SSNIT Payable,liability_current,FALSE
-gh_2400,2400,Accrued Expenses,liability_current,FALSE
-gh_2500,2500,Long-term Loans,liability_non_current,FALSE
-gh_3100,3100,Share Capital,equity,FALSE
-gh_3200,3200,Retained Earnings,equity,FALSE
-gh_3300,3300,Reserves,equity,FALSE
-gh_4100,4100,Sales Revenue,income,FALSE
-gh_4200,4200,Foreign Exchange Gain,income_other,FALSE
-gh_4300,4300,Other Income,income_other,FALSE
-gh_5100,5100,Cost of Goods Sold,expense_direct_cost,FALSE
-gh_5200,5200,Foreign Exchange Loss,expense,FALSE
-gh_5300,5300,Salaries and Wages,expense,FALSE
-gh_5400,5400,Rent Expense,expense,FALSE
-gh_5500,5500,Utilities,expense,FALSE
-gh_5600,5600,Office Expenses,expense,FALSE
-gh_5700,5700,Professional Fees,expense,FALSE
-gh_5800,5800,Depreciation Expense,expense_depreciation,FALSE
-gh_5900,5900,Other Expenses,expense,FALSE
-gh_6100,6100,Income Tax Expense,expense,FALSE
+gh_1100,1100,Trade Receivables,asset_receivable,True
+gh_1200,1200,Bank,asset_cash,False
+gh_1210,1210,Cash,asset_cash,False
+gh_1300,1300,VAT Input,asset_current,False
+gh_1310,1310,NHIL Input,asset_current,False
+gh_1320,1320,GETFund Input,asset_current,False
+gh_1400,1400,Inventory,asset_current,False
+gh_1500,1500,Prepaid Expenses,asset_current,False
+gh_1600,1600,Fixed Assets,asset_fixed,False
+gh_1690,1690,Accumulated Depreciation,asset_fixed,False
+gh_2100,2100,Trade Payables,liability_payable,True
+gh_2200,2200,Short-term Loans,liability_current,False
+gh_2300,2300,VAT Payable,liability_current,False
+gh_2310,2310,NHIL Payable,liability_current,False
+gh_2320,2320,GETFund Payable,liability_current,False
+gh_2330,2330,Withholding Tax Payable,liability_current,False
+gh_2340,2340,PAYE Payable,liability_current,False
+gh_2350,2350,SSNIT Payable,liability_current,False
+gh_2400,2400,Accrued Expenses,liability_current,False
+gh_2500,2500,Long-term Loans,liability_non_current,False
+gh_3100,3100,Share Capital,equity,False
+gh_3200,3200,Retained Earnings,equity,False
+gh_3300,3300,Reserves,equity,False
+gh_4100,4100,Sales Revenue,income,False
+gh_4200,4200,Foreign Exchange Gain,income_other,False
+gh_4300,4300,Other Income,income_other,False
+gh_5100,5100,Cost of Goods Sold,expense_direct_cost,False
+gh_5200,5200,Foreign Exchange Loss,expense,False
+gh_5300,5300,Salaries and Wages,expense,False
+gh_5400,5400,Rent Expense,expense,False
+gh_5500,5500,Utilities,expense,False
+gh_5600,5600,Office Expenses,expense,False
+gh_5700,5700,Professional Fees,expense,False
+gh_5800,5800,Depreciation Expense,expense_depreciation,False
+gh_5900,5900,Other Expenses,expense,False
+gh_6100,6100,Income Tax Expense,expense,False
