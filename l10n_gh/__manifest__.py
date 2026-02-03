@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Ghana - Accounting',
+    'countries': ['gh'],
     'version': '17.0.1.0.0',
-    'category': 'Accounting/Localizations',
+    'category': 'Accounting/Localizations/Account Charts',
     'summary': 'Ghana fiscal localization with VAT, NHIL, GETFund',
     'description': """
 Ghana Fiscal Localization
