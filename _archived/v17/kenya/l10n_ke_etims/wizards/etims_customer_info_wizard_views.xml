@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="etims_customer_info_wizard_view_form" model="ir.ui.view">
+        <field name="name">etims.customer.info.wizard.form</field>
+        <field name="model">etims.customer.info.wizard</field>
+        <field name="arch" type="xml">
+            <form string="KRA Customer Information">
+                <group>
+                    <field name="customer_tin"/>
+                    <field name="customer_name"/>
+                    <field name="customer_status"/>
+                </group>
+                <footer>
+                    <button name="action_update_partner" string="Update Partner" type="object" class="btn-primary"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

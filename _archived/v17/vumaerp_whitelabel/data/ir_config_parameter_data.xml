@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- VumaERP Branding Parameters -->
+        <record id="config_vumaerp_app_name" model="ir.config_parameter">
+            <field name="key">vumaerp.app_name</field>
+            <field name="value">VumaERP</field>
+        </record>
+
+        <record id="config_vumaerp_app_tagline" model="ir.config_parameter">
+            <field name="key">vumaerp.app_tagline</field>
+            <field name="value">Enterprise Resource Planning</field>
+        </record>
+
+        <record id="config_vumaerp_support_url" model="ir.config_parameter">
+            <field name="key">vumaerp.support_url</field>
+            <field name="value">https://vumacloud.com/support</field>
+        </record>
+
+        <record id="config_vumaerp_documentation_url" model="ir.config_parameter">
+            <field name="key">vumaerp.documentation_url</field>
+            <field name="value">https://vumacloud.com/docs</field>
+        </record>
+
+        <record id="config_vumaerp_website" model="ir.config_parameter">
+            <field name="key">vumaerp.website</field>
+            <field name="value">https://vumacloud.com</field>
+        </record>
+
+        <record id="config_vumaerp_publisher" model="ir.config_parameter">
+            <field name="key">vumaerp.publisher</field>
+            <field name="value">VumaCloud</field>
+        </record>
+    </data>
+</odoo>

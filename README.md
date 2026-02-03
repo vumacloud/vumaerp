@@ -1,6 +1,6 @@
 # VumaERP - African Localization Addons
 
-Private Odoo 18.0 addons for African country localizations and customizations.
+Private Odoo 17.0 addons for African country localizations and customizations.
 
 ## Repository Structure
 
@@ -328,8 +328,8 @@ All VumaERP modules are installed to `/opt/odoo/addons` - this is the **only** a
 
 ## Odoo Compatibility
 
-- **Odoo Version**: 18.0
-- **Base**: OCA/OCB 18.0 (Community Edition)
+- **Odoo Version**: 17.0
+- **Base**: OCA/OCB 17.0 (Community Edition)
 
 ## Compliance References
 

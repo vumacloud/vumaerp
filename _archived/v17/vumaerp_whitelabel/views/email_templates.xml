@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Email templates - minimal to avoid xpath errors -->
+    <!-- Email branding is handled via CSS -->
+
+    <!-- Custom footer template that can be called from other templates -->
+    <template id="vumaerp_email_footer" name="VumaERP Email Footer">
+        <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #eeeeee; text-align: center; color: #888888; font-size: 11px;">
+            <p style="margin: 0;">
+                Powered by <a href="https://vumacloud.com" style="color: #714B67; text-decoration: none;">VumaERP</a>
+            </p>
+        </div>
+    </template>
+</odoo>

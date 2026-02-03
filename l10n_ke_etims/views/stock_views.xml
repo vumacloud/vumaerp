@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Stock Move Form Extension -->
+    <!-- ============================================================ -->
+
+    <record id="stock_move_form_view_etims" model="ir.ui.view">
+        <field name="name">stock.move.form.etims</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="eTIMS Kenya" name="etims_group" invisible="not l10n_ke_etims_reported">
+                    <group>
+                        <field name="l10n_ke_etims_reported"/>
+                        <field name="l10n_ke_etims_move_type"/>
+                    </group>
+                    <group>
+                        <field name="l10n_ke_etims_report_date"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Stock Picking Form Extension -->
+    <!-- ============================================================ -->
+
+    <record id="stock_picking_form_view_etims" model="ir.ui.view">
+        <field name="name">stock.picking.form.etims</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_report_stock_to_etims"
+                        string="Report to eTIMS"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="l10n_ke_etims_reported or state != 'done'"/>
+            </xpath>
+            <xpath expr="//sheet/div[@name='button_box']" position="inside">
+                <field name="l10n_ke_etims_reported" widget="boolean_toggle" invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Stock Picking Tree - Add eTIMS column -->
+    <!-- ============================================================ -->
+
+    <record id="stock_picking_tree_view_etims" model="ir.ui.view">
+        <field name="name">stock.picking.tree.etims</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="l10n_ke_etims_reported" string="eTIMS" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Stock Picking Search - Add eTIMS filters -->
+    <!-- ============================================================ -->
+
+    <record id="stock_picking_search_view_etims" model="ir.ui.view">
+        <field name="name">stock.picking.search.etims</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <separator/>
+                <filter name="etims_reported" string="eTIMS Reported" domain="[('l10n_ke_etims_reported', '=', True)]"/>
+                <filter name="etims_not_reported" string="eTIMS Not Reported" domain="[('l10n_ke_etims_reported', '=', False), ('state', '=', 'done')]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

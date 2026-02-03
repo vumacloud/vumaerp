@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Scheduled Action: Fetch KRA Standard Codes -->
+    <record id="ir_cron_etims_fetch_codes" model="ir.cron">
+        <field name="name">KE eTIMS: Fetch KRA standard codes</field>
+        <field name="model_id" ref="model_etims_code_sync"/>
+        <field name="state">code</field>
+        <field name="code">model.sync_all_codes()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">False</field>
+        <field name="doall">False</field>
+    </record>
+
+    <!-- Scheduled Action: Auto-report Stock Movements -->
+    <record id="ir_cron_etims_stock_report" model="ir.cron">
+        <field name="name">KE eTIMS: Report pending stock movements</field>
+        <field name="model_id" ref="model_stock_move"/>
+        <field name="state">code</field>
+        <field name="code">
+# Find unreported stock moves for Kenyan companies
+moves = env['stock.move'].search([
+    ('state', '=', 'done'),
+    ('l10n_ke_etims_reported', '=', False),
+    ('product_id.product_tmpl_id.l10n_ke_etims_registered', '=', True),
+    ('company_id.country_id.code', '=', 'KE'),
+], limit=100)
+for move in moves:
+    try:
+        move._report_to_etims()
+    except Exception as e:
+        pass  # Logged inside _report_to_etims
+        </field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="active">False</field>
+        <field name="doall">False</field>
+    </record>
+</odoo>

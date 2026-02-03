@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Product Template Form Extension -->
+    <!-- ============================================================ -->
+
+    <record id="product_template_form_view_etims" model="ir.ui.view">
+        <field name="name">product.template.form.etims</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="eTIMS Kenya" name="etims_kenya">
+                    <group>
+                        <group string="eTIMS Registration">
+                            <field name="l10n_ke_etims_registered" readonly="1"/>
+                            <field name="l10n_ke_etims_item_code" readonly="1"/>
+                            <field name="l10n_ke_etims_registration_date" readonly="1"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="l10n_ke_item_class_id" options="{'no_create': True}"/>
+                            <field name="l10n_ke_product_type"/>
+                            <field name="l10n_ke_tax_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Unit Codes">
+                            <field name="l10n_ke_pkg_unit_code"/>
+                            <field name="l10n_ke_qty_unit_code"/>
+                        </group>
+                        <group string="Additional Info">
+                            <field name="l10n_ke_origin_country_id" options="{'no_create': True}"/>
+                            <field name="l10n_ke_insurance_applicable"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" name="etims_button_box">
+                        <button name="action_register_etims"
+                                string="Register with eTIMS"
+                                type="object"
+                                class="btn-primary"
+                                invisible="l10n_ke_etims_registered"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Product Template Tree - Add eTIMS column -->
+    <record id="product_template_tree_view_etims" model="ir.ui.view">
+        <field name="name">product.template.tree.etims</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="l10n_ke_etims_registered" string="eTIMS" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Product Template Search - Add eTIMS filters -->
+    <record id="product_template_search_view_etims" model="ir.ui.view">
+        <field name="name">product.template.search.etims</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='services']" position="after">
+                <separator/>
+                <filter name="etims_registered" string="eTIMS Registered" domain="[('l10n_ke_etims_registered', '=', True)]"/>
+                <filter name="etims_not_registered" string="eTIMS Not Registered" domain="[('l10n_ke_etims_registered', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Server Action: Bulk Register Products with eTIMS -->
+    <!-- ============================================================ -->
+
+    <record id="action_product_register_etims" model="ir.actions.server">
+        <field name="name">Register with eTIMS</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    action = records.action_bulk_register_etims()
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- GRA E-VAT Tax Codes (VAT Act 1151, effective January 2026) -->
+
+        <!-- TAX_A: Exempt supplies (0%) -->
+        <record id="tax_code_a" model="ghana.evat.tax.code">
+            <field name="name">Exempt Supplies</field>
+            <field name="code">TAX_A</field>
+            <field name="rate">0.0</field>
+            <field name="code_type">tax</field>
+            <field name="sequence">1</field>
+            <field name="description">VAT exempt supplies under First Schedule of VAT Act 1151. Includes basic food items, medical supplies, educational materials, and other exempt goods/services.</field>
+        </record>
+
+        <!-- TAX_B: Standard rate (15%) -->
+        <record id="tax_code_b" model="ghana.evat.tax.code">
+            <field name="name">Standard Rate (15%)</field>
+            <field name="code">TAX_B</field>
+            <field name="rate">15.0</field>
+            <field name="code_type">tax</field>
+            <field name="sequence">2</field>
+            <field name="description">Standard VAT rate of 15% applicable to most goods and services. Subject to NHIL and GETFund levies for total effective rate of 20%.</field>
+        </record>
+
+        <!-- TAX_C: Zero-rated exports (0%) -->
+        <record id="tax_code_c" model="ghana.evat.tax.code">
+            <field name="name">Zero-Rated (Exports)</field>
+            <field name="code">TAX_C</field>
+            <field name="rate">0.0</field>
+            <field name="code_type">tax</field>
+            <field name="sequence">3</field>
+            <field name="description">Zero-rated supplies including exports, international transport services, and supplies to free zone enterprises.</field>
+        </record>
+
+        <!-- TAX_D: Non-taxable (0%) -->
+        <record id="tax_code_d" model="ghana.evat.tax.code">
+            <field name="name">Non-Taxable</field>
+            <field name="code">TAX_D</field>
+            <field name="rate">0.0</field>
+            <field name="code_type">tax</field>
+            <field name="sequence">4</field>
+            <field name="description">Non-taxable supplies that fall outside the scope of VAT. Includes certain financial services and other non-taxable transactions.</field>
+        </record>
+
+        <!-- TAX_E: Flat rate scheme (3%) -->
+        <record id="tax_code_e" model="ghana.evat.tax.code">
+            <field name="name">Flat Rate Scheme (3%)</field>
+            <field name="code">TAX_E</field>
+            <field name="rate">3.0</field>
+            <field name="code_type">tax</field>
+            <field name="sequence">5</field>
+            <field name="description">VAT Flat Rate Scheme (VFRS) for retailers and wholesalers with annual turnover below threshold. 3% rate without input tax credit.</field>
+        </record>
+
+        <!-- LEVY_A: NHIL (2.5%) -->
+        <record id="levy_code_a" model="ghana.evat.tax.code">
+            <field name="name">NHIL (2.5%)</field>
+            <field name="code">LEVY_A</field>
+            <field name="rate">2.5</field>
+            <field name="code_type">levy</field>
+            <field name="sequence">10</field>
+            <field name="description">National Health Insurance Levy. Applied on same base as VAT. Input deductible under VAT Act 1151 (effective January 2026).</field>
+        </record>
+
+        <!-- LEVY_B: GETFund (2.5%) -->
+        <record id="levy_code_b" model="ghana.evat.tax.code">
+            <field name="name">GETFund (2.5%)</field>
+            <field name="code">LEVY_B</field>
+            <field name="rate">2.5</field>
+            <field name="code_type">levy</field>
+            <field name="sequence">11</field>
+            <field name="description">Ghana Education Trust Fund Levy. Applied on same base as VAT. Input deductible under VAT Act 1151 (effective January 2026).</field>
+        </record>
+
+        <!-- LEVY_D: Tourism/CST levy -->
+        <record id="levy_code_d" model="ghana.evat.tax.code">
+            <field name="name">Tourism/CST Levy</field>
+            <field name="code">LEVY_D</field>
+            <field name="rate">0.0</field>
+            <field name="code_type">levy</field>
+            <field name="sequence">12</field>
+            <field name="description">Tourism levy and Communication Service Tax. Rates vary by sector. Configure rate based on business type.</field>
+        </record>
+    </data>
+</odoo>

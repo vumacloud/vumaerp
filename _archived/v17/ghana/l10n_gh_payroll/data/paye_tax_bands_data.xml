@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ghana PAYE Tax Bands 2024 (Monthly in GHS) -->
+        <record id="paye_band_1" model="ghana.paye.tax.band">
+            <field name="name">Band 1 - 0%</field>
+            <field name="lower_limit">0</field>
+            <field name="upper_limit">490</field>
+            <field name="rate">0</field>
+        </record>
+
+        <record id="paye_band_2" model="ghana.paye.tax.band">
+            <field name="name">Band 2 - 5%</field>
+            <field name="lower_limit">490</field>
+            <field name="upper_limit">600</field>
+            <field name="rate">5</field>
+        </record>
+
+        <record id="paye_band_3" model="ghana.paye.tax.band">
+            <field name="name">Band 3 - 10%</field>
+            <field name="lower_limit">600</field>
+            <field name="upper_limit">730</field>
+            <field name="rate">10</field>
+        </record>
+
+        <record id="paye_band_4" model="ghana.paye.tax.band">
+            <field name="name">Band 4 - 17.5%</field>
+            <field name="lower_limit">730</field>
+            <field name="upper_limit">3896.67</field>
+            <field name="rate">17.5</field>
+        </record>
+
+        <record id="paye_band_5" model="ghana.paye.tax.band">
+            <field name="name">Band 5 - 25%</field>
+            <field name="lower_limit">3896.67</field>
+            <field name="upper_limit">20000</field>
+            <field name="rate">25</field>
+        </record>
+
+        <record id="paye_band_6" model="ghana.paye.tax.band">
+            <field name="name">Band 6 - 30%</field>
+            <field name="lower_limit">20000</field>
+            <field name="upper_limit">50000</field>
+            <field name="rate">30</field>
+        </record>
+
+        <record id="paye_band_7" model="ghana.paye.tax.band">
+            <field name="name">Band 7 - 35%</field>
+            <field name="lower_limit">50000</field>
+            <field name="upper_limit">999999999</field>
+            <field name="rate">35</field>
+        </record>
+    </data>
+</odoo>

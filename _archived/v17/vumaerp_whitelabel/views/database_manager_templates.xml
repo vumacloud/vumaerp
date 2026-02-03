@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Database manager templates - simplified to avoid xpath errors -->
+    <!-- These are rarely used since list_db = False in production -->
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Ghana Allowances Category -->
+        <record id="category_gh_allowance" model="hr.salary.rule.category">
+            <field name="name">Ghana Allowances</field>
+            <field name="code">GH_ALW</field>
+        </record>
+
+        <!-- Ghana Statutory Deductions -->
+        <record id="category_gh_statutory" model="hr.salary.rule.category">
+            <field name="name">Ghana Statutory Deductions</field>
+            <field name="code">GH_DED</field>
+        </record>
+
+        <!-- Ghana Employer Contributions -->
+        <record id="category_gh_employer" model="hr.salary.rule.category">
+            <field name="name">Ghana Employer Contributions</field>
+            <field name="code">GH_ER</field>
+        </record>
+    </data>
+</odoo>

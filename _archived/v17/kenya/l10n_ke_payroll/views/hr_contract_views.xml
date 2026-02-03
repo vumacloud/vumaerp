@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_view_form_ke" model="ir.ui.view">
+        <field name="name">hr.contract.form.kenya</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='notes']" position="before">
+                <group string="Kenya Allowances" name="ke_allowances">
+                    <group>
+                        <field name="ke_house_allowance"/>
+                        <field name="ke_transport_allowance"/>
+                    </group>
+                    <group>
+                        <field name="ke_medical_allowance"/>
+                        <field name="ke_other_allowances"/>
+                    </group>
+                </group>
+                <group string="Kenya Pension" name="ke_pension">
+                    <group>
+                        <field name="ke_private_pension"/>
+                        <field name="ke_pension_opt_out"/>
+                    </group>
+                    <group>
+                        <field name="ke_gross_salary" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

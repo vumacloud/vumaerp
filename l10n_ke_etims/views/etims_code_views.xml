@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OSCU Codes (etims.code) -->
+    <!-- ============================================================ -->
+
+    <!-- Tree View -->
+    <record id="etims_code_view_tree" model="ir.ui.view">
+        <field name="name">etims.code.tree</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <tree string="OSCU Codes">
+                <field name="code_type"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="etims_code_view_form" model="ir.ui.view">
+        <field name="name">etims.code.form</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <form string="OSCU Code">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code_type"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="etims_code_view_search" model="ir.ui.view">
+        <field name="name">etims.code.search</field>
+        <field name="model">etims.code</field>
+        <field name="arch" type="xml">
+            <search string="OSCU Codes">
+                <field name="code"/>
+                <field name="name"/>
+                <filter name="filter_classification" string="Item Classification" domain="[('code_type', '=', '01')]"/>
+                <filter name="filter_tax_type" string="Tax Type" domain="[('code_type', '=', '02')]"/>
+                <filter name="filter_pkg_unit" string="Packaging Unit" domain="[('code_type', '=', '04')]"/>
+                <filter name="filter_qty_unit" string="Quantity Unit" domain="[('code_type', '=', '05')]"/>
+                <separator/>
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_code_type" string="Code Type" context="{'group_by': 'code_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="etims_code_action" model="ir.actions.act_window">
+        <field name="name">OSCU Codes</field>
+        <field name="res_model">etims.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No OSCU codes found
+            </p>
+            <p>
+                OSCU codes are fetched from KRA eTIMS. Go to Settings > Technical > Scheduled Actions
+                and run "KE eTIMS: Fetch KRA standard codes" to sync codes.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Item Classifications / UNSPSC (etims.item.class) -->
+    <!-- ============================================================ -->
+
+    <!-- Tree View -->
+    <record id="etims_item_class_view_tree" model="ir.ui.view">
+        <field name="name">etims.item.class.tree</field>
+        <field name="model">etims.item.class</field>
+        <field name="arch" type="xml">
+            <tree string="UNSPSC Classifications">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="tax_type_code"/>
+                <field name="tax_rate"/>
+                <field name="active" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="etims_item_class_view_form" model="ir.ui.view">
+        <field name="name">etims.item.class.form</field>
+        <field name="model">etims.item.class</field>
+        <field name="arch" type="xml">
+            <form string="UNSPSC Classification">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="tax_type_code"/>
+                            <field name="tax_rate"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="etims_item_class_view_search" model="ir.ui.view">
+        <field name="name">etims.item.class.search</field>
+        <field name="model">etims.item.class</field>
+        <field name="arch" type="xml">
+            <search string="UNSPSC Classifications">
+                <field name="code"/>
+                <field name="name"/>
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_tax_type" string="Tax Type" context="{'group_by': 'tax_type_code'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="etims_item_class_action" model="ir.actions.act_window">
+        <field name="name">UNSPSC Classifications</field>
+        <field name="res_model">etims.item.class</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No UNSPSC classifications found
+            </p>
+            <p>
+                UNSPSC codes are fetched from KRA eTIMS. Go to Settings > Technical > Scheduled Actions
+                and run "KE eTIMS: Fetch KRA standard codes" to sync classifications.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Code Sync Log (etims.code.sync) -->
+    <!-- ============================================================ -->
+
+    <!-- Tree View -->
+    <record id="etims_code_sync_view_tree" model="ir.ui.view">
+        <field name="name">etims.code.sync.tree</field>
+        <field name="model">etims.code.sync</field>
+        <field name="arch" type="xml">
+            <tree string="Code Sync Log">
+                <field name="sync_date"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="code_type"/>
+                <field name="records_synced"/>
+                <field name="status" decoration-success="status == 'success'" decoration-danger="status == 'failed'" decoration-warning="status == 'partial'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="etims_code_sync_view_form" model="ir.ui.view">
+        <field name="name">etims.code.sync.form</field>
+        <field name="model">etims.code.sync</field>
+        <field name="arch" type="xml">
+            <form string="Code Sync Log">
+                <header>
+                    <button name="action_sync_codes" string="Sync Now" type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sync_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="code_type"/>
+                            <field name="records_synced"/>
+                            <field name="status"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="error_message" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="etims_code_sync_action" model="ir.actions.act_window">
+        <field name="name">Code Sync Log</field>
+        <field name="res_model">etims.code.sync</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

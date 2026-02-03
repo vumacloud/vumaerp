@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="kra_etims_initialize_wizard_view_form" model="ir.ui.view">
+        <field name="name">kra.etims.initialize.wizard.view.form</field>
+        <field name="model">kra.etims.initialize.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Initialize e-TIMS Device">
+                <group>
+                    <group string="Device Information">
+                        <field name="name"/>
+                        <field name="device_serial"/>
+                    </group>
+                    <group string="Company Information">
+                        <field name="tin"/>
+                        <field name="bhf_id"/>
+                        <field name="cmc_key" password="True"/>
+                    </group>
+                </group>
+                <group string="API Configuration">
+                    <field name="base_url"/>
+                </group>
+                <footer>
+                    <button name="action_initialize" 
+                            string="Initialize Device" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_kra_etims_initialize_wizard" model="ir.actions.act_window">
+        <field name="name">Initialize e-TIMS Device</field>
+        <field name="res_model">kra.etims.initialize.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_kra_etims_initialize"
+              name="Initialize Device"
+              parent="menu_kra_etims_config"
+              action="action_kra_etims_initialize_wizard"
+              sequence="5"/>
+</odoo>

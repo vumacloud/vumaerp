@@ -1,0 +1,39 @@
+services:
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vumaerp-odoo17:nightly
+    container_name: odoo17
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      # Database connection (DigitalOcean Managed PostgreSQL)
+      - HOST=${DB_HOST}
+      - PORT=${DB_PORT}
+      - USER=${DB_USER}
+      - PASSWORD=${DB_PASSWORD}
+      # Odoo master password for database management
+      - ODOO_ADMIN_PASSWD=${ADMIN_PASSWORD}
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx17
+    depends_on:
+      - odoo
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
+
+volumes:
+  odoo-data:

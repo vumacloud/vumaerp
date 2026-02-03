@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Update standard Kenyan taxes with e-TIMS codes if they exist -->
+        <!-- These records are optional and will only update if the tax records exist -->
+        
+        <!-- UOM Codes - these should exist in base Odoo -->
+        <function model="uom.uom" name="write">
+            <function eval="[ref('uom.product_uom_unit')]" model="uom.uom" name="browse"/>
+            <value eval="{'kra_unit_code': 'U'}"/>
+        </function>
+        
+        <function model="uom.uom" name="write">
+            <function eval="[ref('uom.product_uom_dozen')]" model="uom.uom" name="browse"/>
+            <value eval="{'kra_unit_code': 'DZ'}"/>
+        </function>
+        
+        <function model="uom.uom" name="write">
+            <function eval="[ref('uom.product_uom_kgm')]" model="uom.uom" name="browse"/>
+            <value eval="{'kra_unit_code': 'KG'}"/>
+        </function>
+        
+        <function model="uom.uom" name="write">
+            <function eval="[ref('uom.product_uom_gram')]" model="uom.uom" name="browse"/>
+            <value eval="{'kra_unit_code': 'GRM'}"/>
+        </function>
+        
+        <function model="uom.uom" name="write">
+            <function eval="[ref('uom.product_uom_litre')]" model="uom.uom" name="browse"/>
+            <value eval="{'kra_unit_code': 'L'}"/>
+        </function>
+    </data>
+</odoo>

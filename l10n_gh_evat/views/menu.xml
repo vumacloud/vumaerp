@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- E-VAT Configuration Menu -->
+    <menuitem id="menu_evat_config"
+              name="Ghana E-VAT"
+              parent="account.menu_finance_configuration"
+              sequence="100"/>
+
+    <menuitem id="menu_evat_config_settings"
+              name="E-VAT Configuration"
+              parent="menu_evat_config"
+              action="evat_config_action"
+              sequence="10"/>
+
+    <menuitem id="menu_evat_tax_codes"
+              name="E-VAT Tax Codes"
+              parent="menu_evat_config"
+              action="evat_tax_code_action"
+              sequence="20"/>
+</odoo>
