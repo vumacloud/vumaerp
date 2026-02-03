@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account Move Form View Extension - Add eTIMS Payment Settings -->
+    <record id="view_move_form_etims_payment" model="ir.ui.view">
+        <field name="name">account.move.form.etims.payment</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Add refund reason field for credit notes -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="etims_refund_reason"
+                       invisible="move_type not in ('out_refund', 'in_refund') or company_id.country_id.code != 'KE'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Credit Note Wizard Extension - Add eTIMS Refund Reason -->
+    <record id="view_account_move_reversal_etims" model="ir.ui.view">
+        <field name="name">account.move.reversal.etims</field>
+        <field name="model">account.move.reversal</field>
+        <field name="inherit_id" ref="account.view_account_move_reversal"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='reason']" position="after">
+                <field name="etims_refund_reason"
+                       required="1"
+                       string="eTIMS Refund Reason"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

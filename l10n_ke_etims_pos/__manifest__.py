@@ -5,27 +5,45 @@
     'category': 'Point of Sale',
     'summary': 'KRA eTIMS integration for Point of Sale',
     'description': """
-Kenya eTIMS POS Integration
-===========================
+Kenya eTIMS POS & Payment Integration
+=====================================
 
-This module extends the Point of Sale for Kenya Revenue Authority's
+This module extends Point of Sale and Accounting for Kenya Revenue Authority's
 electronic Tax Invoice Management System (eTIMS) compliance.
 
-Features:
----------
-* Real-time POS order submission to eTIMS at payment
-* Batch submission at session close for any missed orders
-* POS return/refund handling with reason codes
-* Session-level eTIMS submission tracking
-* eTIMS receipt printing with SCU and receipt numbers
-* Offline queue capability
+**CRITICAL COMPLIANCE FEATURE**: Submits to eTIMS only when payment is received,
+not when invoice is posted. This aligns with KRA regulations and KPMG advisory
+that income in eTIMS must represent actual sales transactions.
 
-Key Integration Points:
------------------------
-* POS order submission when payment is completed
-* Automatic retry for failed submissions
-* Session close ensures all orders are submitted
-* Payment registration triggers invoice submission
+POS Features:
+-------------
+* Real-time POS order submission to eTIMS at payment completion
+* Batch submission at session close for any missed orders
+* POS return/refund handling with KRA reason codes
+* Session-level eTIMS submission tracking (submitted/pending/failed stats)
+* eTIMS receipt printing with SCU and receipt numbers
+* Offline queue capability with automatic retry
+
+Invoice/Payment Features:
+-------------------------
+* Payment-triggered eTIMS submission (NOT on invoice posting)
+* Supports fully paid invoices only - partial payments wait
+* Credit note/refund handling with reason codes
+* Batch payment registration support
+* Clear audit trail for compliance
+
+Refund Reason Codes (per KRA):
+------------------------------
+* 01 - Damage/Defect
+* 02 - Change of Mind
+* 03 - Wrong Item Delivered
+* 04 - Late Delivery
+* 05 - Duplicate Order
+* 06 - Price Dispute
+* 07 - Quantity Dispute
+* 08 - Quality Issues
+* 09 - Order Cancellation
+* 10 - Other
 
 This module requires the base Kenya eTIMS module (l10n_ke_etims).
     """,
@@ -38,6 +56,7 @@ This module requires the base Kenya eTIMS module (l10n_ke_etims).
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/account_move_views.xml',
         'views/pos_views.xml',
     ],
     'assets': {
