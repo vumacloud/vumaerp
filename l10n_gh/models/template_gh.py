@@ -24,6 +24,8 @@ class AccountChartTemplate(models.AbstractModel):
                 'account_fiscal_country_id': 'base.gh',
                 'income_currency_exchange_account_id': 'gh_4200',
                 'expense_currency_exchange_account_id': 'gh_5200',
+                'account_sale_tax_id': 'gh_vat_sale_15',
+                'account_purchase_tax_id': 'gh_vat_purchase_15',
             },
         }
 
@@ -75,14 +77,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_vat_15',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2300', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2300', 'tag_ids': []},
-                ],
+                'sequence': 10,
             },
             'gh_nhil_sale': {
                 'name': _('NHIL 2.5% (Sales)'),
@@ -91,14 +86,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_nhil',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2310', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2310', 'tag_ids': []},
-                ],
+                'sequence': 20,
             },
             'gh_getfund_sale': {
                 'name': _('GETFund 2.5% (Sales)'),
@@ -107,14 +95,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_getfund',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2320', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2320', 'tag_ids': []},
-                ],
+                'sequence': 21,
             },
             'gh_vat_sale_3_flat': {
                 'name': _('VAT 3% Flat Rate (Sales)'),
@@ -123,14 +104,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_vat_3',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2300', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_2300', 'tag_ids': []},
-                ],
+                'sequence': 30,
             },
             'gh_vat_sale_exempt': {
                 'name': _('VAT Exempt (Sales)'),
@@ -139,6 +113,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_exempt',
+                'sequence': 40,
             },
             'gh_vat_sale_zero': {
                 'name': _('Zero Rated (Sales)'),
@@ -147,6 +122,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'sale',
                 'tax_group_id': 'gh_tax_group_zero',
+                'sequence': 41,
             },
             # ===================
             # PURCHASE TAXES
@@ -158,14 +134,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'purchase',
                 'tax_group_id': 'gh_tax_group_vat_15',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1300', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1300', 'tag_ids': []},
-                ],
+                'sequence': 10,
             },
             'gh_nhil_purchase': {
                 'name': _('NHIL 2.5% (Purchases)'),
@@ -174,14 +143,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'purchase',
                 'tax_group_id': 'gh_tax_group_nhil',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1310', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1310', 'tag_ids': []},
-                ],
+                'sequence': 20,
             },
             'gh_getfund_purchase': {
                 'name': _('GETFund 2.5% (Purchases)'),
@@ -190,14 +152,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'purchase',
                 'tax_group_id': 'gh_tax_group_getfund',
-                'invoice_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1320', 'tag_ids': []},
-                ],
-                'refund_repartition_line_ids': [
-                    {'repartition_type': 'base', 'tag_ids': []},
-                    {'repartition_type': 'tax', 'account_id': 'gh_1320', 'tag_ids': []},
-                ],
+                'sequence': 21,
             },
             'gh_vat_purchase_exempt': {
                 'name': _('VAT Exempt (Purchases)'),
@@ -206,6 +161,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'purchase',
                 'tax_group_id': 'gh_tax_group_exempt',
+                'sequence': 40,
             },
             'gh_vat_purchase_zero': {
                 'name': _('Zero Rated (Purchases)'),
@@ -214,5 +170,6 @@ class AccountChartTemplate(models.AbstractModel):
                 'amount_type': 'percent',
                 'type_tax_use': 'purchase',
                 'tax_group_id': 'gh_tax_group_zero',
+                'sequence': 41,
             },
         }
