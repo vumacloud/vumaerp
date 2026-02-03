@@ -1,24 +1,41 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Ghana - Base',
+    'name': 'Ghana - Accounting',
     'version': '17.0.1.0.0',
-    'category': 'Localization',
-    'summary': 'Ghana base data (regions)',
+    'category': 'Accounting/Localizations',
+    'summary': 'Ghana fiscal localization with VAT, NHIL, GETFund',
     'description': """
-Ghana Base Localization
-=======================
+Ghana Fiscal Localization
+=========================
 
-Base data for Ghana including:
-- Ghana's 16 administrative regions
+Complete fiscal localization for Ghana including:
 
-This module provides foundational data for other Ghana-specific modules.
+Chart of Accounts:
+- IFRS-compliant chart of accounts for Ghana
+- Accounts for VAT, NHIL, GETFund tracking
+
+Tax Rates (VAT Act 1151, effective January 2026):
+- VAT: 15% (standard rate)
+- NHIL: 2.5% (National Health Insurance Levy)
+- GETFund: 2.5% (Ghana Education Trust Fund)
+- VAT Flat Rate: 3% (for qualifying retailers)
+- Zero Rated: 0% (exports)
+- Exempt: 0% (exempt supplies)
+
+Total effective rate for standard supplies: 20%
+
+References:
+- Ghana Revenue Authority: https://gra.gov.gh
+- ICAG: https://icagh.com
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
     'license': 'LGPL-3',
-    'depends': ['base'],
+    'depends': ['account'],
     'data': [
         'data/res_country_data.xml',
+        'data/template/account.group-gh.csv',
+        'data/template/account.account-gh.csv',
     ],
     'installable': True,
     'auto_install': False,

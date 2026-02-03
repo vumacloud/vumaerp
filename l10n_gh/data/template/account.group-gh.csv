@@ -1,0 +1,15 @@
+id,code_prefix_start,code_prefix_end,name
+gh_group_1,1,1,Assets
+gh_group_11,11,12,Current Assets
+gh_group_13,13,13,Tax Assets
+gh_group_14,14,15,Other Current Assets
+gh_group_16,16,16,Non-Current Assets
+gh_group_2,2,2,Liabilities
+gh_group_21,21,22,Current Liabilities
+gh_group_23,23,23,Tax Liabilities
+gh_group_24,24,24,Accruals
+gh_group_25,25,25,Non-Current Liabilities
+gh_group_3,3,3,Equity
+gh_group_4,4,4,Income
+gh_group_5,5,5,Expenses
+gh_group_6,6,6,Tax Expense
