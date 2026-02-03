@@ -9,6 +9,7 @@ vumaerp/
 ├── muk_web_theme/           # Base: MuK IT backend theme
 ├── third_party/odooapps/    # Base: Odoo Mates modules (payroll, accounting)
 ├── vuma_config/             # Base: Environment configuration (.env support)
+├── l10n_ke_etims_pos/       # Kenya eTIMS POS & Payment Integration
 │
 ├── kenya/                   # Kenya-specific modules
 │   ├── l10n_ke/             # Kenya base localization
@@ -30,9 +31,13 @@ vumaerp/
 │   ├── l10n_ng_tax/         # FIRS tax integration (VAT, WHT)
 │   └── l10n_ng_payroll/     # Nigeria payroll (PAYE, Pension, NHF)
 │
+├── rwanda/                  # Rwanda-specific modules
+│   ├── l10n_rw/             # Rwanda base localization
+│   ├── l10n_rw_ebm/         # RRA EBM e-invoicing integration
+│   └── l10n_rw_payroll/     # Rwanda payroll (PAYE, RSSB, Maternity)
+│
 ├── ethiopia/                # Ethiopia-specific modules (planned)
-├── tanzania/                # Tanzania-specific modules (planned)
-└── rwanda/                  # Rwanda-specific modules (planned)
+└── tanzania/                # Tanzania-specific modules (planned)
 ```
 
 ## Base Modules (All Countries)
@@ -50,6 +55,7 @@ vumaerp/
 |--------|-------------|
 | `l10n_ke` | Base Kenya localization (country data, formats) |
 | `l10n_ke_etims` | KRA eTIMS OSCU API integration (22 endpoints) |
+| `l10n_ke_etims_pos` | eTIMS POS & Payment integration (SME-focused) |
 | `l10n_ke_payroll` | Kenya statutory payroll |
 
 ### Kenya Payroll (l10n_ke_payroll)
@@ -68,10 +74,62 @@ Statutory deductions (2025 rates):
 KRA eTIMS OSCU (Online Sales Control Unit) integration:
 - Device registration and verification
 - Real-time invoice submission
-- Item/product registration with classification codes
+- Item/product registration with UNSPSC classification codes
 - Customer PIN validation
 - Stock movement reporting
 - Purchase transaction submission
+
+### Kenya eTIMS POS & Payment Integration (l10n_ke_etims_pos)
+
+**Critical compliance module** for SMEs using Point of Sale and payment-based workflows.
+
+#### KPMG Tax Alert Compliance (January 2026 Readiness)
+
+Per KPMG Kenya Tax Alert on "eTIMS and the Shift to Data-Driven Income and Expense Validation":
+
+| KPMG Recommendation | Implementation Status |
+|---------------------|----------------------|
+| **Submit on payment receipt, not invoice posting** | Implemented - Payment-triggered submission |
+| **ERP/POS integration with real-time submission** | Implemented - POS and invoice integration |
+| **Credit note/refund handling with audit trails** | Implemented - Reason codes and original reference |
+| **Full eTIMS coverage across income streams** | Implemented - Invoices + POS orders |
+| **Supplier onboarding and PIN validation** | Implemented in base l10n_ke_etims |
+
+#### Key Features
+
+**Payment-Triggered Submission (NOT on invoice posting):**
+- Invoices submitted to eTIMS only when payment is received
+- Posted but unpaid invoices are NOT submitted
+- Ensures eTIMS reflects actual sales, not accrued revenue
+- Compliance with KRA position that eTIMS = determinant of taxable income
+
+**POS Integration (SME Critical):**
+- Real-time submission when POS payment is completed
+- Batch submission at session close for missed orders
+- Session-level tracking: submitted/pending/failed statistics
+- eTIMS receipt printing with SCU and receipt numbers
+- Offline queue capability with automatic retry
+- Mobile money (M-Pesa) and card payment detection
+
+**Refund/Return Handling:**
+- Credit notes require refund reason code
+- POS returns linked to original orders
+- Full audit trail for compliance
+
+#### eTIMS Refund Reason Codes
+
+| Code | Reason |
+|------|--------|
+| 01 | Damage/Defect |
+| 02 | Change of Mind |
+| 03 | Wrong Item Delivered |
+| 04 | Late Delivery |
+| 05 | Duplicate Order |
+| 06 | Price Dispute |
+| 07 | Quantity Dispute |
+| 08 | Quality Issues |
+| 09 | Order Cancellation |
+| 10 | Other |
 
 ## Uganda Modules
 
@@ -182,6 +240,34 @@ FIRS (Federal Inland Revenue Service) tax integration:
 - Tax code management
 - TCC (Tax Clearance Certificate) tracking
 
+## Rwanda Modules
+
+| Module | Description |
+|--------|-------------|
+| `l10n_rw` | Base Rwanda localization (country data, formats) |
+| `l10n_rw_ebm` | RRA EBM e-invoicing integration |
+| `l10n_rw_payroll` | Rwanda statutory payroll |
+
+### Rwanda EBM (l10n_rw_ebm)
+
+RRA (Rwanda Revenue Authority) EBM (Electronic Billing Machine) integration:
+- Device registration and management
+- Real-time invoice submission to RRA
+- Credit note handling with original reference
+- Tax code management (VAT 18%, Exempt, Zero-rated)
+- Stock management integration
+
+### Rwanda Payroll (l10n_rw_payroll)
+
+Statutory deductions (2025 rates):
+
+| Deduction | Rate | Notes |
+|-----------|------|-------|
+| **PAYE** | 0-30% | Progressive tax bands |
+| **RSSB Pension** | 3% + 5% | Employee 3% + Employer 5% |
+| **RSSB Medical** | 0.5% + 0.5% | Employee + Employer |
+| **Maternity** | 0.3% | Employer only |
+
 ## Installation
 
 1. Clone this repository:
@@ -211,6 +297,11 @@ FIRS (Federal Inland Revenue Service) tax integration:
    addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/nigeria
    ```
 
+   **Rwanda:**
+   ```ini
+   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/rwanda
+   ```
+
 3. Update apps list and install required modules.
 
 ## Environment Configuration
@@ -229,6 +320,30 @@ SMTP_PASSWORD=secret
 
 - **Odoo Version**: 17.0
 - **Base**: OCA/OCB 17.0 (Community Edition)
+
+## Compliance References
+
+### Kenya
+- KPMG Tax Alert: "eTIMS and the Shift to Data-Driven Income and Expense Validation"
+- Finance Act, 2023 (expense disallowance for non-eTIMS transactions)
+- Electronic Tax Invoice Regulations, 2024
+- KRA eTIMS OSCU API Documentation
+
+### Uganda
+- URA EFRIS Implementation Guidelines
+- VAT Act (Electronic Fiscal Devices)
+
+### Ghana
+- GRA E-VAT System Requirements
+- VAT Act, 2013 (as amended)
+
+### Nigeria
+- FIRS VAT Guidelines
+- Finance Act, 2023
+
+### Rwanda
+- RRA EBM Implementation Guidelines
+- Law on Tax Procedures
 
 ## License
 
