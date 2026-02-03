@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- POS Order Form View Extension -->
+    <record id="view_pos_order_form_etims" model="ir.ui.view">
+        <field name="name">pos.order.form.etims</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <!-- Add eTIMS submit button -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_etims" type="object"
+                        string="Submit to eTIMS"
+                        class="btn-primary"
+                        invisible="state not in ('paid', 'done', 'invoiced') or etims_submitted"/>
+            </xpath>
+
+            <!-- Add eTIMS tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="eTIMS" name="etims_tab">
+                    <group>
+                        <group string="Submission Status">
+                            <field name="etims_submitted"/>
+                            <field name="etims_submit_date"/>
+                            <field name="etims_submission_error" invisible="not etims_submission_error"/>
+                        </group>
+                        <group string="eTIMS Receipt">
+                            <field name="etims_scu_no"/>
+                            <field name="etims_rcpt_no"/>
+                        </group>
+                    </group>
+                    <group string="Refund Information"
+                           invisible="amount_total >= 0">
+                        <field name="etims_refund_reason"/>
+                        <field name="etims_original_order_id"/>
+                    </group>
+                    <group string="Technical Details"
+                           invisible="not etims_submitted">
+                        <field name="etims_intrl_data"/>
+                        <field name="etims_rcpt_sign"/>
+                        <field name="etims_response" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS Order Tree View Extension -->
+    <record id="view_pos_order_tree_etims" model="ir.ui.view">
+        <field name="name">pos.order.tree.etims</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="etims_submitted" string="eTIMS" optional="show"
+                       widget="boolean_toggle" readonly="1"/>
+                <field name="etims_scu_no" string="SCU No" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS Order Search View Extension -->
+    <record id="view_pos_order_search_etims" model="ir.ui.view">
+        <field name="name">pos.order.search.etims</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='session']" position="after">
+                <separator/>
+                <filter string="eTIMS Submitted" name="etims_submitted"
+                        domain="[('etims_submitted', '=', True)]"/>
+                <filter string="eTIMS Pending" name="etims_pending"
+                        domain="[('etims_submitted', '=', False), ('state', 'in', ['paid', 'done', 'invoiced'])]"/>
+                <filter string="eTIMS Failed" name="etims_failed"
+                        domain="[('etims_submitted', '=', False), ('etims_submission_error', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS Session Form View Extension -->
+    <record id="view_pos_session_form_etims" model="ir.ui.view">
+        <field name="name">pos.session.form.etims</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_pending_etims" type="object"
+                        string="Submit Pending to eTIMS"
+                        class="btn-secondary"
+                        invisible="state != 'opened' or etims_submission_complete"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object"
+                        name="action_view_etims_pending"
+                        icon="fa-clock-o"
+                        invisible="etims_orders_pending == 0">
+                    <field name="etims_orders_pending" string="eTIMS Pending" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" type="object"
+                        name="action_view_etims_failed"
+                        icon="fa-exclamation-triangle"
+                        invisible="etims_orders_failed == 0">
+                    <field name="etims_orders_failed" string="eTIMS Failed" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS Config Form View Extension -->
+    <record id="view_pos_config_form_etims" model="ir.ui.view">
+        <field name="name">pos.config.form.etims</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='category_reference']/.." position="after">
+                <group string="KRA eTIMS Integration" name="etims_settings"
+                       invisible="company_id.country_id.code != 'KE'">
+                    <field name="etims_auto_submit"/>
+                    <field name="etims_block_on_failure"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action to view orders pending eTIMS submission -->
+    <record id="action_pos_orders_pending_etims" model="ir.actions.act_window">
+        <field name="name">POS Orders Pending eTIMS</field>
+        <field name="res_model">pos.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('etims_submitted', '=', False),
+            ('state', 'in', ['paid', 'done', 'invoiced']),
+            ('company_id.country_id.code', '=', 'KE')
+        ]</field>
+        <field name="context">{'search_default_etims_pending': 1}</field>
+    </record>
+
+    <!-- Action to view orders with eTIMS errors -->
+    <record id="action_pos_orders_etims_failed" model="ir.actions.act_window">
+        <field name="name">POS Orders eTIMS Failed</field>
+        <field name="res_model">pos.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('etims_submitted', '=', False),
+            ('etims_submission_error', '!=', False),
+            ('company_id.country_id.code', '=', 'KE')
+        ]</field>
+    </record>
+</odoo>
