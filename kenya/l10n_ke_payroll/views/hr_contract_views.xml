@@ -21,8 +21,8 @@
                 <group>
                     <group>
                         <field name="ke_kra_pin"/>
-                        <field name="ke_nhif_no"/>
-                        <field name="ke_nssf_no"/>
+                        <field name="ke_nhif_number"/>
+                        <field name="ke_nssf_number"/>
                     </group>
                     <group>
                         <field name="ke_pension_opt_out"/>
