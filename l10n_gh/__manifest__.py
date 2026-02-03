@@ -3,24 +3,29 @@
     'name': 'Ghana - Accounting',
     'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations',
-    'summary': 'Ghana base localization',
+    'summary': 'Ghana fiscal localization with VAT, NHIL, GETFund',
     'description': """
-Ghana Accounting Localization
-=============================
+Ghana Fiscal Localization
+=========================
 
-Base localization for Ghana including:
-- Ghana regions data
-- TIN validation support
-- Currency: GHS (Ghana Cedi)
+Complete fiscal localization for Ghana including:
 
-Tax rates under VAT Act 1151 (effective January 2026):
-- VAT: 15%
-- NHIL: 2.5% (input deductible)
-- GETFund: 2.5% (input deductible)
-- Total effective rate: 20%
+Chart of Accounts:
+- IFRS-compliant chart of accounts for Ghana
+- Accounts for VAT, NHIL, GETFund tracking
+
+Tax Rates (VAT Act 1151, effective January 2026):
+- VAT: 15% (standard rate)
+- NHIL: 2.5% (National Health Insurance Levy)
+- GETFund: 2.5% (Ghana Education Trust Fund)
+- VAT Flat Rate: 3% (for qualifying retailers)
+- Zero Rated: 0% (exports)
+- Exempt: 0% (exempt supplies)
+
+Total effective rate for standard supplies: 20%
 
 References:
-- GRA: https://gra.gov.gh
+- Ghana Revenue Authority: https://gra.gov.gh
 - ICAG: https://icagh.com
     """,
     'author': 'VumaCloud',
