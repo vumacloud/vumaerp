@@ -5,6 +5,9 @@
         Ghana Chart of Accounts Template
         Based on IFRS as adopted by ICAG (Institute of Chartered Accountants, Ghana)
         Reference: Companies Act, 2019 (Act 992)
+
+        Note: Account references are set in account_chart_template_configure_data.xml
+        which loads AFTER accounts are created.
         -->
         <record id="gh_chart_template" model="account.chart.template">
             <field name="name">Ghana - IFRS Chart of Accounts</field>
@@ -14,15 +17,6 @@
             <field name="bank_account_code_prefix">1200</field>
             <field name="cash_account_code_prefix">1100</field>
             <field name="transfer_account_code_prefix">1190</field>
-            <field name="income_currency_exchange_account_id" ref="l10n_gh.account_gh_7600"/>
-            <field name="expense_currency_exchange_account_id" ref="l10n_gh.account_gh_6700"/>
-            <field name="property_account_receivable_id" ref="l10n_gh.account_gh_1300"/>
-            <field name="property_account_payable_id" ref="l10n_gh.account_gh_2100"/>
-            <field name="property_account_expense_categ_id" ref="l10n_gh.account_gh_5100"/>
-            <field name="property_account_income_categ_id" ref="l10n_gh.account_gh_4100"/>
-            <field name="property_stock_account_input_categ_id" ref="l10n_gh.account_gh_1410"/>
-            <field name="property_stock_account_output_categ_id" ref="l10n_gh.account_gh_1420"/>
-            <field name="property_stock_valuation_account_id" ref="l10n_gh.account_gh_1400"/>
         </record>
     </data>
 </odoo>
