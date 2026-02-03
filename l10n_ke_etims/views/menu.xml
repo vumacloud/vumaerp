@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Menu under Invoicing > Configuration -->
-    <menuitem id="menu_etims_config"
-              name="eTIMS Configuration"
+    <!-- eTIMS Root Menu under Invoicing > Configuration -->
+    <menuitem id="menu_etims_root"
+              name="KE eTIMS"
               parent="account.menu_finance_configuration"
-              action="etims_config_action"
               sequence="100"/>
+
+    <!-- eTIMS Configuration -->
+    <menuitem id="menu_etims_config"
+              name="Configuration"
+              parent="menu_etims_root"
+              action="etims_config_action"
+              sequence="10"/>
+
+    <!-- OSCU Codes -->
+    <menuitem id="menu_etims_oscu_codes"
+              name="OSCU Codes"
+              parent="menu_etims_root"
+              action="etims_code_action"
+              sequence="20"/>
+
+    <!-- UNSPSC Classifications -->
+    <menuitem id="menu_etims_item_class"
+              name="UNSPSC Classifications"
+              parent="menu_etims_root"
+              action="etims_item_class_action"
+              sequence="30"/>
+
+    <!-- Code Sync Log -->
+    <menuitem id="menu_etims_code_sync"
+              name="Code Sync Log"
+              parent="menu_etims_root"
+              action="etims_code_sync_action"
+              sequence="40"/>
 </odoo>

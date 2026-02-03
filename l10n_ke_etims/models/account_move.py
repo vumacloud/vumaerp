@@ -53,8 +53,16 @@ class AccountMove(models.Model):
 
     def _prepare_etims_item(self, line, seq):
         """Prepare a single invoice line for eTIMS."""
+        product = line.product_id
+        product_tmpl = product.product_tmpl_id if product else None
+
+        # Get tax information - prefer product's eTIMS tax type, fallback to line tax
         tax = line.tax_ids[:1] if line.tax_ids else None
-        tax_code = self._get_etims_tax_code(tax)
+        if product_tmpl and product_tmpl.l10n_ke_tax_type:
+            tax_code = product_tmpl.l10n_ke_tax_type
+        else:
+            tax_code = self._get_etims_tax_code(tax)
+
         tax_amt = tax.amount if tax else 0
 
         unit_price = line.price_unit
@@ -70,14 +78,35 @@ class AccountMove(models.Model):
             taxable_amt = supply_amt
             tax_amount = 0
 
+        # Get item code - use eTIMS item code if registered, else default_code
+        if product:
+            item_code = product._get_etims_item_code()[:20]
+        else:
+            item_code = 'SVC'
+
+        # Get UNSPSC classification code from product
+        if product:
+            item_class_code = product._get_etims_item_class_code()
+        else:
+            item_class_code = ''
+
+        # Get unit codes from product
+        if product:
+            unit_codes = product._get_etims_unit_codes()
+            pkg_unit_code = unit_codes['pkg_unit']
+            qty_unit_code = unit_codes['qty_unit']
+        else:
+            pkg_unit_code = 'NT'
+            qty_unit_code = 'U'
+
         return {
             'itemSeq': seq,
-            'itemCd': line.product_id.default_code or str(line.product_id.id) if line.product_id else 'SVC',
-            'itemClsCd': '5020299',  # Default classification - should be configurable
-            'itemNm': (line.name or line.product_id.name or 'Item')[:200],
-            'pkgUnitCd': 'NT',  # Package unit: NT=Not Applicable
+            'itemCd': item_code,
+            'itemClsCd': item_class_code,
+            'itemNm': (line.name or (product.name if product else 'Item'))[:200],
+            'pkgUnitCd': pkg_unit_code,
             'pkg': 1,
-            'qtyUnitCd': 'U',  # Quantity unit: U=Unit
+            'qtyUnitCd': qty_unit_code,
             'qty': qty,
             'prc': round(unit_price, 2),
             'splyAmt': round(supply_amt, 2),
@@ -183,6 +212,33 @@ class AccountMove(models.Model):
 
         if self.state != 'posted':
             raise UserError(_('Only posted invoices can be submitted to eTIMS.'))
+
+        # Validate products are registered with eTIMS and have UNSPSC codes
+        product_lines = self.invoice_line_ids.filtered(
+            lambda l: not l.display_type and l.product_id
+        )
+
+        # Check for unregistered products
+        unregistered = product_lines.filtered(
+            lambda l: not l.product_id.product_tmpl_id.l10n_ke_etims_registered
+        )
+        if unregistered:
+            product_names = ', '.join(unregistered.mapped('product_id.name')[:5])
+            raise UserError(_(
+                'The following products must be registered with eTIMS before submitting the invoice:\n%s'
+                '\n\nGo to the product form and click "Register with eTIMS".'
+            ) % product_names)
+
+        # Check for missing UNSPSC classifications
+        missing_unspsc = product_lines.filtered(
+            lambda l: not l.product_id.product_tmpl_id.l10n_ke_item_class_id
+        )
+        if missing_unspsc:
+            product_names = ', '.join(missing_unspsc.mapped('product_id.name')[:5])
+            raise UserError(_(
+                'The following products are missing UNSPSC classification:\n%s'
+                '\n\nGo to the product form, eTIMS Kenya tab, and select a UNSPSC Classification.'
+            ) % product_names)
 
         # Get config
         config = self.env['etims.config'].get_config(self.company_id)
