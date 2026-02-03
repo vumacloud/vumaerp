@@ -26,9 +26,11 @@ References:
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
     'license': 'LGPL-3',
-    'depends': ['base', 'account'],
+    'depends': ['account'],
     'data': [
         'data/res_country_data.xml',
+        'data/template/account.group-gh.csv',
+        'data/template/account.account-gh.csv',
     ],
     'installable': True,
     'auto_install': False,
