@@ -22,6 +22,9 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             self.env.company.id: {
                 'account_fiscal_country_id': 'base.gh',
+                'bank_account_code_prefix': '1200',
+                'cash_account_code_prefix': '1210',
+                'transfer_account_code_prefix': '1201',
                 'income_currency_exchange_account_id': 'gh_4200',
                 'expense_currency_exchange_account_id': 'gh_5200',
                 'account_sale_tax_id': 'gh_vat_sale_15',
