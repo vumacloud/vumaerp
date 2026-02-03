@@ -110,13 +110,17 @@
         <field name="name">pos.config.form.etims</field>
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='category_reference']/.." position="after">
-                <group string="KRA eTIMS Integration" name="etims_settings"
-                       invisible="company_id.country_id.code != 'KE'">
-                    <field name="etims_auto_submit"/>
-                    <field name="etims_block_on_failure"/>
-                </group>
+            <!-- Add eTIMS settings page to notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="KRA eTIMS" name="etims_page"
+                      invisible="company_id.country_id.code != 'KE'">
+                    <group string="eTIMS Integration Settings" name="etims_settings">
+                        <field name="etims_auto_submit"/>
+                        <field name="etims_block_on_failure"/>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

@@ -8,7 +8,7 @@ Private Odoo 17.0 addons for African country localizations and customizations.
 vumaerp/
 ├── muk_web_theme/           # Base: MuK IT backend theme
 ├── third_party/odooapps/    # Base: Odoo Mates modules (payroll, accounting)
-├── vuma_config/             # Base: Environment configuration (.env support)
+├── vumaerp_branding/        # VumaERP branding customizations
 ├── l10n_ke_etims_pos/       # Kenya eTIMS POS & Payment Integration
 │
 ├── kenya/                   # Kenya-specific modules
@@ -47,7 +47,7 @@ vumaerp/
 | `muk_web_theme` | Modern backend theme by MuK IT |
 | `third_party/odooapps/om_hr_payroll` | Base payroll module |
 | `third_party/odooapps/om_account_accountant` | Full accounting features |
-| `vuma_config` | Environment-based configuration with .env file support |
+| `vumaerp_branding` | VumaERP branding and customizations |
 
 ## Kenya Modules
 
@@ -270,51 +270,61 @@ Statutory deductions (2025 rates):
 
 ## Installation
 
-1. Clone this repository:
+All VumaERP modules are installed to `/opt/odoo/addons` - this is the **only** addons directory used.
+
+1. Clone this repository to a staging location:
    ```bash
    git clone https://github.com/vumacloud/vumaerp.git /opt/vumaerp
    ```
 
-2. Configure Odoo addons path based on country:
+2. Copy/symlink the required modules to `/opt/odoo/addons` based on country:
 
    **Kenya:**
-   ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/kenya
+   ```bash
+   # Base modules
+   cp -r /opt/vumaerp/muk_web_theme /opt/odoo/addons/
+   cp -r /opt/vumaerp/third_party/odooapps/* /opt/odoo/addons/
+   cp -r /opt/vumaerp/vumaerp_branding /opt/odoo/addons/
+
+   # Kenya-specific modules
+   cp -r /opt/vumaerp/kenya/* /opt/odoo/addons/
+   cp -r /opt/vumaerp/l10n_ke_etims_pos /opt/odoo/addons/
    ```
 
    **Uganda:**
-   ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/uganda
+   ```bash
+   # Base modules (same as above)
+   # Uganda-specific modules
+   cp -r /opt/vumaerp/uganda/* /opt/odoo/addons/
    ```
 
    **Ghana:**
-   ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/ghana
+   ```bash
+   # Base modules (same as above)
+   # Ghana-specific modules
+   cp -r /opt/vumaerp/ghana/* /opt/odoo/addons/
    ```
 
    **Nigeria:**
-   ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/nigeria
+   ```bash
+   # Base modules (same as above)
+   # Nigeria-specific modules
+   cp -r /opt/vumaerp/nigeria/* /opt/odoo/addons/
    ```
 
    **Rwanda:**
-   ```ini
-   addons_path = /opt/odoo/addons,/opt/vumaerp,/opt/vumaerp/rwanda
+   ```bash
+   # Base modules (same as above)
+   # Rwanda-specific modules
+   cp -r /opt/vumaerp/rwanda/* /opt/odoo/addons/
    ```
 
-3. Update apps list and install required modules.
+3. Ensure Odoo config points to the addons directory:
+   ```ini
+   addons_path = /opt/odoo/addons
+   ```
 
-## Environment Configuration
-
-The `vuma_config` module supports `.env` files for configuration:
-
-```bash
-# /etc/odoo/.env or ~/.odoo/.env
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASSWORD=secret
-```
+4. Restart Odoo and update apps list, then install required modules.
 
 ## Odoo Compatibility
 
