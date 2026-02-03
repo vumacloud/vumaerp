@@ -42,7 +42,6 @@ gh_250200,250200,Lease Liabilities,liability_non_current,FALSE
 gh_310100,310100,Share Capital,equity,FALSE
 gh_310200,310200,Additional Paid-in Capital,equity,FALSE
 gh_320100,320100,Retained Earnings,equity,FALSE
-gh_320200,320200,Current Year Earnings,equity_unaffected,FALSE
 gh_330100,330100,Reserves,equity,FALSE
 gh_410100,410100,Sales Revenue,income,FALSE
 gh_410200,410200,Service Revenue,income,FALSE
