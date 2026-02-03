@@ -1,150 +1,90 @@
-# Part of VumaERP. See LICENSE file for full copyright and licensing details.
-
-import hashlib
+# -*- coding: utf-8 -*-
 import json
 import logging
 import requests
-from datetime import datetime
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-# GRA E-VAT API Endpoints
-# Reference: https://gra.gov.gh/e-services/e-vat/
-EVAT_SANDBOX_URL = "https://apitest.e-vatgh.com/evat_apiqa"
-EVAT_PRODUCTION_URL = "https://api.e-vatgh.com/evat_api"
+SANDBOX_URL = 'https://apitest.e-vatgh.com/evat_apiqa'
+PRODUCTION_URL = 'https://api.e-vatgh.com/evat_api'
 
 
 class GhanaEvatConfig(models.Model):
     _name = 'ghana.evat.config'
     _description = 'Ghana E-VAT Configuration'
-    _rec_name = 'company_id'
 
+    name = fields.Char(default='E-VAT Configuration', required=True)
     company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
-        default=lambda self: self.env.company,
-    )
+        'res.company', string='Company', required=True,
+        default=lambda self: self.env.company)
+    active = fields.Boolean(default=True)
+
+    # Environment
     environment = fields.Selection([
         ('sandbox', 'Sandbox (Testing)'),
         ('production', 'Production'),
     ], string='Environment', default='sandbox', required=True)
 
     # GRA Credentials
-    # Reference: GRA E-VAT API Documentation
-    tin = fields.Char(
-        string='TIN',
-        help='Ghana Revenue Authority Tax Identification Number (e.g., C00XXXXXXXX)',
-    )
-    company_name = fields.Char(
-        string='Company Name (GRA)',
-        help='Company name as registered with GRA for E-VAT',
-    )
-    security_key = fields.Char(
-        string='Security Key',
-        help='E-VAT API Security Key provided by GRA',
-    )
+    tin = fields.Char(string='TIN', required=True,
+                      help='GRA Tax Identification Number (e.g., C00XXXXXXXX)')
+    company_name = fields.Char(string='Company Name (GRA)', required=True,
+                               help='Company name as registered with GRA')
+    security_key = fields.Char(string='Security Key', required=True,
+                               help='E-VAT API Security Key from GRA')
 
-    # Status tracking
-    last_request_date = fields.Datetime(
-        string='Last Request Date',
-        readonly=True,
-    )
-    last_response = fields.Text(
-        string='Last Response',
-        readonly=True,
-    )
-
-    api_url = fields.Char(
-        string='API URL',
-        compute='_compute_api_url',
-    )
+    # Status
+    last_request_date = fields.Datetime(string='Last Request')
+    last_response = fields.Text(string='Last Response')
 
     _sql_constraints = [
-        ('company_unique', 'unique(company_id)',
-         'Only one E-VAT configuration per company is allowed.'),
+        ('company_uniq', 'unique(company_id)',
+         'Only one E-VAT configuration per company allowed.')
     ]
 
-    @api.depends('environment')
-    def _compute_api_url(self):
-        """Compute API URL based on environment selection."""
-        for record in self:
-            if record.environment == 'production':
-                record.api_url = EVAT_PRODUCTION_URL
-            else:
-                record.api_url = EVAT_SANDBOX_URL
-
-    def _get_headers(self):
-        """
-        Prepare HTTP headers for GRA E-VAT API requests.
-
-        Returns:
-            dict: HTTP headers including authentication
-        """
+    def _get_api_url(self):
+        """Get the API base URL based on environment."""
         self.ensure_one()
+        return SANDBOX_URL if self.environment == 'sandbox' else PRODUCTION_URL
+
+    def _prepare_headers(self):
+        """Prepare HTTP headers for API request."""
         return {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         }
 
-    def _prepare_auth_payload(self):
+    def _call_api(self, endpoint, data):
         """
-        Prepare authentication payload for GRA E-VAT API.
+        Make an API call to GRA E-VAT.
 
-        Based on GRA E-VAT API documentation:
-        - COMPANY_TIN: Tax Identification Number
-        - COMPANY_NAMES: Registered company name
-        - COMPANY_SECURITY_KEY: API security key
-
-        Returns:
-            dict: Authentication fields for API payload
+        :param endpoint: API endpoint (e.g., 'post_receipt_Json.jsp')
+        :param data: Dictionary with request data
+        :return: Response dictionary
         """
         self.ensure_one()
-        if not self.tin or not self.company_name or not self.security_key:
-            raise UserError(_('Please configure TIN, Company Name, and Security Key.'))
+        url = f"{self._get_api_url()}/{endpoint}"
 
-        return {
+        # Add authentication to payload
+        data.update({
             'COMPANY_TIN': self.tin,
             'COMPANY_NAMES': self.company_name,
             'COMPANY_SECURITY_KEY': self.security_key,
-        }
+        })
 
-    def _call_api(self, endpoint, data):
-        """
-        Make API call to GRA E-VAT system.
-
-        Args:
-            endpoint: API endpoint path (e.g., 'post_receipt_Json.jsp')
-            data: Dictionary payload to send
-
-        Returns:
-            dict: Parsed JSON response
-
-        Raises:
-            UserError: On API errors or connection failures
-        """
-        self.ensure_one()
-        url = f"{self.api_url}/{endpoint}"
-        headers = self._get_headers()
-
-        # Add authentication to payload
-        payload = {**self._prepare_auth_payload(), **data}
-
-        _logger.info("GRA E-VAT API Request to %s", url)
-        _logger.debug("Payload: %s", json.dumps(payload, indent=2))
+        _logger.info('GRA E-VAT API Request to %s', url)
 
         try:
             response = requests.post(
                 url,
-                json=payload,
-                headers=headers,
-                timeout=30,
+                json=data,
+                headers=self._prepare_headers(),
+                timeout=30
             )
 
-            # Update tracking fields
+            # Log response
             self.write({
                 'last_request_date': fields.Datetime.now(),
                 'last_response': response.text[:5000] if response.text else '',
@@ -152,45 +92,32 @@ class GhanaEvatConfig(models.Model):
 
             if response.status_code == 200:
                 result = response.json()
-                _logger.info("GRA E-VAT API Response: %s", result)
+                _logger.info('GRA E-VAT API Response: %s', json.dumps(result, indent=2))
                 return result
             else:
-                error_msg = f"API Error {response.status_code}: {response.text}"
-                _logger.error(error_msg)
-                raise UserError(_(error_msg))
+                raise UserError(_('E-VAT API Error %s: %s') % (response.status_code, response.text))
 
         except requests.exceptions.Timeout:
-            raise UserError(_('Connection to GRA E-VAT timed out. Please try again.'))
+            raise UserError(_('Connection to GRA E-VAT timed out.'))
         except requests.exceptions.ConnectionError as e:
             raise UserError(_('Cannot connect to GRA E-VAT: %s') % str(e))
         except json.JSONDecodeError:
             raise UserError(_('Invalid response from GRA E-VAT server.'))
 
     def action_test_connection(self):
-        """
-        Test connection to GRA E-VAT API.
-
-        Returns:
-            dict: Notification action with result
-        """
+        """Test connection to GRA E-VAT API."""
         self.ensure_one()
-
-        if not self.tin or not self.security_key:
-            raise UserError(_('Please configure TIN and Security Key first.'))
-
-        # For connection test, we attempt a minimal API call
-        # The actual endpoint may vary based on GRA API version
         try:
-            # Attempt to get response endpoint which validates credentials
-            url = f"{self.api_url}/get_Response_JSON.jsp"
-            headers = self._get_headers()
-            payload = self._prepare_auth_payload()
-
+            url = f"{self._get_api_url()}/get_Response_JSON.jsp"
             response = requests.post(
                 url,
-                json=payload,
-                headers=headers,
-                timeout=30,
+                json={
+                    'COMPANY_TIN': self.tin,
+                    'COMPANY_NAMES': self.company_name,
+                    'COMPANY_SECURITY_KEY': self.security_key,
+                },
+                headers=self._prepare_headers(),
+                timeout=30
             )
 
             self.write({
@@ -203,53 +130,23 @@ class GhanaEvatConfig(models.Model):
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
-                        'title': _('Connection Successful'),
-                        'message': _('Successfully connected to GRA E-VAT (%s)') % self.environment,
+                        'title': _('Success'),
+                        'message': _('Connection to GRA E-VAT successful!'),
                         'type': 'success',
-                        'sticky': False,
                     }
                 }
             else:
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Connection Failed'),
-                        'message': _('Error %s: %s') % (response.status_code, response.text[:200]),
-                        'type': 'danger',
-                        'sticky': True,
-                    }
-                }
+                raise UserError(_('E-VAT Error: %s') % response.text[:200])
         except Exception as e:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Connection Error'),
-                    'message': str(e),
-                    'type': 'danger',
-                    'sticky': True,
-                }
-            }
+            raise UserError(_('Connection test failed: %s') % str(e))
 
     @api.model
     def get_config(self, company=None):
-        """
-        Get E-VAT configuration for a company.
-
-        Args:
-            company: res.company record or None for current company
-
-        Returns:
-            ghana.evat.config record or raises UserError
-        """
-        if company is None:
-            company = self.env.company
-
+        """Get E-VAT config for company."""
+        company = company or self.env.company
         config = self.search([('company_id', '=', company.id)], limit=1)
         if not config:
             raise UserError(_(
-                'E-VAT is not configured for company %s. '
-                'Please go to Invoicing > Configuration > Ghana E-VAT Configuration.'
+                'E-VAT not configured for %s. Go to Invoicing > Configuration > Ghana E-VAT.'
             ) % company.name)
         return config

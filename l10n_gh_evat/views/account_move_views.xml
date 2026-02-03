@@ -1,60 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Extend Invoice Form View with E-VAT Fields -->
     <record id="view_move_form_evat" model="ir.ui.view">
         <field name="name">account.move.form.evat</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <!-- Add E-VAT Submit Button -->
+            <!-- Add E-VAT submit button -->
             <xpath expr="//header" position="inside">
-                <button name="action_submit_evat"
+                <button name="action_submit_evat" type="object"
                         string="Submit to E-VAT"
-                        type="object"
-                        class="btn-secondary"
+                        class="btn-primary"
                         invisible="move_type not in ('out_invoice', 'out_refund') or state != 'posted' or evat_submitted"/>
                 <field name="evat_submitted" invisible="1"/>
             </xpath>
 
-            <!-- Add E-VAT Status Badge -->
-            <xpath expr="//div[hasclass('oe_title')]" position="after">
-                <div class="alert alert-success" role="alert"
-                     invisible="not evat_submitted">
-                    <strong>E-VAT Submitted</strong> - SDC ID: <field name="evat_sdc_id" readonly="1"/>
-                </div>
-            </xpath>
-
-            <!-- Add E-VAT Tab in Notebook -->
+            <!-- Add E-VAT tab -->
             <xpath expr="//notebook" position="inside">
-                <page string="Ghana E-VAT" name="evat"
+                <page string="E-VAT" name="evat_tab"
                       invisible="move_type not in ('out_invoice', 'out_refund')">
                     <group>
                         <group string="Submission Status">
                             <field name="evat_submitted"/>
                             <field name="evat_submit_date"/>
                         </group>
-                        <group string="SDC Information">
+                        <group string="E-VAT Receipt">
                             <field name="evat_sdc_id"/>
                             <field name="evat_sdc_time"/>
                             <field name="evat_invoice_number"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Verification">
-                            <field name="evat_internal_data"/>
-                            <field name="evat_signature"/>
-                            <field name="evat_qrcode_url" widget="url"/>
-                        </group>
-                    </group>
-                    <group string="API Response" invisible="not evat_response">
-                        <field name="evat_response" nolabel="1" readonly="1"/>
+                    <group string="Technical Details"
+                           invisible="not evat_submitted">
+                        <field name="evat_internal_data"/>
+                        <field name="evat_signature"/>
+                        <field name="evat_qrcode_url" widget="url"/>
+                        <field name="evat_response" readonly="1"/>
                     </group>
                 </page>
             </xpath>
         </field>
     </record>
 
-    <!-- Extend Invoice Tree View with E-VAT Status -->
+    <!-- Tree view to show E-VAT status -->
     <record id="view_move_tree_evat" model="ir.ui.view">
         <field name="name">account.move.tree.evat</field>
         <field name="model">account.move</field>
@@ -62,24 +49,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
                 <field name="evat_submitted" string="E-VAT" optional="show"/>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Search Filter for E-VAT Status -->
-    <record id="view_account_invoice_filter_evat" model="ir.ui.view">
-        <field name="name">account.move.search.evat</field>
-        <field name="model">account.move</field>
-        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='late']" position="after">
-                <separator/>
-                <filter name="evat_submitted"
-                        string="E-VAT Submitted"
-                        domain="[('evat_submitted', '=', True)]"/>
-                <filter name="evat_pending"
-                        string="E-VAT Pending"
-                        domain="[('evat_submitted', '=', False), ('move_type', 'in', ('out_invoice', 'out_refund')), ('state', '=', 'posted')]"/>
+                <field name="evat_sdc_id" string="SDC ID" optional="hide"/>
             </xpath>
         </field>
     </record>

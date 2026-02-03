@@ -1,9 +1,7 @@
-# Part of VumaERP. See LICENSE file for full copyright and licensing details.
-
+# -*- coding: utf-8 -*-
 import json
 import logging
 from datetime import datetime
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -13,364 +11,165 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    # E-VAT Submission Fields
-    evat_submitted = fields.Boolean(
-        string='Submitted to E-VAT',
-        default=False,
-        copy=False,
-        readonly=True,
-        help='Indicates if invoice has been submitted to GRA E-VAT',
-    )
-    evat_sdc_id = fields.Char(
-        string='SDC ID',
-        copy=False,
-        readonly=True,
-        help='Sales Data Controller ID from GRA',
-    )
-    evat_sdc_time = fields.Char(
-        string='SDC Time',
-        copy=False,
-        readonly=True,
-        help='SDC timestamp from GRA',
-    )
-    evat_invoice_number = fields.Char(
-        string='E-VAT Invoice Number',
-        copy=False,
-        readonly=True,
-        help='Invoice number assigned by GRA E-VAT',
-    )
-    evat_internal_data = fields.Char(
-        string='Internal Data',
-        copy=False,
-        readonly=True,
-        help='Internal data hash from GRA',
-    )
-    evat_signature = fields.Char(
-        string='Receipt Signature',
-        copy=False,
-        readonly=True,
-        help='Digital signature from GRA',
-    )
-    evat_qrcode_url = fields.Char(
-        string='QR Code URL',
-        copy=False,
-        readonly=True,
-        help='URL for QR code verification',
-    )
-    evat_submit_date = fields.Datetime(
-        string='Submission Date',
-        copy=False,
-        readonly=True,
-        help='Date/time of E-VAT submission',
-    )
-    evat_response = fields.Text(
-        string='E-VAT Response',
-        copy=False,
-        readonly=True,
-        help='Full JSON response from GRA E-VAT',
-    )
+    # E-VAT Fields
+    evat_submitted = fields.Boolean(string='Submitted to E-VAT', copy=False)
+    evat_sdc_id = fields.Char(string='SDC ID', copy=False, readonly=True)
+    evat_sdc_time = fields.Char(string='SDC Time', copy=False, readonly=True)
+    evat_invoice_number = fields.Char(string='E-VAT Invoice No', copy=False, readonly=True)
+    evat_internal_data = fields.Char(string='Internal Data', copy=False, readonly=True)
+    evat_signature = fields.Char(string='Signature', copy=False, readonly=True)
+    evat_qrcode_url = fields.Char(string='QR Code URL', copy=False, readonly=True)
+    evat_submit_date = fields.Datetime(string='E-VAT Submit Date', copy=False, readonly=True)
+    evat_response = fields.Text(string='E-VAT Response', copy=False, readonly=True)
 
     def _get_evat_date(self, dt=None):
-        """
-        Format date for GRA E-VAT API.
-
-        Args:
-            dt: datetime object or None for invoice date
-
-        Returns:
-            str: Date formatted as YYYY-MM-DD
-        """
-        if dt is None:
-            dt = self.invoice_date or fields.Date.today()
-        if isinstance(dt, datetime):
-            return dt.strftime('%Y-%m-%d')
-        return str(dt)
+        """Format date for GRA E-VAT: YYYY-MM-DD"""
+        dt = dt or self.invoice_date or fields.Date.today()
+        if isinstance(dt, str):
+            dt = fields.Date.from_string(dt)
+        return dt.strftime('%Y-%m-%d')
 
     def _get_evat_datetime(self, dt=None):
-        """
-        Format datetime for GRA E-VAT API.
-
-        Args:
-            dt: datetime object or None for now
-
-        Returns:
-            str: Datetime formatted as YYYY-MM-DD HH:MM:SS
-        """
-        if dt is None:
-            dt = datetime.now()
+        """Format datetime for GRA E-VAT: YYYY-MM-DD HH:MM:SS"""
+        dt = dt or datetime.now()
         return dt.strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_evat_tax_code(self, line):
-        """
-        Get GRA tax code for an invoice line.
-
-        Args:
-            line: account.move.line record
-
-        Returns:
-            str: GRA tax code (TAX_A through TAX_E)
-        """
+    def _get_evat_tax_code(self, tax):
+        """Map Odoo tax to GRA tax code."""
         TaxCode = self.env['ghana.evat.tax.code']
-
-        # Get the first tax on the line
-        tax = line.tax_ids[:1] if line.tax_ids else None
         return TaxCode.map_odoo_tax_to_gra(tax)
 
-    def _get_evat_levy_amounts(self, line, tax_code):
-        """
-        Calculate levy amounts for an invoice line.
+    def _prepare_evat_item(self, line, seq):
+        """Prepare a single invoice line for GRA E-VAT."""
+        tax = line.tax_ids[:1] if line.tax_ids else None
+        tax_code = self._get_evat_tax_code(tax)
 
-        Under VAT Act 1151 (January 2026):
-        - NHIL (LEVY_A): 2.5%
-        - GETFund (LEVY_B): 2.5%
-        - COVID Levy: Abolished
-
-        Args:
-            line: account.move.line record
-            tax_code: GRA tax code
-
-        Returns:
-            dict: Levy amounts
-        """
-        TaxCode = self.env['ghana.evat.tax.code']
-        levies = {
-            'LEVY_A': 0.0,  # NHIL
-            'LEVY_B': 0.0,  # GETFund
-            'LEVY_D': 0.0,  # Tourism/CST
-        }
-
-        if tax_code != 'TAX_B':
-            return levies
-
-        base_amount = line.price_subtotal
-
-        # NHIL: 2.5%
-        nhil_rate = TaxCode.get_tax_rate('LEVY_A')
-        levies['LEVY_A'] = round(base_amount * nhil_rate, 2)
-
-        # GETFund: 2.5%
-        getfund_rate = TaxCode.get_tax_rate('LEVY_B')
-        levies['LEVY_B'] = round(base_amount * getfund_rate, 2)
-
-        return levies
-
-    def _prepare_evat_item(self, line, sequence):
-        """
-        Prepare invoice line data for GRA E-VAT API.
-
-        Args:
-            line: account.move.line record
-            sequence: Item sequence number
-
-        Returns:
-            dict: Line item data for API payload
-        """
-        tax_code = self._get_evat_tax_code(line)
-        levies = self._get_evat_levy_amounts(line, tax_code)
-
-        # Calculate tax amount
         TaxCode = self.env['ghana.evat.tax.code']
         tax_rate = TaxCode.get_tax_rate(tax_code)
-        tax_amount = round(line.price_subtotal * tax_rate, 2)
+
+        base_amt = line.price_subtotal
+        tax_amt = round(base_amt * tax_rate, 2)
+
+        # Calculate levies for standard taxable (TAX_B)
+        levy_a = levy_b = levy_d = 0.0
+        if tax_code == 'TAX_B':
+            levy_a = round(base_amt * 0.025, 2)  # NHIL 2.5%
+            levy_b = round(base_amt * 0.025, 2)  # GETFund 2.5%
 
         return {
-            'ITEM_SEQ': sequence,
-            'ITEM_CODE': line.product_id.default_code or str(line.product_id.id) or 'ITEM',
+            'ITEM_SEQ': seq,
+            'ITEM_CODE': line.product_id.default_code or str(line.product_id.id) if line.product_id else 'ITEM',
             'ITEM_DESC': (line.name or line.product_id.name or 'Item')[:100],
             'UNIT_PRICE': round(line.price_unit, 2),
             'QUANTITY': round(line.quantity, 3),
-            'DISCOUNT_AMT': round((line.price_unit * line.quantity) - line.price_subtotal, 2),
+            'DISCOUNT_AMT': round((line.price_unit * line.quantity) - base_amt, 2),
             'TAX_CODE': tax_code,
             'TAX_RATE': round(tax_rate * 100, 2),
-            'TAX_AMT': tax_amount,
-            'LEVY_A_AMT': levies['LEVY_A'],
-            'LEVY_B_AMT': levies['LEVY_B'],
-            'LEVY_D_AMT': levies['LEVY_D'],
-            'TOTAL_AMT': round(line.price_subtotal + tax_amount + sum(levies.values()), 2),
+            'TAX_AMT': tax_amt,
+            'LEVY_A_AMT': levy_a,
+            'LEVY_B_AMT': levy_b,
+            'LEVY_D_AMT': levy_d,
+            'TOTAL_AMT': round(base_amt + tax_amt + levy_a + levy_b + levy_d, 2),
         }
 
     def _prepare_evat_payload(self):
-        """
-        Prepare complete payload for GRA E-VAT submission.
-
-        Based on GRA E-VAT API documentation, the payload includes:
-        - Header information (invoice number, date, customer details)
-        - Line items with tax calculations
-        - Totals by tax code
-
-        Returns:
-            dict: Complete API payload
-        """
+        """Prepare the full GRA E-VAT payload."""
         self.ensure_one()
 
         if self.move_type not in ('out_invoice', 'out_refund'):
             raise UserError(_('Only customer invoices can be submitted to E-VAT.'))
 
-        if self.state != 'posted':
-            raise UserError(_('Only posted invoices can be submitted to E-VAT.'))
-
-        if self.evat_submitted:
-            raise UserError(_('This invoice has already been submitted to E-VAT.'))
-
-        # Determine transaction type
-        trans_type = 'SALE' if self.move_type == 'out_invoice' else 'REFUND'
-
-        # Customer information
-        customer = self.partner_id
-        customer_tin = customer.vat or ''
-
-        # Prepare line items
         items = []
-        totals_by_tax = {}
+        totals = {'TAX_A': 0, 'TAX_B': 0, 'TAX_C': 0, 'TAX_D': 0, 'TAX_E': 0}
+        tax_totals = {'TAX_A': 0, 'TAX_B': 0, 'TAX_C': 0, 'TAX_D': 0, 'TAX_E': 0}
+        levy_a_total = levy_b_total = levy_d_total = 0.0
 
-        for seq, line in enumerate(self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'), start=1):
+        seq = 0
+        for line in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
+            seq += 1
             item = self._prepare_evat_item(line, seq)
             items.append(item)
 
-            # Accumulate totals by tax code
             tax_code = item['TAX_CODE']
-            if tax_code not in totals_by_tax:
-                totals_by_tax[tax_code] = {
-                    'base': 0.0,
-                    'tax': 0.0,
-                    'levy_a': 0.0,
-                    'levy_b': 0.0,
-                    'levy_d': 0.0,
-                }
-            totals_by_tax[tax_code]['base'] += line.price_subtotal
-            totals_by_tax[tax_code]['tax'] += item['TAX_AMT']
-            totals_by_tax[tax_code]['levy_a'] += item['LEVY_A_AMT']
-            totals_by_tax[tax_code]['levy_b'] += item['LEVY_B_AMT']
-            totals_by_tax[tax_code]['levy_d'] += item['LEVY_D_AMT']
+            totals[tax_code] += line.price_subtotal
+            tax_totals[tax_code] += item['TAX_AMT']
+            levy_a_total += item['LEVY_A_AMT']
+            levy_b_total += item['LEVY_B_AMT']
+            levy_d_total += item['LEVY_D_AMT']
 
-        # Calculate totals
-        total_base = sum(t['base'] for t in totals_by_tax.values())
-        total_tax = sum(t['tax'] for t in totals_by_tax.values())
-        total_levy_a = sum(t['levy_a'] for t in totals_by_tax.values())
-        total_levy_b = sum(t['levy_b'] for t in totals_by_tax.values())
-        total_levy_d = sum(t['levy_d'] for t in totals_by_tax.values())
-        total_amount = total_base + total_tax + total_levy_a + total_levy_b + total_levy_d
+        trans_type = 'REFUND' if self.move_type == 'out_refund' else 'SALE'
 
-        # Build payload
         payload = {
-            # Transaction header
             'TRANS_TYPE': trans_type,
-            'INVOICE_NUMBER': self.name,
+            'INVOICE_NUMBER': self.name or '',
             'INVOICE_DATE': self._get_evat_date(),
             'INVOICE_TIME': self._get_evat_datetime(),
-
-            # Customer details
-            'CLIENT_TIN': customer_tin,
-            'CLIENT_NAME': (customer.name or 'CASH CUSTOMER')[:100],
-            'CLIENT_ADDRESS': (customer.contact_address or '')[:200],
-
-            # Items
+            'CLIENT_TIN': self.partner_id.vat or '',
+            'CLIENT_NAME': (self.partner_id.name or 'CASH CUSTOMER')[:100],
+            'CLIENT_ADDRESS': (self.partner_id.contact_address or '')[:200],
             'ITEMS': items,
-
-            # Tax totals by code
-            'TAX_A_BASE': round(totals_by_tax.get('TAX_A', {}).get('base', 0), 2),
-            'TAX_A_AMT': round(totals_by_tax.get('TAX_A', {}).get('tax', 0), 2),
-            'TAX_B_BASE': round(totals_by_tax.get('TAX_B', {}).get('base', 0), 2),
-            'TAX_B_AMT': round(totals_by_tax.get('TAX_B', {}).get('tax', 0), 2),
-            'TAX_C_BASE': round(totals_by_tax.get('TAX_C', {}).get('base', 0), 2),
-            'TAX_C_AMT': round(totals_by_tax.get('TAX_C', {}).get('tax', 0), 2),
-            'TAX_D_BASE': round(totals_by_tax.get('TAX_D', {}).get('base', 0), 2),
-            'TAX_D_AMT': round(totals_by_tax.get('TAX_D', {}).get('tax', 0), 2),
-            'TAX_E_BASE': round(totals_by_tax.get('TAX_E', {}).get('base', 0), 2),
-            'TAX_E_AMT': round(totals_by_tax.get('TAX_E', {}).get('tax', 0), 2),
-
-            # Levy totals
-            'LEVY_A_AMT': round(total_levy_a, 2),  # NHIL
-            'LEVY_B_AMT': round(total_levy_b, 2),  # GETFund
-            'LEVY_D_AMT': round(total_levy_d, 2),  # Tourism/CST
-
-            # Grand totals
-            'TOTAL_BASE': round(total_base, 2),
-            'TOTAL_TAX': round(total_tax, 2),
-            'TOTAL_LEVY': round(total_levy_a + total_levy_b + total_levy_d, 2),
-            'TOTAL_AMOUNT': round(total_amount, 2),
+            'TAX_A_BASE': round(totals['TAX_A'], 2),
+            'TAX_A_AMT': round(tax_totals['TAX_A'], 2),
+            'TAX_B_BASE': round(totals['TAX_B'], 2),
+            'TAX_B_AMT': round(tax_totals['TAX_B'], 2),
+            'TAX_C_BASE': round(totals['TAX_C'], 2),
+            'TAX_C_AMT': round(tax_totals['TAX_C'], 2),
+            'TAX_D_BASE': round(totals['TAX_D'], 2),
+            'TAX_D_AMT': round(tax_totals['TAX_D'], 2),
+            'TAX_E_BASE': round(totals['TAX_E'], 2),
+            'TAX_E_AMT': round(tax_totals['TAX_E'], 2),
+            'LEVY_A_AMT': round(levy_a_total, 2),
+            'LEVY_B_AMT': round(levy_b_total, 2),
+            'LEVY_D_AMT': round(levy_d_total, 2),
+            'TOTAL_BASE': round(sum(totals.values()), 2),
+            'TOTAL_TAX': round(sum(tax_totals.values()), 2),
+            'TOTAL_LEVY': round(levy_a_total + levy_b_total + levy_d_total, 2),
+            'TOTAL_AMOUNT': round(self.amount_total, 2),
         }
 
         return payload
 
     def action_submit_evat(self):
-        """
-        Submit invoice to GRA E-VAT system.
-
-        This action:
-        1. Validates the invoice is ready for submission
-        2. Prepares the API payload
-        3. Calls the GRA E-VAT API
-        4. Stores the response (SDC code, signature, QR code URL)
-
-        Returns:
-            dict: Notification action with result
-        """
+        """Submit invoice to GRA E-VAT."""
         self.ensure_one()
 
-        # Get E-VAT configuration
-        config = self.env['ghana.evat.config'].get_config(self.company_id)
+        if self.evat_submitted:
+            raise UserError(_('This invoice has already been submitted to E-VAT.'))
 
-        # Prepare payload
+        if self.state != 'posted':
+            raise UserError(_('Only posted invoices can be submitted to E-VAT.'))
+
+        config = self.env['ghana.evat.config'].get_config(self.company_id)
         payload = self._prepare_evat_payload()
 
-        _logger.info(
-            "Submitting invoice %s to GRA E-VAT (%s)",
-            self.name, config.environment
-        )
+        _logger.info('Submitting invoice %s to GRA E-VAT', self.name)
 
         try:
-            # Call GRA E-VAT API
-            response = config._call_api('post_receipt_Json.jsp', payload)
+            result = config._call_api('post_receipt_Json.jsp', payload)
 
-            # Process response
-            # GRA returns SDC information on successful submission
             self.write({
                 'evat_submitted': True,
                 'evat_submit_date': fields.Datetime.now(),
-                'evat_sdc_id': response.get('SDC_ID', response.get('sdc_id', '')),
-                'evat_sdc_time': response.get('SDC_TIME', response.get('sdc_time', '')),
-                'evat_invoice_number': response.get('INVOICE_NUMBER', response.get('invoice_number', '')),
-                'evat_internal_data': response.get('INTERNAL_DATA', response.get('internalData', '')),
-                'evat_signature': response.get('SIGNATURE', response.get('signature', '')),
-                'evat_qrcode_url': response.get('QRCODE_URL', response.get('QRCodeURL', '')),
-                'evat_response': json.dumps(response, indent=2),
+                'evat_sdc_id': result.get('SDC_ID', result.get('sdc_id', '')),
+                'evat_sdc_time': result.get('SDC_TIME', result.get('sdc_time', '')),
+                'evat_invoice_number': result.get('INVOICE_NUMBER', result.get('invoice_number', '')),
+                'evat_internal_data': result.get('INTERNAL_DATA', result.get('internalData', '')),
+                'evat_signature': result.get('SIGNATURE', result.get('signature', '')),
+                'evat_qrcode_url': result.get('QRCODE_URL', result.get('QRCodeURL', '')),
+                'evat_response': json.dumps(result, indent=2),
             })
 
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _('E-VAT Submission Successful'),
-                    'message': _('Invoice %s submitted to GRA. SDC ID: %s') % (
-                        self.name,
-                        self.evat_sdc_id or 'N/A'
-                    ),
+                    'title': _('Success'),
+                    'message': _('Invoice submitted to E-VAT. SDC: %s') % self.evat_sdc_id,
                     'type': 'success',
-                    'sticky': False,
                 }
             }
-
         except UserError:
             raise
         except Exception as e:
-            _logger.exception("E-VAT submission failed for invoice %s", self.name)
+            _logger.exception('E-VAT submission failed for %s', self.name)
             raise UserError(_('E-VAT submission failed: %s') % str(e))
-
-    def action_view_evat_response(self):
-        """
-        View the full E-VAT response in a popup.
-
-        Returns:
-            dict: Action to display response
-        """
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('E-VAT Response'),
-            'res_model': 'account.move',
-            'res_id': self.id,
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'show_evat_response': True},
-        }

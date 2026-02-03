@@ -1,59 +1,39 @@
-# Part of VumaERP. See LICENSE file for full copyright and licensing details.
-
+# -*- coding: utf-8 -*-
 {
     'name': 'Ghana - E-VAT Integration',
     'version': '17.0.1.0.0',
     'category': 'Accounting/Localizations',
-    'summary': 'Ghana Revenue Authority E-VAT electronic invoicing integration',
+    'summary': 'GRA E-VAT electronic invoicing for Ghana',
     'description': """
-Ghana E-VAT Integration Module
-==============================
+Ghana GRA E-VAT Integration
+===========================
 
-This module integrates with the Ghana Revenue Authority (GRA) E-VAT system
-for electronic invoicing compliance under VAT Act 1151.
+Integration with Ghana Revenue Authority E-VAT system for electronic invoicing
+under VAT Act 1151.
 
-Features
---------
-* Submit sales invoices to GRA Virtual Sales Data Controller (VSDC)
-* Receive SDC codes and QR codes for fiscal receipts
-* Support for all GRA tax codes (TAX_A through TAX_E)
-* Support for levy codes (NHIL, GETFund, Tourism/CST)
-* Sandbox and Production environment support
+Features:
+- Submit sales invoices to GRA VSDC
+- Receive SDC codes and QR codes
+- Track submission status
 
-Tax Rates (VAT Act 1151, effective January 2026)
-------------------------------------------------
-* VAT (TAX_B): 15%
-* NHIL (LEVY_A): 2.5% - Input deductible
-* GETFund (LEVY_B): 2.5% - Input deductible
-* Tourism/CST (LEVY_D): 1%/5%
-* Total effective rate: 20%
+Tax Rates (VAT Act 1151, January 2026):
+- VAT: 15%
+- NHIL: 2.5%
+- GETFund: 2.5%
+- Total: 20%
 
-Tax Code Mappings
------------------
-* TAX_A: 0% - Exempted supplies
-* TAX_B: 15% - Standard taxable supplies
-* TAX_C: 0% - Export (zero-rated)
-* TAX_D: 0% - Non-taxable supplies
-* TAX_E: 3% - Non-VAT flat rate
-
-Requirements
-------------
-* VAT-registered business with GRA
-* E-VAT credentials (TIN, Security Key)
-* Completed GRA certification process
-
-For more information, visit: https://gra.gov.gh/e-services/e-vat/
+Reference: https://gra.gov.gh/e-services/e-vat/
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
     'license': 'LGPL-3',
-    'depends': ['l10n_gh'],
+    'depends': ['account'],
     'data': [
         'security/ir.model.access.csv',
         'data/evat_tax_code_data.xml',
-        'views/menu.xml',
         'views/evat_config_views.xml',
         'views/account_move_views.xml',
+        'views/menu.xml',
     ],
     'installable': True,
     'auto_install': False,
