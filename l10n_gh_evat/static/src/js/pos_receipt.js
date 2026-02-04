@@ -13,7 +13,7 @@ patch(Order.prototype, {
             evat_sdc_id: this.evat_sdc_id || '',
             evat_sdc_time: this.evat_sdc_time || '',
             evat_receipt_number: this.evat_receipt_number || '',
-            evat_qrcode_url: this.evat_qrcode_url || '',
+            evat_qrcode: this.evat_qrcode || '',
         };
     },
 
@@ -26,7 +26,7 @@ patch(Order.prototype, {
             this.evat_sdc_id = data.evat_sdc_id || '';
             this.evat_sdc_time = data.evat_sdc_time || '';
             this.evat_receipt_number = data.evat_receipt_number || '';
-            this.evat_qrcode_url = data.evat_qrcode_url || '';
+            this.evat_qrcode = data.evat_qrcode || '';
         }
     },
 

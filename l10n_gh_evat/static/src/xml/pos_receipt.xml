@@ -23,9 +23,9 @@
                     </div>
                 </div>
                 <!-- QR Code placeholder - needs to be generated from URL -->
-                <t t-if="receipt.evat_data.evat_qrcode_url">
+                <t t-if="receipt.evat_data.evat_qrcode">
                     <div style="text-align: center; margin-top: 10px;">
-                        <img t-att-src="receipt.evat_data.evat_qrcode_url"
+                        <img t-att-src="receipt.evat_data.evat_qrcode"
                              style="max-width: 100px; max-height: 100px;"
                              alt="E-VAT QR Code"/>
                     </div>
