@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend POS Receipt to include E-VAT information -->
+    <t t-name="l10n_gh_evat.EvatReceiptInfo" owl="1">
+        <t t-if="receipt.evat_data and receipt.evat_data.evat_submitted">
+            <div class="pos-receipt-evat" style="border-top: 1px dashed black; margin-top: 10px; padding-top: 10px;">
+                <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">
+                    GRA E-VAT RECEIPT
+                </div>
+                <div class="evat-info" style="font-size: 11px;">
+                    <div t-if="receipt.evat_data.evat_sdc_id">
+                        <span style="font-weight: bold;">SDC ID: </span>
+                        <span t-esc="receipt.evat_data.evat_sdc_id"/>
+                    </div>
+                    <div t-if="receipt.evat_data.evat_receipt_number">
+                        <span style="font-weight: bold;">Receipt No: </span>
+                        <span t-esc="receipt.evat_data.evat_receipt_number"/>
+                    </div>
+                    <div t-if="receipt.evat_data.evat_sdc_time">
+                        <span style="font-weight: bold;">SDC Time: </span>
+                        <span t-esc="receipt.evat_data.evat_sdc_time"/>
+                    </div>
+                </div>
+                <!-- QR Code placeholder - needs to be generated from URL -->
+                <t t-if="receipt.evat_data.evat_qrcode_url">
+                    <div style="text-align: center; margin-top: 10px;">
+                        <img t-att-src="receipt.evat_data.evat_qrcode_url"
+                             style="max-width: 100px; max-height: 100px;"
+                             alt="E-VAT QR Code"/>
+                    </div>
+                    <div style="text-align: center; font-size: 9px; margin-top: 5px;">
+                        Scan to verify at GRA
+                    </div>
+                </t>
+                <div style="text-align: center; font-size: 9px; margin-top: 10px; border-top: 1px dashed black; padding-top: 5px;">
+                    This is a GRA E-VAT compliant receipt
+                </div>
+            </div>
+        </t>
+    </t>
+
+    <!-- Extend the main OrderReceipt template -->
+    <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt')]" position="inside">
+            <t t-call="l10n_gh_evat.EvatReceiptInfo">
+                <t t-set="receipt" t-value="receipt"/>
+            </t>
+        </xpath>
+    </t>
+
+</templates>
