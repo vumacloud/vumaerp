@@ -5,3 +5,4 @@ from . import evat_config
 from . import evat_tax_code
 from . import account_move
 from . import pos_order
+from . import product_template
