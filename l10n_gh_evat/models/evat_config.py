@@ -119,11 +119,11 @@ class GhanaEvatConfig(models.Model):
             raise UserError(_('Invalid response from GRA E-VAT server.'))
 
     def action_test_connection(self):
-        """Test connection to GRA E-VAT API v8.2."""
+        """Test connection to GRA E-VAT API v8.2 using health endpoint."""
         self.ensure_one()
         try:
-            # Try to get taxpayer info or use a simple endpoint
-            url = f"{self._get_taxpayer_endpoint()}/info"
+            # Use the documented /health endpoint
+            url = f"{self._get_taxpayer_endpoint()}/health"
             response = requests.get(
                 url,
                 headers=self._prepare_headers(),
@@ -135,21 +135,46 @@ class GhanaEvatConfig(models.Model):
                 'last_response': response.text[:5000] if response.text else '',
             })
 
-            # Even if we get an error, if we got a response, connection works
-            if response.status_code in (200, 201, 400, 401, 404):
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Connection Test'),
-                        'message': _('Connection to GRA E-VAT successful! Status: %s') % response.status_code,
-                        'type': 'success' if response.status_code in (200, 201) else 'warning',
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('status') == 'UP':
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'display_notification',
+                        'params': {
+                            'title': _('Connection Test'),
+                            'message': _('GRA E-VAT connection successful! Status: UP'),
+                            'type': 'success',
+                        }
                     }
-                }
-            else:
-                raise UserError(_('E-VAT Error: %s') % response.text[:200])
-        except Exception as e:
+            elif response.status_code == 403:
+                raise UserError(_('Invalid security key or taxpayer reference (E907).'))
+
+            raise UserError(_('E-VAT Error: %s') % response.text[:200])
+        except requests.exceptions.RequestException as e:
             raise UserError(_('Connection test failed: %s') % str(e))
+
+    def validate_tin(self, tin):
+        """
+        Validate a TIN using GRA E-VAT API v8.2.
+        Returns dict with tin, type, name, sector, address or raises error.
+        """
+        self.ensure_one()
+        try:
+            url = f"{self._get_taxpayer_endpoint()}/identification/tin/{tin}"
+            response = requests.get(
+                url,
+                headers=self._prepare_headers(),
+                timeout=30
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('status') == 'SUCCESS':
+                    return result.get('data', {})
+            raise UserError(_('TIN validation failed: %s') % response.text[:200])
+        except requests.exceptions.RequestException as e:
+            raise UserError(_('TIN validation error: %s') % str(e))
 
     @api.model
     def get_config(self, company=None):
