@@ -82,24 +82,67 @@ class AccountMove(models.Model):
 
         return ''  # Standard taxable item
 
+    def _get_line_tax_amounts(self, line):
+        """
+        Extract VAT, NHIL, GETFund, CST, and Tourism amounts from line taxes.
+        Returns dict with vat, nhil, getfund, cst, tourism amounts.
+
+        Per GRA best practice, taxes should be applied separately:
+        - VAT 15%
+        - NHIL 2.5%
+        - GETFund 2.5%
+        - CST 5% (communication services)
+        - Tourism 1% (hospitality)
+        """
+        result = {'vat': 0.0, 'nhil': 0.0, 'getfund': 0.0, 'cst': 0.0, 'tourism': 0.0}
+        base_amt = line.price_subtotal
+
+        if not line.tax_ids:
+            return result
+
+        for tax in line.tax_ids:
+            tax_name = (tax.name or '').upper()
+            tax_amount = round(base_amt * tax.amount / 100, 2)
+
+            if 'NHIL' in tax_name:
+                result['nhil'] = tax_amount
+            elif 'GETFUND' in tax_name or 'GET FUND' in tax_name or 'GETFund' in tax.name:
+                result['getfund'] = tax_amount
+            elif 'CST' in tax_name or 'COMMUNICATION' in tax_name:
+                result['cst'] = tax_amount
+            elif 'TOURISM' in tax_name:
+                result['tourism'] = tax_amount
+            elif 'VAT' in tax_name and tax.amount > 0:
+                result['vat'] = tax_amount
+
+        return result
+
     def _prepare_evat_item(self, line):
         """Prepare a single invoice line for GRA E-VAT v8.2."""
-        # Calculate levy amounts based on item category
         base_amt = line.price_subtotal
-        levy_a = levy_b = levy_d = levy_e = 0.0
-
         item_category = self._get_evat_item_category(line)
 
-        # Calculate levies based on category
-        # LEVY_A: NHIL 2.5%, LEVY_B: GETFund 2.5%, LEVY_D: CST 5%, LEVY_E: Tourism 1%
-        if item_category == '':  # Standard taxable
-            levy_a = round(base_amt * 0.025, 2)  # NHIL 2.5%
-            levy_b = round(base_amt * 0.025, 2)  # GETFund 2.5%
-        elif item_category == 'CST':
-            levy_d = round(base_amt * 0.05, 2)  # CST 5%
-        elif item_category == 'TRSM':
-            levy_e = round(base_amt * 0.01, 2)  # Tourism 1%
-        # EXM, RNT, EXC_PLASTIC have zero levies
+        # Get actual tax amounts from Odoo taxes
+        tax_amounts = self._get_line_tax_amounts(line)
+
+        # Use actual tax amounts if available, otherwise calculate
+        levy_a = tax_amounts['nhil']
+        levy_b = tax_amounts['getfund']
+        levy_d = tax_amounts['cst']
+        levy_e = tax_amounts['tourism']
+
+        # Fallback: if no NHIL/GETFund taxes applied but item is standard taxable,
+        # calculate them (for backward compatibility)
+        if item_category == '' and levy_a == 0 and levy_b == 0:
+            # Check if VAT is applied - if so, levies should also apply
+            if tax_amounts['vat'] > 0:
+                levy_a = round(base_amt * 0.025, 2)  # NHIL 2.5%
+                levy_b = round(base_amt * 0.025, 2)  # GETFund 2.5%
+                _logger.warning(
+                    'Line "%s" has VAT but no NHIL/GETFund taxes. '
+                    'Consider adding NHIL 2.5%% and GETFund 2.5%% taxes for GRA compliance.',
+                    line.name
+                )
 
         return {
             'itemCode': line.product_id.default_code or f'PROD{line.product_id.id}' if line.product_id else 'ITEM',
@@ -130,26 +173,34 @@ class AccountMove(models.Model):
         total_levy = 0.0
         total_vat = 0.0
         total_discount = 0.0
+        total_base = 0.0
 
         for line in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
             item = self._prepare_evat_item(line)
             items.append(item)
 
-            # Accumulate totals
+            # Accumulate levy totals from item
             total_levy += item['levyAmountA'] + item['levyAmountB'] + item['levyAmountD'] + item['levyAmountE']
             total_discount += item['discountAmount']
+            total_base += line.price_subtotal
 
-            # Calculate VAT for this line
-            if line.tax_ids:
-                for tax in line.tax_ids:
-                    if tax.amount > 0 and 'VAT' in tax.name.upper():
-                        total_vat += round(line.price_subtotal * tax.amount / 100, 2)
+            # Get VAT amount from actual taxes
+            tax_amounts = self._get_line_tax_amounts(line)
+            total_vat += tax_amounts['vat']
 
         # Determine flag (INVOICE or REFUND)
         flag = 'REFUND' if self.move_type == 'out_refund' else 'INVOICE'
 
         # Get calculation type
         calc_type = self._get_evat_calculation_type()
+
+        # Per GRA sample invoice:
+        # - EXCLUSIVE: totalAmount = base amount (before taxes)
+        # - INCLUSIVE: totalAmount = total including taxes
+        if calc_type == 'EXCLUSIVE':
+            total_amount = total_base
+        else:
+            total_amount = self.amount_total
 
         payload = {
             'currency': self.currency_id.name or 'GHS',
@@ -161,13 +212,12 @@ class AccountMove(models.Model):
             'calculationType': calc_type,
             'totalVat': round(total_vat, 2),
             'transactionDate': self._get_evat_date(),
-            'totalAmount': round(self.amount_total, 2),
+            'totalAmount': round(total_amount, 2),
             'totalExciseAmount': 0.00,
             'businessPartnerName': (self.partner_id.name or 'Cash Customer')[:100],
             'businessPartnerTin': self.partner_id.vat or 'C0000000000',
             'saleType': 'NORMAL',
-            'discountType': 'GENERAL' if total_discount > 0 else 'GENERAL',
-            'taxType': 'STANDARD',
+            'discountType': 'GENERAL',
             'discountAmount': round(total_discount, 2),
             'reference': self.ref or '',
             'groupReferenceId': '',
