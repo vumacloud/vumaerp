@@ -21,10 +21,11 @@
                         </group>
                     </group>
                     <group>
-                        <group string="GRA Credentials">
-                            <field name="tin" placeholder="C00XXXXXXXX"/>
-                            <field name="company_name"/>
+                        <group string="GRA Credentials (v8.2)">
+                            <field name="tin" placeholder="CXX000000YY"/>
+                            <field name="branch_id" placeholder="001"/>
                             <field name="security_key" password="True"/>
+                            <field name="user_name"/>
                         </group>
                         <group string="Status">
                             <field name="last_request_date"/>
@@ -61,8 +62,8 @@
                 Configure GRA E-VAT integration
             </p>
             <p>
-                Enter your TIN, company name, and security key from GRA
-                to start submitting invoices to E-VAT.
+                Enter your TIN, branch ID, security key, and user name from GRA
+                to start submitting invoices to E-VAT (API v8.2).
             </p>
         </field>
     </record>

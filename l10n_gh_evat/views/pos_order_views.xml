@@ -29,9 +29,7 @@
                         </group>
                     </group>
                     <group string="Technical Details" invisible="not evat_submitted">
-                        <field name="evat_internal_data"/>
-                        <field name="evat_signature"/>
-                        <field name="evat_qrcode_url" widget="url"/>
+                        <field name="evat_qrcode"/>
                         <field name="evat_response" readonly="1"/>
                     </group>
                 </page>

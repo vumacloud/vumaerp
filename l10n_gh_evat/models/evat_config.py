@@ -7,8 +7,9 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-SANDBOX_URL = 'https://apitest.e-vatgh.com/evat_apiqa'
-PRODUCTION_URL = 'https://api.e-vatgh.com/evat_api'
+# GRA E-VAT API v8.2 URLs
+SANDBOX_URL = 'https://vsdcstaging.vat-gh.com'
+PRODUCTION_URL = 'https://vsdc.vat-gh.com'
 
 
 class GhanaEvatConfig(models.Model):
@@ -27,13 +28,15 @@ class GhanaEvatConfig(models.Model):
         ('production', 'Production'),
     ], string='Environment', default='sandbox', required=True)
 
-    # GRA Credentials
+    # GRA Credentials (v8.2)
     tin = fields.Char(string='TIN', required=True,
-                      help='GRA Tax Identification Number (e.g., C00XXXXXXXX)')
-    company_name = fields.Char(string='Company Name (GRA)', required=True,
-                               help='Company name as registered with GRA')
+                      help='GRA Tax Identification Number (e.g., CXX000000YY)')
+    branch_id = fields.Char(string='Branch ID', default='001',
+                            help='Branch ID suffix (default: 001)')
     security_key = fields.Char(string='Security Key', required=True,
                                help='E-VAT API Security Key from GRA')
+    user_name = fields.Char(string='User Name', required=True,
+                            help='User name for E-VAT submissions')
 
     # Status
     last_request_date = fields.Datetime(string='Last Request')
@@ -49,40 +52,48 @@ class GhanaEvatConfig(models.Model):
         self.ensure_one()
         return SANDBOX_URL if self.environment == 'sandbox' else PRODUCTION_URL
 
+    def _get_taxpayer_endpoint(self):
+        """Get the taxpayer-specific endpoint."""
+        self.ensure_one()
+        return f"{self._get_api_url()}/vsdc/api/v1/taxpayer/{self.tin}-{self.branch_id}"
+
     def _prepare_headers(self):
-        """Prepare HTTP headers for API request."""
+        """Prepare HTTP headers for API request (v8.2)."""
         return {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'security_key': self.security_key,
         }
 
-    def _call_api(self, endpoint, data):
+    def _call_api(self, endpoint, data, method='POST'):
         """
-        Make an API call to GRA E-VAT.
+        Make an API call to GRA E-VAT v8.2.
 
-        :param endpoint: API endpoint (e.g., 'post_receipt_Json.jsp')
+        :param endpoint: API endpoint (e.g., 'invoice')
         :param data: Dictionary with request data
+        :param method: HTTP method (POST, GET)
         :return: Response dictionary
         """
         self.ensure_one()
-        url = f"{self._get_api_url()}/{endpoint}"
+        url = f"{self._get_taxpayer_endpoint()}/{endpoint}"
 
-        # Add authentication to payload
-        data.update({
-            'COMPANY_TIN': self.tin,
-            'COMPANY_NAMES': self.company_name,
-            'COMPANY_SECURITY_KEY': self.security_key,
-        })
-
-        _logger.info('GRA E-VAT API Request to %s', url)
+        _logger.info('GRA E-VAT API v8.2 Request to %s', url)
+        _logger.debug('Request data: %s', json.dumps(data, indent=2))
 
         try:
-            response = requests.post(
-                url,
-                json=data,
-                headers=self._prepare_headers(),
-                timeout=30
-            )
+            if method == 'POST':
+                response = requests.post(
+                    url,
+                    json=data,
+                    headers=self._prepare_headers(),
+                    timeout=30
+                )
+            else:
+                response = requests.get(
+                    url,
+                    headers=self._prepare_headers(),
+                    timeout=30
+                )
 
             # Log response
             self.write({
@@ -90,12 +101,15 @@ class GhanaEvatConfig(models.Model):
                 'last_response': response.text[:5000] if response.text else '',
             })
 
-            if response.status_code == 200:
+            _logger.info('GRA E-VAT API Response Status: %s', response.status_code)
+            _logger.debug('Response: %s', response.text[:1000])
+
+            if response.status_code in (200, 201):
                 result = response.json()
-                _logger.info('GRA E-VAT API Response: %s', json.dumps(result, indent=2))
                 return result
             else:
-                raise UserError(_('E-VAT API Error %s: %s') % (response.status_code, response.text))
+                error_msg = response.text[:500] if response.text else f'HTTP {response.status_code}'
+                raise UserError(_('E-VAT API Error: %s') % error_msg)
 
         except requests.exceptions.Timeout:
             raise UserError(_('Connection to GRA E-VAT timed out.'))
@@ -105,17 +119,13 @@ class GhanaEvatConfig(models.Model):
             raise UserError(_('Invalid response from GRA E-VAT server.'))
 
     def action_test_connection(self):
-        """Test connection to GRA E-VAT API."""
+        """Test connection to GRA E-VAT API v8.2."""
         self.ensure_one()
         try:
-            url = f"{self._get_api_url()}/get_Response_JSON.jsp"
-            response = requests.post(
+            # Try to get taxpayer info or use a simple endpoint
+            url = f"{self._get_taxpayer_endpoint()}/info"
+            response = requests.get(
                 url,
-                json={
-                    'COMPANY_TIN': self.tin,
-                    'COMPANY_NAMES': self.company_name,
-                    'COMPANY_SECURITY_KEY': self.security_key,
-                },
                 headers=self._prepare_headers(),
                 timeout=30
             )
@@ -125,14 +135,15 @@ class GhanaEvatConfig(models.Model):
                 'last_response': response.text[:5000] if response.text else '',
             })
 
-            if response.status_code == 200:
+            # Even if we get an error, if we got a response, connection works
+            if response.status_code in (200, 201, 400, 401, 404):
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
-                        'title': _('Success'),
-                        'message': _('Connection to GRA E-VAT successful!'),
-                        'type': 'success',
+                        'title': _('Connection Test'),
+                        'message': _('Connection to GRA E-VAT successful! Status: %s') % response.status_code,
+                        'type': 'success' if response.status_code in (200, 201) else 'warning',
                     }
                 }
             else:

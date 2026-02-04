@@ -11,153 +11,126 @@ _logger = logging.getLogger(__name__)
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    # E-VAT Fields
+    # E-VAT Fields (v8.2)
     evat_submitted = fields.Boolean(string='Submitted to E-VAT', copy=False)
     evat_sdc_id = fields.Char(string='SDC ID', copy=False, readonly=True)
     evat_sdc_time = fields.Char(string='SDC Time', copy=False, readonly=True)
     evat_receipt_number = fields.Char(string='E-VAT Receipt No', copy=False, readonly=True)
-    evat_internal_data = fields.Char(string='Internal Data', copy=False, readonly=True)
-    evat_signature = fields.Char(string='Signature', copy=False, readonly=True)
-    evat_qrcode_url = fields.Char(string='QR Code URL', copy=False, readonly=True)
+    evat_qrcode = fields.Char(string='QR Code', copy=False, readonly=True)
     evat_submit_date = fields.Datetime(string='E-VAT Submit Date', copy=False, readonly=True)
     evat_response = fields.Text(string='E-VAT Response', copy=False, readonly=True)
 
     def _get_evat_date(self, dt=None):
-        """Format date for GRA E-VAT: YYYY-MM-DD"""
+        """Format date for GRA E-VAT v8.2: YYYY-MM-DD"""
         dt = dt or self.date_order or fields.Datetime.now()
         if isinstance(dt, str):
             dt = fields.Datetime.from_string(dt)
         return dt.strftime('%Y-%m-%d')
 
-    def _get_evat_datetime(self, dt=None):
-        """Format datetime for GRA E-VAT: YYYY-MM-DD HH:MM:SS"""
-        dt = dt or self.date_order or datetime.now()
-        if isinstance(dt, str):
-            dt = fields.Datetime.from_string(dt)
-        return dt.strftime('%Y-%m-%d %H:%M:%S')
+    def _get_evat_tax_type(self, line):
+        """Determine tax type for a line."""
+        if not line.tax_ids:
+            return 'EXEMPT'
 
-    def _get_evat_tax_code(self, tax):
-        """Map Odoo tax to GRA tax code."""
-        TaxCode = self.env['ghana.evat.tax.code']
-        return TaxCode.map_odoo_tax_to_gra(tax)
+        tax = line.tax_ids[0]
+        if tax.amount == 0:
+            return 'EXEMPT'
+        elif tax.amount == 3:
+            return 'FLAT'
+        else:
+            return 'STANDARD'
 
-    def _prepare_evat_item(self, line, seq):
-        """Prepare a single POS order line for GRA E-VAT."""
-        tax = line.tax_ids[:1] if line.tax_ids else None
-        tax_code = self._get_evat_tax_code(tax)
-
-        TaxCode = self.env['ghana.evat.tax.code']
-        tax_rate = TaxCode.get_tax_rate(tax_code)
-
+    def _prepare_evat_item(self, line):
+        """Prepare a single POS order line for GRA E-VAT v8.2."""
         base_amt = line.price_subtotal
-        tax_amt = round(base_amt * tax_rate, 2)
+        levy_a = levy_b = levy_d = levy_e = 0.0
 
-        # Calculate levies for standard taxable (TAX_B)
-        levy_a = levy_b = levy_d = 0.0
-        if tax_code == 'TAX_B':
+        # Check if this is a standard taxable item
+        tax_type = self._get_evat_tax_type(line)
+        if tax_type == 'STANDARD':
             levy_a = round(base_amt * 0.025, 2)  # NHIL 2.5%
             levy_b = round(base_amt * 0.025, 2)  # GETFund 2.5%
 
+        discount_amt = round(line.discount * line.price_unit * line.qty / 100, 2) if line.discount else 0
+
         return {
-            'ITEM_SEQ': seq,
-            'ITEM_CODE': line.product_id.default_code or str(line.product_id.id) if line.product_id else 'ITEM',
-            'ITEM_DESC': (line.full_product_name or line.product_id.name or 'Item')[:100],
-            'UNIT_PRICE': round(line.price_unit, 2),
-            'QUANTITY': round(line.qty, 3),
-            'DISCOUNT_AMT': round(line.discount * line.price_unit * line.qty / 100, 2) if line.discount else 0.0,
-            'TAX_CODE': tax_code,
-            'TAX_RATE': round(tax_rate * 100, 2),
-            'TAX_AMT': tax_amt,
-            'LEVY_A_AMT': levy_a,
-            'LEVY_B_AMT': levy_b,
-            'LEVY_D_AMT': levy_d,
-            'TOTAL_AMT': round(base_amt + tax_amt + levy_a + levy_b + levy_d, 2),
+            'itemCode': line.product_id.default_code or str(line.product_id.id) if line.product_id else 'ITEM',
+            'itemCategory': line.product_id.categ_id.name if line.product_id and line.product_id.categ_id else '',
+            'expireDate': '',
+            'description': (line.full_product_name or line.product_id.name or 'Item')[:200],
+            'quantity': str(round(line.qty, 3)),
+            'levyAmountA': levy_a,
+            'levyAmountB': levy_b,
+            'levyAmountD': levy_d,
+            'levyAmountE': levy_e,
+            'discountAmount': discount_amt,
+            'exciseAmount': 0,
+            'batchCode': '',
+            'unitPrice': str(round(line.price_unit, 2)),
         }
 
     def _prepare_evat_payload(self):
-        """Prepare the full GRA E-VAT payload for POS order."""
+        """Prepare the full GRA E-VAT v8.2 payload for POS order."""
         self.ensure_one()
 
-        items = []
-        totals = {'TAX_A': 0, 'TAX_B': 0, 'TAX_C': 0, 'TAX_D': 0, 'TAX_E': 0}
-        tax_totals = {'TAX_A': 0, 'TAX_B': 0, 'TAX_C': 0, 'TAX_D': 0, 'TAX_E': 0}
-        levy_a_total = levy_b_total = levy_d_total = 0.0
+        config = self.env['ghana.evat.config'].get_config(self.company_id)
 
-        seq = 0
+        items = []
+        total_levy = 0.0
+        total_vat = 0.0
+        total_discount = 0.0
+
         for line in self.lines:
-            seq += 1
-            item = self._prepare_evat_item(line, seq)
+            item = self._prepare_evat_item(line)
             items.append(item)
 
-            tax_code = item['TAX_CODE']
-            totals[tax_code] += line.price_subtotal
-            tax_totals[tax_code] += item['TAX_AMT']
-            levy_a_total += item['LEVY_A_AMT']
-            levy_b_total += item['LEVY_B_AMT']
-            levy_d_total += item['LEVY_D_AMT']
+            # Accumulate totals
+            total_levy += item['levyAmountA'] + item['levyAmountB'] + item['levyAmountD'] + item['levyAmountE']
+            total_discount += item['discountAmount']
 
-        # Determine transaction type
+            # Calculate VAT for this line
+            if line.tax_ids:
+                for tax in line.tax_ids:
+                    if tax.amount > 0 and 'VAT' in tax.name.upper():
+                        total_vat += round(line.price_subtotal * tax.amount / 100, 2)
+
+        # Determine flag
         total_amount = self.amount_total
-        trans_type = 'REFUND' if total_amount < 0 else 'SALE'
+        flag = 'REFUND' if total_amount < 0 else 'INVOICE'
 
         # Customer info
         partner = self.partner_id
-        client_name = partner.name if partner else 'CASH CUSTOMER'
-        client_tin = partner.vat if partner else ''
-        client_address = partner.contact_address if partner else ''
+        client_name = partner.name if partner else 'Cash Customer'
+        client_tin = partner.vat if partner and partner.vat else 'C0000000000'
 
         payload = {
-            'TRANS_TYPE': trans_type,
-            'RECEIPT_NUMBER': self.pos_reference or self.name or '',
-            'INVOICE_DATE': self._get_evat_date(),
-            'INVOICE_TIME': self._get_evat_datetime(),
-            'CLIENT_TIN': client_tin or '',
-            'CLIENT_NAME': client_name[:100],
-            'CLIENT_ADDRESS': (client_address or '')[:200],
-            'ITEMS': items,
-            'TAX_A_BASE': round(totals['TAX_A'], 2),
-            'TAX_A_AMT': round(tax_totals['TAX_A'], 2),
-            'TAX_B_BASE': round(totals['TAX_B'], 2),
-            'TAX_B_AMT': round(tax_totals['TAX_B'], 2),
-            'TAX_C_BASE': round(totals['TAX_C'], 2),
-            'TAX_C_AMT': round(tax_totals['TAX_C'], 2),
-            'TAX_D_BASE': round(totals['TAX_D'], 2),
-            'TAX_D_AMT': round(tax_totals['TAX_D'], 2),
-            'TAX_E_BASE': round(totals['TAX_E'], 2),
-            'TAX_E_AMT': round(tax_totals['TAX_E'], 2),
-            'LEVY_A_AMT': round(levy_a_total, 2),
-            'LEVY_B_AMT': round(levy_b_total, 2),
-            'LEVY_D_AMT': round(levy_d_total, 2),
-            'TOTAL_BASE': round(sum(totals.values()), 2),
-            'TOTAL_TAX': round(sum(tax_totals.values()), 2),
-            'TOTAL_LEVY': round(levy_a_total + levy_b_total + levy_d_total, 2),
-            'TOTAL_AMOUNT': round(abs(total_amount), 2),
-            'PAYMENT_MODE': self._get_payment_mode(),
+            'currency': self.currency_id.name or 'GHS',
+            'exchangeRate': '1.0',
+            'invoiceNumber': self.pos_reference or self.name or '',
+            'totalLevy': round(total_levy, 2),
+            'userName': config.user_name,
+            'flag': flag,
+            'calculationType': 'EXCLUSIVE',
+            'totalVat': round(total_vat, 2),
+            'transactionDate': self._get_evat_date(),
+            'totalAmount': round(abs(total_amount), 2),
+            'totalExciseAmount': 0.00,
+            'businessPartnerName': client_name[:100],
+            'businessPartnerTin': client_tin,
+            'saleType': 'NORMAL',
+            'discountType': 'GENERAL',
+            'taxType': 'STANDARD',
+            'discountAmount': round(total_discount, 2),
+            'reference': '',
+            'groupReferenceId': '',
+            'purchaseOrderReference': '',
+            'items': items,
         }
 
         return payload
 
-    def _get_payment_mode(self):
-        """Determine payment mode for E-VAT."""
-        if not self.payment_ids:
-            return 'CASH'
-
-        payment = self.payment_ids[0]
-        method_name = payment.payment_method_id.name.upper() if payment.payment_method_id else ''
-
-        if 'CASH' in method_name:
-            return 'CASH'
-        elif 'CARD' in method_name or 'CREDIT' in method_name or 'DEBIT' in method_name:
-            return 'CARD'
-        elif 'MOBILE' in method_name or 'MOMO' in method_name:
-            return 'MOBILE_MONEY'
-        elif 'CHEQUE' in method_name or 'CHECK' in method_name:
-            return 'CHEQUE'
-        else:
-            return 'OTHER'
-
     def action_submit_evat(self):
-        """Submit POS order to GRA E-VAT."""
+        """Submit POS order to GRA E-VAT v8.2."""
         self.ensure_one()
 
         if self.evat_submitted:
@@ -169,20 +142,18 @@ class PosOrder(models.Model):
         config = self.env['ghana.evat.config'].get_config(self.company_id)
         payload = self._prepare_evat_payload()
 
-        _logger.info('Submitting POS order %s to GRA E-VAT', self.name)
+        _logger.info('Submitting POS order %s to GRA E-VAT v8.2', self.name)
 
         try:
-            result = config._call_api('post_receipt_Json.jsp', payload)
+            result = config._call_api('invoice', payload)
 
             self.write({
                 'evat_submitted': True,
                 'evat_submit_date': fields.Datetime.now(),
-                'evat_sdc_id': result.get('SDC_ID', result.get('sdc_id', '')),
-                'evat_sdc_time': result.get('SDC_TIME', result.get('sdc_time', '')),
-                'evat_receipt_number': result.get('RECEIPT_NUMBER', result.get('receipt_number', '')),
-                'evat_internal_data': result.get('INTERNAL_DATA', result.get('internalData', '')),
-                'evat_signature': result.get('SIGNATURE', result.get('signature', '')),
-                'evat_qrcode_url': result.get('QRCODE_URL', result.get('QRCodeURL', '')),
+                'evat_sdc_id': result.get('sdcId', result.get('SDC_ID', '')),
+                'evat_sdc_time': result.get('sdcDateTime', result.get('SDC_TIME', '')),
+                'evat_receipt_number': result.get('invoiceNumber', result.get('INVOICE_NUMBER', '')),
+                'evat_qrcode': result.get('qrCode', result.get('QRCode', '')),
                 'evat_response': json.dumps(result, indent=2),
             })
 
@@ -190,7 +161,7 @@ class PosOrder(models.Model):
                 'evat_submitted': True,
                 'evat_sdc_id': self.evat_sdc_id,
                 'evat_receipt_number': self.evat_receipt_number,
-                'evat_qrcode_url': self.evat_qrcode_url,
+                'evat_qrcode': self.evat_qrcode,
             }
 
         except UserError:
@@ -198,23 +169,6 @@ class PosOrder(models.Model):
         except Exception as e:
             _logger.exception('E-VAT submission failed for POS order %s', self.name)
             raise UserError(_('E-VAT submission failed: %s') % str(e))
-
-    def _submit_evat_auto(self):
-        """Auto-submit to E-VAT after payment (called from POS)."""
-        for order in self:
-            if order.evat_submitted:
-                continue
-            try:
-                order.action_submit_evat()
-            except Exception as e:
-                _logger.error('Auto E-VAT submission failed for %s: %s', order.name, str(e))
-
-    @api.model
-    def _order_fields(self, ui_order):
-        """Extend to include E-VAT fields from POS."""
-        result = super()._order_fields(ui_order)
-        # E-VAT data will be populated after submission
-        return result
 
     @api.model
     def create_from_ui(self, orders, draft=False):
@@ -249,5 +203,5 @@ class PosOrder(models.Model):
             'evat_sdc_id': self.evat_sdc_id or '',
             'evat_sdc_time': self.evat_sdc_time or '',
             'evat_receipt_number': self.evat_receipt_number or '',
-            'evat_qrcode_url': self.evat_qrcode_url or '',
+            'evat_qrcode': self.evat_qrcode or '',
         }
