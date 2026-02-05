@@ -64,7 +64,7 @@ This module requires the base Kenya eTIMS module (l10n_ke_etims).
         'l10n_ke_etims',
     ],
     'data': [
-        'security/ir.model.access.csv',
+        # No new models, only extending existing ones - no security rules needed
         'views/account_move_views.xml',
         'views/pos_views.xml',
     ],
