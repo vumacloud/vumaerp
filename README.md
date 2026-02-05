@@ -71,13 +71,39 @@ Statutory deductions (2025 rates):
 
 ### Kenya eTIMS (l10n_ke_etims)
 
+#### TIS Registration with KRA
+
+VumaERP is registered as a **Trader Invoicing System (TIS)** with Kenya Revenue Authority:
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| **TIS Name** | VumaERP | Registered system name |
+| **TIS Version** | 2.0.0 | Current TIS version |
+| **Serial Number Format** | `VUMAERP{TIN}{BRANCH}` | Auto-generated |
+
+**Serial Number Example:** `VUMAERPP051234567A00`
+- `VUMAERP` - TIS prefix
+- `P051234567A` - Company KRA PIN
+- `00` - Branch ID (00 = main branch)
+
+#### Module Versioning
+
+Format: `{ODOO_MAJOR}.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}`
+
+- Current Version: `17.2.0.0` (Odoo 17, TIS v2.0.0)
+- For KRA registration, report TIS Version: `2.0.0`
+
+#### KRA eTIMS OSCU Features
+
 KRA eTIMS OSCU (Online Sales Control Unit) integration:
 - Device registration and verification
+- Auto-generated serial numbers (VUMAERP convention)
 - Real-time invoice submission
 - Item/product registration with UNSPSC classification codes
 - Customer PIN validation
 - Stock movement reporting
 - Purchase transaction submission
+- TIS identification in all API requests
 
 ### Kenya eTIMS POS & Payment Integration (l10n_ke_etims_pos)
 

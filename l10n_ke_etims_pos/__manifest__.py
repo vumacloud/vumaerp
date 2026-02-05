@@ -1,22 +1,31 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Kenya - eTIMS POS Integration',
-    'version': '18.0.1.0.0',
+    # Version format: {ODOO_MAJOR}.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
+    # Must match base l10n_ke_etims module versioning
+    'version': '17.2.0.0',
     'category': 'Point of Sale',
-    'summary': 'KRA eTIMS integration for Point of Sale',
+    'summary': 'VumaERP KRA eTIMS integration for Point of Sale',
     'description': """
-Kenya eTIMS POS & Payment Integration
-=====================================
+VumaERP Kenya eTIMS POS & Payment Integration
+=============================================
 
-This module extends Point of Sale and Accounting for Kenya Revenue Authority's
-electronic Tax Invoice Management System (eTIMS) compliance.
+Part of VumaERP TIS (Trader Invoicing System) for KRA eTIMS compliance.
 
-**CRITICAL COMPLIANCE FEATURE**: Submits to eTIMS only when payment is received,
-not when invoice is posted. This aligns with KRA regulations and KPMG advisory
-that income in eTIMS must represent actual sales transactions.
+TIS IDENTIFICATION
+------------------
+- TIS Name: VumaERP
+- TIS Version: 2.0.0
+- Module Version: 17.2.0.0 (Odoo 17, TIS v2.0.0)
 
-POS Features:
--------------
+CRITICAL COMPLIANCE FEATURE
+---------------------------
+Submits to eTIMS only when payment is received, not when invoice is posted.
+This aligns with KRA regulations and KPMG advisory that income in eTIMS
+must represent actual sales transactions.
+
+POS FEATURES
+------------
 * Real-time POS order submission to eTIMS at payment completion
 * Batch submission at session close for any missed orders
 * POS return/refund handling with KRA reason codes
@@ -24,16 +33,16 @@ POS Features:
 * eTIMS receipt printing with SCU and receipt numbers
 * Offline queue capability with automatic retry
 
-Invoice/Payment Features:
--------------------------
+INVOICE/PAYMENT FEATURES
+------------------------
 * Payment-triggered eTIMS submission (NOT on invoice posting)
 * Supports fully paid invoices only - partial payments wait
 * Credit note/refund handling with reason codes
 * Batch payment registration support
 * Clear audit trail for compliance
 
-Refund Reason Codes (per KRA):
-------------------------------
+REFUND REASON CODES (per KRA)
+-----------------------------
 * 01 - Damage/Defect
 * 02 - Change of Mind
 * 03 - Wrong Item Delivered
