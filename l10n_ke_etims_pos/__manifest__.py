@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Kenya - eTIMS POS Integration',
-    # Version format: {ODOO_MAJOR}.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
+    # Version format: 17.0.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
     # Must match base l10n_ke_etims module versioning
-    'version': '17.2.0.0',
+    'version': '17.0.2.0.0',
     'category': 'Point of Sale',
     'summary': 'VumaERP KRA eTIMS integration for Point of Sale',
     'description': """
@@ -16,7 +16,7 @@ TIS IDENTIFICATION
 ------------------
 - TIS Name: VumaERP
 - TIS Version: 2.0.0
-- Module Version: 17.2.0.0 (Odoo 17, TIS v2.0.0)
+- Module Version: 17.0.2.0.0 (Odoo 17.0, TIS v2.0.0)
 
 CRITICAL COMPLIANCE FEATURE
 ---------------------------
