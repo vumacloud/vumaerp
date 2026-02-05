@@ -46,6 +46,8 @@
                         </group>
                         <group string="Environment">
                             <field name="environment" widget="radio"/>
+                            <field name="api_url_pattern" widget="radio"
+                                   help="If initialization fails, try the other pattern. KRA documentation is inconsistent about this."/>
                         </group>
                     </group>
                     <group>
@@ -64,6 +66,8 @@
                             <field name="cmn_key"
                                    readonly="device_state == 'initialized'"
                                    help="Automatically obtained from KRA during device initialization. Can be entered manually if needed."/>
+                            <field name="sdc_id" readonly="1"
+                                   help="SDC/CU ID returned from KRA (e.g., KRACU04XXXXXXXX)"/>
                             <field name="initialization_date" readonly="1"/>
                         </group>
                     </group>
