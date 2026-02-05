@@ -24,8 +24,17 @@ TIS_VERSION = '2.0.0'  # TIS version reported to KRA (independent of Odoo versio
 TIS_SERIAL_PREFIX = 'VUMAERP'  # Prefix for device serial number generation
 
 # API Endpoints
-SANDBOX_URL = 'https://etims-api-sbx.kra.go.ke/etims-api'
-PRODUCTION_URL = 'https://etims-api.kra.go.ke/etims-api'
+# Note: There's a discrepancy in KRA documentation about the URL structure.
+# The OSCU Spec shows /etims-api/ prefix, but Step-by-Step Guide omits it.
+# We provide both options - users should test which works in their environment.
+SANDBOX_URL_WITH_PREFIX = 'https://etims-api-sbx.kra.go.ke/etims-api'
+SANDBOX_URL_NO_PREFIX = 'https://etims-api-sbx.kra.go.ke'
+PRODUCTION_URL_WITH_PREFIX = 'https://etims-api.kra.go.ke/etims-api'
+PRODUCTION_URL_NO_PREFIX = 'https://etims-api.kra.go.ke'
+
+# Default to WITH prefix (per OSCU Spec which is more authoritative)
+SANDBOX_URL = SANDBOX_URL_WITH_PREFIX
+PRODUCTION_URL = PRODUCTION_URL_WITH_PREFIX
 
 
 class EtimsConfig(models.Model):
@@ -43,6 +52,15 @@ class EtimsConfig(models.Model):
         ('sandbox', 'Sandbox (Testing)'),
         ('production', 'Production'),
     ], string='Environment', default='sandbox', required=True)
+
+    # API URL Pattern - KRA docs are inconsistent about this
+    api_url_pattern = fields.Selection([
+        ('with_prefix', 'With /etims-api/ prefix (OSCU Spec)'),
+        ('no_prefix', 'Without prefix (Step-by-Step Guide)'),
+    ], string='API URL Pattern', default='with_prefix',
+       help='KRA documentation is inconsistent about the URL structure. '
+            'Try "With prefix" first (per OSCU Spec). If initialization fails, '
+            'try "Without prefix" (per Step-by-Step Guide).')
 
     # Credentials from KRA
     tin = fields.Char(string='TIN (KRA PIN)', required=True,
@@ -162,9 +180,16 @@ class EtimsConfig(models.Model):
         return f"{TIS_SERIAL_PREFIX}{clean_tin}{branch_id}"
 
     def _get_api_url(self):
-        """Get the API base URL based on environment."""
+        """Get the API base URL based on environment and URL pattern setting."""
         self.ensure_one()
-        return SANDBOX_URL if self.environment == 'sandbox' else PRODUCTION_URL
+        if self.environment == 'sandbox':
+            if self.api_url_pattern == 'no_prefix':
+                return SANDBOX_URL_NO_PREFIX
+            return SANDBOX_URL_WITH_PREFIX
+        else:
+            if self.api_url_pattern == 'no_prefix':
+                return PRODUCTION_URL_NO_PREFIX
+            return PRODUCTION_URL_WITH_PREFIX
 
     def _prepare_headers(self):
         """
@@ -393,11 +418,13 @@ class EtimsConfig(models.Model):
         This is separate from _call_api because initialization requests
         don't include the communication key (we're requesting it).
 
+        If the configured URL pattern fails, automatically tries the alternative
+        pattern since KRA documentation is inconsistent about the URL structure.
+
         Returns:
             dict: API response with communication key on success
         """
         self.ensure_one()
-        url = self._get_api_url() + '/selectInitOsdcInfo'
 
         # Build initialization request
         # Per OSCU spec: only tin, bhfId, and dvcSrlNo are required
@@ -407,30 +434,63 @@ class EtimsConfig(models.Model):
             'dvcSrlNo': self.dvc_srl_no,
         }
 
-        _logger.info('OSCU Init Request to %s: %s', url, json.dumps(data, indent=2))
+        # Try configured URL pattern first, then alternative if it fails
+        url_patterns = [
+            (self._get_api_url(), self.api_url_pattern),
+        ]
 
-        try:
-            response = requests.post(
-                url,
-                json=data,
-                headers=self._prepare_headers(),
-                timeout=60  # Longer timeout for initialization
-            )
-            response.raise_for_status()
-            result = response.json()
+        # Add alternative URL pattern as fallback
+        if self.environment == 'sandbox':
+            alt_url = SANDBOX_URL_NO_PREFIX if self.api_url_pattern == 'with_prefix' else SANDBOX_URL_WITH_PREFIX
+            alt_pattern = 'no_prefix' if self.api_url_pattern == 'with_prefix' else 'with_prefix'
+        else:
+            alt_url = PRODUCTION_URL_NO_PREFIX if self.api_url_pattern == 'with_prefix' else PRODUCTION_URL_WITH_PREFIX
+            alt_pattern = 'no_prefix' if self.api_url_pattern == 'with_prefix' else 'with_prefix'
 
-            # Log response
-            self.write({
-                'last_request_date': fields.Datetime.now(),
-                'last_response': json.dumps(result, indent=2),
-            })
+        url_patterns.append((alt_url, alt_pattern))
 
-            _logger.info('OSCU Init Response: %s', json.dumps(result, indent=2))
-            return result
+        last_error = None
+        for base_url, pattern in url_patterns:
+            url = base_url + '/selectInitOsdcInfo'
+            _logger.info('OSCU Init Request to %s (pattern: %s): %s',
+                        url, pattern, json.dumps(data, indent=2))
 
-        except requests.exceptions.RequestException as e:
-            _logger.error('OSCU Init API Error: %s', str(e))
-            raise UserError(_('Failed to connect to KRA eTIMS: %s') % str(e))
+            try:
+                response = requests.post(
+                    url,
+                    json=data,
+                    headers=self._prepare_headers(),
+                    timeout=60  # Longer timeout for initialization
+                )
+                response.raise_for_status()
+                result = response.json()
+
+                # Success! Update the URL pattern if we used the alternative
+                if pattern != self.api_url_pattern:
+                    _logger.info('Alternative URL pattern worked, updating configuration')
+                    self.api_url_pattern = pattern
+
+                # Log response
+                self.write({
+                    'last_request_date': fields.Datetime.now(),
+                    'last_response': json.dumps(result, indent=2),
+                })
+
+                _logger.info('OSCU Init Response: %s', json.dumps(result, indent=2))
+                return result
+
+            except requests.exceptions.RequestException as e:
+                last_error = str(e)
+                _logger.warning('OSCU Init failed with URL %s: %s', url, str(e))
+                continue  # Try next URL pattern
+
+        # Both patterns failed
+        _logger.error('OSCU Init API Error (all URL patterns failed): %s', last_error)
+        raise UserError(_(
+            'Failed to connect to KRA eTIMS. Tried both URL patterns.\n'
+            'Last error: %s\n\n'
+            'Please verify your TIN, Branch ID, and Device Serial Number are correct.'
+        ) % last_error)
 
     def action_reset_device(self):
         """
