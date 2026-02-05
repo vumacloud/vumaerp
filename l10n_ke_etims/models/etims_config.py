@@ -60,6 +60,12 @@ class EtimsConfig(models.Model):
     cmn_key = fields.Char(string='Communication Key',
                           help='Key received from KRA after device init')
 
+    # SDC/CU ID (received after device initialization)
+    sdc_id = fields.Char(
+        string='SDC/CU ID',
+        help='Signed Data Controller / Control Unit ID from KRA (e.g., KRACU04XXXXXXXX)'
+    )
+
     # TIS Information (read-only, for display)
     tis_name = fields.Char(
         string='TIS Name',
@@ -185,17 +191,14 @@ class EtimsConfig(models.Model):
         self.ensure_one()
         url = self._get_api_url() + endpoint
 
-        # Add common fields to request
+        # Add common fields required by OSCU spec for all endpoints
+        # Per spec: tin, bhfId, and cmcKey are the standard common fields
         data.update({
             'tin': self.tin,
             'bhfId': self.bhf_id,
-            'dvcSrlNo': self.dvc_srl_no,
-            # TIS identification for KRA
-            'tisNm': TIS_NAME,
-            'tisVersion': TIS_VERSION,
         })
         if self.cmn_key:
-            data['cmnKey'] = self.cmn_key
+            data['cmcKey'] = self.cmn_key
 
         _logger.info('eTIMS API Request to %s: %s', endpoint, json.dumps(data, indent=2))
 
@@ -306,7 +309,7 @@ class EtimsConfig(models.Model):
             result = self._call_oscu_init_api()
 
             if result.get('resultCd') == '000':
-                # Success - extract and store communication key
+                # Success - extract and store communication key and SDC ID
                 data = result.get('data', {})
 
                 # KRA may return the key as 'cmcKey', 'cmnKey', or 'commKey'
@@ -317,9 +320,18 @@ class EtimsConfig(models.Model):
                     data.get('communicationKey')
                 )
 
+                # SDC/CU ID for receipt formatting (e.g., KRACU04XXXXXXXX)
+                sdc_id = (
+                    data.get('sdcId') or
+                    data.get('cuId') or
+                    data.get('deviceId') or
+                    ''
+                )
+
                 if comm_key:
                     self.write({
                         'cmn_key': comm_key,
+                        'sdc_id': sdc_id,
                         'device_state': 'initialized',
                         'initialization_date': fields.Datetime.now(),
                         'initialization_error': False,
@@ -388,16 +400,11 @@ class EtimsConfig(models.Model):
         url = self._get_api_url() + '/selectInitOsdcInfo'
 
         # Build initialization request
-        # Per KRA specs: TIN, branch ID, device serial, and TIS info
+        # Per OSCU spec: only tin, bhfId, and dvcSrlNo are required
         data = {
             'tin': self.tin,
             'bhfId': self.bhf_id,
             'dvcSrlNo': self.dvc_srl_no,
-            # TIS identification
-            'tisNm': TIS_NAME,
-            'tisVersion': TIS_VERSION,
-            # Additional device info that may be required
-            'dvcId': self.dvc_srl_no,  # Device ID (same as serial)
         }
 
         _logger.info('OSCU Init Request to %s: %s', url, json.dumps(data, indent=2))

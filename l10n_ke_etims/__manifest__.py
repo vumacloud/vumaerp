@@ -58,8 +58,10 @@ For KRA registration, report TIS Version as: 2.0.0
     'data': [
         'security/ir.model.access.csv',
         'data/etims_cron.xml',
+        'data/etims_daily_report_data.xml',
         'views/etims_config_views.xml',
         'views/etims_code_views.xml',
+        'views/etims_daily_report_views.xml',
         'views/product_views.xml',
         'views/stock_views.xml',
         'views/account_move_views.xml',

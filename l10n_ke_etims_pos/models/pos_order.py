@@ -31,17 +31,31 @@ class PosOrder(models.Model):
         copy=False,
         help='Indicates if this POS order has been submitted to KRA eTIMS'
     )
-    etims_scu_no = fields.Char(
-        string='SCU No',
+    etims_invoice_number = fields.Integer(
+        string='eTIMS Invoice Number',
         copy=False,
         readonly=True,
-        help='Signed Code Unit number from KRA'
+        help='Sequential numeric invoice number for eTIMS (invcNo)'
+    )
+    etims_sdc_id = fields.Char(
+        string='SDC ID',
+        copy=False,
+        readonly=True,
+        help='SDC/CU ID from device initialization'
     )
     etims_rcpt_no = fields.Char(
         string='Receipt No',
         copy=False,
         readonly=True,
         help='Receipt number from KRA eTIMS'
+    )
+    etims_cu_invoice_number = fields.Char(
+        string='CU Invoice Number',
+        copy=False,
+        readonly=True,
+        compute='_compute_etims_cu_invoice_number',
+        store=True,
+        help='Formatted CU Invoice Number: {CU_ID}/{Receipt_Number}'
     )
     etims_intrl_data = fields.Char(
         string='Internal Data',
@@ -52,6 +66,12 @@ class PosOrder(models.Model):
         string='Receipt Signature',
         copy=False,
         readonly=True
+    )
+    etims_sdc_datetime = fields.Char(
+        string='SDC DateTime',
+        copy=False,
+        readonly=True,
+        help='Date/time from OSCU/VSCU'
     )
     etims_submit_date = fields.Datetime(
         string='eTIMS Submit Date',
@@ -69,21 +89,160 @@ class PosOrder(models.Model):
         help='Error message if submission failed - for retry'
     )
 
+    # Receipt type per TIS spec Section 4
+    etims_transaction_type = fields.Selection([
+        ('NORMAL', 'Normal'),
+        ('COPY', 'Copy'),
+        ('TRAINING', 'Training'),
+        ('PROFORMA', 'Proforma'),
+    ], string='Transaction Type', default='NORMAL', copy=False,
+       help='Transaction type per TIS spec: NORMAL, COPY, TRAINING, or PROFORMA')
+
+    etims_receipt_type_label = fields.Char(
+        string='Receipt Type',
+        compute='_compute_etims_receipt_type_label',
+        store=True,
+        help='Receipt type label per TIS spec (NS, NC, CS, CC, TS, TC, PS)'
+    )
+
+    @api.depends('etims_transaction_type', 'amount_total')
+    def _compute_etims_receipt_type_label(self):
+        """Compute receipt type label per TIS spec Section 4."""
+        for order in self:
+            is_refund = order.amount_total < 0
+            receipt_type = 'CREDIT_NOTE' if is_refund else 'SALES'
+            trans_type = order.etims_transaction_type or 'NORMAL'
+
+            labels = {
+                ('NORMAL', 'SALES'): 'NS',
+                ('NORMAL', 'CREDIT_NOTE'): 'NC',
+                ('COPY', 'SALES'): 'CS',
+                ('COPY', 'CREDIT_NOTE'): 'CC',
+                ('TRAINING', 'SALES'): 'TS',
+                ('TRAINING', 'CREDIT_NOTE'): 'TC',
+                ('PROFORMA', 'SALES'): 'PS',
+            }
+            order.etims_receipt_type_label = labels.get((trans_type, receipt_type), 'NS')
+
+    def get_formatted_internal_data(self):
+        """Get internal data formatted with dashes per TIS spec."""
+        self.ensure_one()
+        return self._format_with_dashes(self.etims_intrl_data)
+
+    def get_formatted_receipt_signature(self):
+        """Get receipt signature formatted with dashes per TIS spec."""
+        self.ensure_one()
+        return self._format_with_dashes(self.etims_rcpt_sign)
+
+    def _format_with_dashes(self, data, group_size=4):
+        """Format data with dashes after every Nth character."""
+        if not data:
+            return ''
+        clean_data = ''.join(c for c in str(data) if c not in '- \t\n')
+        groups = [clean_data[i:i + group_size] for i in range(0, len(clean_data), group_size)]
+        return '-'.join(groups)
+
+    def get_etims_qr_content(self):
+        """Generate QR code content per TIS spec Section 6.23.8."""
+        self.ensure_one()
+        if not self.etims_submitted:
+            return ''
+
+        # Format date as ddmmyyyy
+        sdc_datetime = self.etims_sdc_datetime or ''
+        if sdc_datetime and len(sdc_datetime) >= 14:
+            date_str = sdc_datetime[6:8] + sdc_datetime[4:6] + sdc_datetime[0:4]
+            time_str = sdc_datetime[8:14]
+        else:
+            from datetime import datetime
+            now = datetime.now()
+            date_str = now.strftime('%d%m%Y')
+            time_str = now.strftime('%H%M%S')
+
+        parts = [
+            date_str,
+            time_str,
+            str(self.etims_sdc_id or ''),
+            str(self.etims_rcpt_no or ''),
+            str(self.etims_intrl_data or ''),
+            str(self.etims_rcpt_sign or ''),
+        ]
+        return '#'.join(parts)
+
+    def get_etims_qr_image(self):
+        """Generate QR code image as base64."""
+        self.ensure_one()
+        content = self.get_etims_qr_content()
+        if not content:
+            return False
+
+        try:
+            import qrcode
+            import io
+            import base64
+
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(content)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+
+            buffer = io.BytesIO()
+            img.save(buffer, format='PNG')
+            buffer.seek(0)
+            return base64.b64encode(buffer.getvalue()).decode('utf-8')
+        except ImportError:
+            _logger.warning('qrcode library not installed')
+            return False
+        except Exception as e:
+            _logger.error('Failed to generate QR code: %s', str(e))
+            return False
+
+    @api.depends('etims_sdc_id', 'etims_rcpt_no')
+    def _compute_etims_cu_invoice_number(self):
+        """Compute CU Invoice Number in format: {CU_ID}/{Receipt_Number}"""
+        for order in self:
+            if order.etims_sdc_id and order.etims_rcpt_no:
+                order.etims_cu_invoice_number = f"{order.etims_sdc_id}/{order.etims_rcpt_no}"
+            else:
+                order.etims_cu_invoice_number = False
+
+    def _get_next_etims_invoice_number(self):
+        """
+        Get the next sequential eTIMS invoice number for POS.
+        Per OSCU spec, invcNo must be a NUMBER (integer sequence).
+        """
+        self.ensure_one()
+        # Get the max invoice number for this company from both invoices and POS orders
+        self.env.cr.execute("""
+            SELECT COALESCE(MAX(max_num), 0) + 1 FROM (
+                SELECT MAX(etims_invoice_number) as max_num
+                FROM account_move
+                WHERE company_id = %s AND etims_invoice_number IS NOT NULL
+                UNION ALL
+                SELECT MAX(etims_invoice_number) as max_num
+                FROM pos_order
+                WHERE company_id = %s AND etims_invoice_number IS NOT NULL
+            ) combined
+        """, (self.company_id.id, self.company_id.id))
+        result = self.env.cr.fetchone()
+        return result[0] if result else 1
+
     # Refund-specific fields for POS returns
+    # Per OSCU Spec Section 4.16: only codes 01-05 are valid
     etims_refund_reason = fields.Selection([
-        ('01', 'Damage/Defect'),
-        ('02', 'Change of Mind'),
-        ('03', 'Wrong Item Delivered'),
-        ('04', 'Late Delivery'),
-        ('05', 'Duplicate Order'),
-        ('06', 'Price Dispute'),
-        ('07', 'Quantity Dispute'),
-        ('08', 'Quality Issues'),
-        ('09', 'Order Cancellation'),
-        ('10', 'Other'),
+        ('01', 'Return'),
+        ('02', 'Incorrect Information'),
+        ('03', 'Omission'),
+        ('04', 'Cancellation'),
+        ('05', 'Other'),
     ], string='Refund Reason',
        default='01',
-       help='Reason code for the refund as required by KRA eTIMS')
+       help='Reason code for the refund as required by KRA eTIMS (Section 4.16)')
 
     etims_original_order_id = fields.Many2one(
         'pos.order',
@@ -133,6 +292,10 @@ class PosOrder(models.Model):
     def _get_etims_payment_type(self):
         """
         Determine eTIMS payment type based on POS payment methods.
+
+        Per OSCU Spec Section 4.10:
+        01=Cash, 02=Credit, 03=Cash/Credit, 04=Bank Check,
+        05=Debit/Credit Card, 06=Mobile Money, 07=Other
         """
         self.ensure_one()
 
@@ -149,20 +312,24 @@ class PosOrder(models.Model):
                 if pm.journal_id.type == 'cash':
                     return '01'  # Cash
                 elif pm.journal_id.type == 'bank':
-                    # Check for mobile money or cards
+                    # Check for mobile money or cards per spec
                     if any(mm in pm_name for mm in ['mpesa', 'm-pesa', 'mobile', 'airtel', 'safaricom']):
-                        return '05'  # Mobile Money
-                    elif any(card in pm_name for card in ['card', 'visa', 'mastercard']):
-                        return '03'  # Credit Card
-                    return '02'  # Bank
+                        return '06'  # Mobile Money (per spec)
+                    elif any(card in pm_name for card in ['card', 'visa', 'mastercard', 'debit', 'credit']):
+                        return '05'  # Debit/Credit Card (per spec)
+                    elif 'check' in pm_name or 'cheque' in pm_name:
+                        return '04'  # Bank Check
+                    return '02'  # Credit/Bank Transfer
 
             # Fallback to name-based detection
             if any(cash in pm_name for cash in ['cash', 'ksh', 'kes']):
-                return '01'
+                return '01'  # Cash
             elif any(mm in pm_name for mm in ['mpesa', 'm-pesa', 'mobile', 'airtel']):
-                return '05'
+                return '06'  # Mobile Money
             elif any(card in pm_name for card in ['card', 'visa', 'mastercard', 'credit', 'debit']):
-                return '03'
+                return '05'  # Debit/Credit Card
+            elif 'check' in pm_name or 'cheque' in pm_name:
+                return '04'  # Bank Check
 
         return '01'  # Default to cash
 
@@ -253,14 +420,14 @@ class PosOrder(models.Model):
         # Payment type
         pmt_ty_cd = self._get_etims_payment_type()
 
-        # Handle refund fields
+        # Get eTIMS invoice number (must be a NUMBER per spec)
+        etims_invc_no = self.etims_invoice_number or self._get_next_etims_invoice_number()
+
+        # Handle refund fields - orgInvcNo should be the original's eTIMS invoice number
         if is_return:
             org_invc_no = 0
-            if self.etims_original_order_id and self.etims_original_order_id.etims_rcpt_no:
-                try:
-                    org_invc_no = int(self.etims_original_order_id.etims_rcpt_no)
-                except (ValueError, TypeError):
-                    org_invc_no = 0
+            if self.etims_original_order_id and self.etims_original_order_id.etims_invoice_number:
+                org_invc_no = self.etims_original_order_id.etims_invoice_number
 
             rfd_dt = self._get_etims_date(self.date_order)
             rfd_rsn_cd = self.etims_refund_reason or '01'
@@ -275,11 +442,11 @@ class PosOrder(models.Model):
         cust_nm = (partner.name if partner else 'Cash Sale')[:100]
 
         payload = {
-            'invcNo': self.pos_reference or self.name or '',
+            'trdInvcNo': (self.pos_reference or self.name or '')[:50],  # Trader invoice number (CHAR 50)
+            'invcNo': etims_invc_no,  # eTIMS invoice number (NUMBER 38)
             'orgInvcNo': org_invc_no,
             'custTin': cust_tin,
             'custNm': cust_nm,
-            'salesTyCd': 'N',
             'rcptTyCd': rcpt_ty_cd,
             'pmtTyCd': pmt_ty_cd,
             'salesSttsCd': '02',
@@ -318,7 +485,7 @@ class PosOrder(models.Model):
             'receipt': {
                 'custTin': cust_tin,
                 'custMblNo': (partner.mobile or partner.phone or '') if partner else '',
-                'rptNo': 0,
+                'rcptPbctDt': self._get_etims_datetime(),  # Receipt published datetime (CHAR 14)
                 'trdeNm': cust_nm,
                 'adrs': (partner.street or '')[:200] if partner else '',
                 'topMsg': '',
@@ -375,23 +542,30 @@ class PosOrder(models.Model):
         payload = self._prepare_etims_payload()
 
         try:
-            result = config._call_api('/trnsSales/saveSalesWr', payload)
+            result = config._call_api('/saveTrnsSalesOsdc', payload)
 
             if result.get('resultCd') == '000':
                 data = result.get('data', {})
+                # Get SDC ID from config (set during device initialization)
+                sdc_id = config.sdc_id if hasattr(config, 'sdc_id') else ''
+                # Per OSCU spec: curRcptNo is the current receipt number
+                rcpt_no = str(data.get('curRcptNo', data.get('rcptNo', '')))
+
                 self.write({
                     'etims_submitted': True,
-                    'etims_scu_no': data.get('scuNo'),
-                    'etims_rcpt_no': str(data.get('rcptNo', '')),
-                    'etims_intrl_data': data.get('intrlData'),
-                    'etims_rcpt_sign': data.get('rcptSign'),
+                    'etims_invoice_number': payload.get('invcNo'),  # Store the invoice number we sent
+                    'etims_sdc_id': sdc_id,
+                    'etims_rcpt_no': rcpt_no,
+                    'etims_intrl_data': data.get('intrlData', ''),
+                    'etims_rcpt_sign': data.get('rcptSign', ''),
+                    'etims_sdc_datetime': data.get('sdcDateTime', ''),
                     'etims_submit_date': fields.Datetime.now(),
                     'etims_response': str(result),
                     'etims_submission_error': False,
                 })
                 _logger.info(
-                    'POS Order %s submitted to eTIMS. SCU: %s',
-                    self.name, data.get('scuNo')
+                    'POS Order %s submitted to eTIMS. Receipt #: %s',
+                    self.name, rcpt_no
                 )
                 return True
             else:
@@ -427,7 +601,7 @@ class PosOrder(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'title': _('Success'),
-                    'message': _('POS Order submitted to eTIMS. SCU: %s') % self.etims_scu_no,
+                    'message': _('POS Order submitted to eTIMS. Receipt #: %s') % self.etims_rcpt_no,
                     'type': 'success',
                 }
             }

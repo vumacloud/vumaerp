@@ -28,21 +28,17 @@ class AccountMove(models.Model):
     )
 
     # Refund-specific fields for credit notes
+    # Per OSCU Spec Section 4.16: only codes 01-05 are valid
     etims_refund_reason = fields.Selection([
-        ('01', 'Damage/Defect'),
-        ('02', 'Change of Mind'),
-        ('03', 'Wrong Item Delivered'),
-        ('04', 'Late Delivery'),
-        ('05', 'Duplicate Order'),
-        ('06', 'Price Dispute'),
-        ('07', 'Quantity Dispute'),
-        ('08', 'Quality Issues'),
-        ('09', 'Order Cancellation'),
-        ('10', 'Other'),
+        ('01', 'Return'),
+        ('02', 'Incorrect Information'),
+        ('03', 'Omission'),
+        ('04', 'Cancellation'),
+        ('05', 'Other'),
     ], string='Refund Reason (eTIMS)',
        default='01',
        copy=False,
-       help='Reason code for the refund as required by KRA eTIMS.')
+       help='Reason code for the refund as required by KRA eTIMS (Section 4.16).')
 
     def _auto_submit_etims_on_payment(self):
         """
@@ -155,21 +151,16 @@ class AccountMoveReversal(models.TransientModel):
     """
     _inherit = 'account.move.reversal'
 
+    # Per OSCU Spec Section 4.16: only codes 01-05 are valid
     etims_refund_reason = fields.Selection([
-        ('01', 'Damage/Defect'),
-        ('02', 'Change of Mind'),
-        ('03', 'Wrong Item Delivered'),
-        ('04', 'Late Delivery'),
-        ('05', 'Duplicate Order'),
-        ('06', 'Price Dispute'),
-        ('07', 'Quantity Dispute'),
-        ('08', 'Quality Issues'),
-        ('09', 'Order Cancellation'),
-        ('10', 'Other'),
+        ('01', 'Return'),
+        ('02', 'Incorrect Information'),
+        ('03', 'Omission'),
+        ('04', 'Cancellation'),
+        ('05', 'Other'),
     ], string='Refund Reason (eTIMS)',
        default='01',
-       help='Reason code for the refund as required by KRA eTIMS. '
-            'This will be included in the eTIMS submission.')
+       help='Reason code for the refund as required by KRA eTIMS (Section 4.16).')
 
     def _prepare_default_reversal(self, move):
         """Add eTIMS refund reason to credit note."""

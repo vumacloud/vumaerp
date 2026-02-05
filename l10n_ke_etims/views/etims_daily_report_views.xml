@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Daily Report Form View -->
+    <record id="view_etims_daily_report_form" model="ir.ui.view">
+        <field name="name">etims.daily.report.form</field>
+        <field name="model">etims.daily.report</field>
+        <field name="arch" type="xml">
+            <form string="eTIMS Daily Report">
+                <header>
+                    <button name="action_generate_report" string="Generate Report"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Report Info">
+                            <field name="report_type"/>
+                            <field name="report_date"/>
+                            <field name="report_datetime"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Period">
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Transaction Summary" name="transactions">
+                            <group>
+                                <group string="Receipt Counts">
+                                    <field name="count_ns"/>
+                                    <field name="count_nc"/>
+                                    <field name="count_cs"/>
+                                    <field name="count_cc"/>
+                                    <field name="count_ts"/>
+                                    <field name="count_tc"/>
+                                    <field name="count_ps"/>
+                                </group>
+                                <group string="Amounts">
+                                    <field name="total_sales"/>
+                                    <field name="total_refunds"/>
+                                    <field name="total_net"/>
+                                    <field name="total_discounts"/>
+                                    <field name="total_items"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Tax Breakdown" name="taxes">
+                            <group>
+                                <group string="Taxable Amounts">
+                                    <field name="taxable_amt_a"/>
+                                    <field name="taxable_amt_b"/>
+                                    <field name="taxable_amt_c"/>
+                                    <field name="taxable_amt_d"/>
+                                    <field name="taxable_amt_e"/>
+                                </group>
+                                <group string="Tax Amounts">
+                                    <field name="tax_amt_a"/>
+                                    <field name="tax_amt_b"/>
+                                    <field name="tax_amt_c"/>
+                                    <field name="tax_amt_d"/>
+                                    <field name="tax_amt_e"/>
+                                    <field name="total_tax"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Payment Methods" name="payments">
+                            <group>
+                                <group>
+                                    <field name="cash_amount"/>
+                                    <field name="card_amount"/>
+                                    <field name="mobile_amount"/>
+                                </group>
+                                <group>
+                                    <field name="credit_amount"/>
+                                    <field name="other_amount"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="eTIMS" name="etims" invisible="not etims_submitted">
+                            <group>
+                                <field name="etims_submitted"/>
+                                <field name="etims_response"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Daily Report Tree View -->
+    <record id="view_etims_daily_report_tree" model="ir.ui.view">
+        <field name="name">etims.daily.report.tree</field>
+        <field name="model">etims.daily.report</field>
+        <field name="arch" type="xml">
+            <tree string="eTIMS Daily Reports">
+                <field name="name"/>
+                <field name="report_type"/>
+                <field name="report_date"/>
+                <field name="count_ns"/>
+                <field name="count_nc"/>
+                <field name="total_sales"/>
+                <field name="total_refunds"/>
+                <field name="total_net"/>
+                <field name="total_tax"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Daily Report Search View -->
+    <record id="view_etims_daily_report_search" model="ir.ui.view">
+        <field name="name">etims.daily.report.search</field>
+        <field name="model">etims.daily.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Daily Reports">
+                <field name="name"/>
+                <field name="report_date"/>
+                <separator/>
+                <filter name="x_reports" string="X Reports"
+                        domain="[('report_type', '=', 'X')]"/>
+                <filter name="z_reports" string="Z Reports"
+                        domain="[('report_type', '=', 'Z')]"/>
+                <separator/>
+                <filter name="today" string="Today"
+                        domain="[('report_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="this_month" string="This Month"
+                        domain="[('report_date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('report_date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Report Type"
+                            context="{'group_by': 'report_type'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'report_date:day'}"/>
+                    <filter name="group_month" string="Month"
+                            context="{'group_by': 'report_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Daily Report Action -->
+    <record id="action_etims_daily_report" model="ir.actions.act_window">
+        <field name="name">Daily Reports (X/Z)</field>
+        <field name="res_model">etims.daily.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_etims_daily_report_search"/>
+        <field name="context">{'search_default_z_reports': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Generate your first daily report
+            </p>
+            <p>
+                Per TIS specifications:<br/>
+                - X Report: Interim summary (on demand)<br/>
+                - Z Report: End-of-day summary (mandatory daily)
+            </p>
+        </field>
+    </record>
+
+    <!-- Generate Z Report Server Action -->
+    <record id="action_generate_z_report" model="ir.actions.server">
+        <field name="name">Generate Z Report (End of Day)</field>
+        <field name="model_id" ref="model_etims_daily_report"/>
+        <field name="binding_model_id" ref="model_etims_daily_report"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_generate_z_report()</field>
+    </record>
+
+    <!-- Generate X Report Server Action -->
+    <record id="action_generate_x_report" model="ir.actions.server">
+        <field name="name">Generate X Report (Interim)</field>
+        <field name="model_id" ref="model_etims_daily_report"/>
+        <field name="binding_model_id" ref="model_etims_daily_report"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_generate_x_report()</field>
+    </record>
+
+</odoo>

@@ -33,4 +33,11 @@
               parent="menu_etims_root"
               action="etims_code_sync_action"
               sequence="40"/>
+
+    <!-- Daily Reports (X/Z) -->
+    <menuitem id="menu_etims_daily_report"
+              name="Daily Reports (X/Z)"
+              parent="menu_etims_root"
+              action="action_etims_daily_report"
+              sequence="50"/>
 </odoo>

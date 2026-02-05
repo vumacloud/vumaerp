@@ -149,6 +149,20 @@ class EtimsCodeSync(models.Model):
     ], string='Status', default='success')
     error_message = fields.Text(string='Error Message')
 
+    def _get_last_sync_date(self, code_type=None):
+        """
+        Get the last sync date for a code type.
+        Returns datetime in eTIMS format: YYYYMMDDHHmmss
+        """
+        domain = [('company_id', '=', self.env.company.id), ('status', '=', 'success')]
+        if code_type:
+            domain.append(('code_type', '=', code_type))
+
+        last_sync = self.search(domain, order='sync_date desc', limit=1)
+        if last_sync and last_sync.sync_date:
+            return last_sync.sync_date.strftime('%Y%m%d%H%M%S')
+        return '20200101000000'  # Default start date
+
     @api.model
     def sync_all_codes(self, company=None):
         """
@@ -158,7 +172,10 @@ class EtimsCodeSync(models.Model):
         company = company or self.env.company
         config = self.env['etims.config'].get_config(company)
 
-        # Code types to fetch
+        # Get last sync date for incremental sync
+        last_req_dt = self._get_last_sync_date()
+
+        # Code types to fetch - per OSCU spec, /selectCodeList uses lastReqDt
         code_endpoints = [
             ('/selectCodeList', '01', 'Item Classification'),
             ('/selectCodeList', '02', 'Taxation Type'),
@@ -172,7 +189,8 @@ class EtimsCodeSync(models.Model):
 
         for endpoint, code_type, type_name in code_endpoints:
             try:
-                result = config._call_api(endpoint, {'cdClsCd': code_type})
+                # Per OSCU spec: lastReqDt is required for /selectCodeList
+                result = config._call_api(endpoint, {'lastReqDt': last_req_dt})
 
                 if result.get('resultCd') == '000':
                     data_list = result.get('data', {}).get('clsList', [])

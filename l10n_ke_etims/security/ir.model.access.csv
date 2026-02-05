@@ -7,3 +7,7 @@ access_etims_item_class_user,etims.item.class user,model_etims_item_class,accoun
 access_etims_item_class_manager,etims.item.class manager,model_etims_item_class,account.group_account_manager,1,1,1,1
 access_etims_code_sync_user,etims.code.sync user,model_etims_code_sync,account.group_account_invoice,1,0,0,0
 access_etims_code_sync_manager,etims.code.sync manager,model_etims_code_sync,account.group_account_manager,1,1,1,1
+access_etims_daily_report_user,etims.daily.report user,model_etims_daily_report,account.group_account_invoice,1,0,0,0
+access_etims_daily_report_manager,etims.daily.report manager,model_etims_daily_report,account.group_account_manager,1,1,1,1
+access_etims_receipt_mixin_user,etims.receipt.mixin user,model_etims_receipt_mixin,account.group_account_invoice,1,0,0,0
+access_etims_receipt_mixin_manager,etims.receipt.mixin manager,model_etims_receipt_mixin,account.group_account_manager,1,1,1,1
