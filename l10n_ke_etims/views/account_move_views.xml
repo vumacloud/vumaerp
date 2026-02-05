@@ -24,7 +24,7 @@
                             <field name="etims_submit_date"/>
                         </group>
                         <group string="eTIMS Receipt">
-                            <field name="etims_scu_no"/>
+                            <field name="etims_sdc_id"/>
                             <field name="etims_rcpt_no"/>
                         </group>
                     </group>
@@ -47,7 +47,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
                 <field name="etims_submitted" string="eTIMS" optional="show"/>
-                <field name="etims_scu_no" string="SCU No" optional="hide"/>
+                <field name="etims_sdc_id" string="SDC ID" optional="hide"/>
             </xpath>
         </field>
     </record>

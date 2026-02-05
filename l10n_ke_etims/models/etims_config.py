@@ -209,12 +209,15 @@ class EtimsConfig(models.Model):
         """
         Make an API call to eTIMS.
 
-        :param endpoint: API endpoint (e.g., '/trnsSales/saveSalesWr')
+        If the configured URL pattern fails with a connection error,
+        automatically tries the alternative pattern since KRA documentation
+        is inconsistent about the URL structure.
+
+        :param endpoint: API endpoint (e.g., '/saveTrnsSalesOsdc')
         :param data: Dictionary with request data
         :return: Response dictionary
         """
         self.ensure_one()
-        url = self._get_api_url() + endpoint
 
         # Add common fields required by OSCU spec for all endpoints
         # Per spec: tin, bhfId, and cmcKey are the standard common fields
@@ -225,30 +228,65 @@ class EtimsConfig(models.Model):
         if self.cmn_key:
             data['cmcKey'] = self.cmn_key
 
-        _logger.info('eTIMS API Request to %s: %s', endpoint, json.dumps(data, indent=2))
+        # Build list of URL patterns to try (configured pattern first, then alternative)
+        url_patterns = [(self._get_api_url(), self.api_url_pattern)]
 
-        try:
-            response = requests.post(
-                url,
-                json=data,
-                headers=self._prepare_headers(),
-                timeout=30
-            )
-            response.raise_for_status()
-            result = response.json()
+        # Add alternative URL pattern as fallback
+        if self.environment == 'sandbox':
+            alt_url = SANDBOX_URL_NO_PREFIX if self.api_url_pattern == 'with_prefix' else SANDBOX_URL_WITH_PREFIX
+            alt_pattern = 'no_prefix' if self.api_url_pattern == 'with_prefix' else 'with_prefix'
+        else:
+            alt_url = PRODUCTION_URL_NO_PREFIX if self.api_url_pattern == 'with_prefix' else PRODUCTION_URL_WITH_PREFIX
+            alt_pattern = 'no_prefix' if self.api_url_pattern == 'with_prefix' else 'with_prefix'
 
-            # Log response
-            self.write({
-                'last_request_date': fields.Datetime.now(),
-                'last_response': json.dumps(result, indent=2),
-            })
+        url_patterns.append((alt_url, alt_pattern))
 
-            _logger.info('eTIMS API Response: %s', json.dumps(result, indent=2))
-            return result
+        last_error = None
+        for base_url, pattern in url_patterns:
+            url = base_url + endpoint
+            _logger.info('eTIMS API Request to %s (pattern: %s): %s',
+                        url, pattern, json.dumps(data, indent=2))
 
-        except requests.exceptions.RequestException as e:
-            _logger.error('eTIMS API Error: %s', str(e))
-            raise UserError(_('eTIMS API Error: %s') % str(e))
+            try:
+                response = requests.post(
+                    url,
+                    json=data,
+                    headers=self._prepare_headers(),
+                    timeout=30
+                )
+                response.raise_for_status()
+                result = response.json()
+
+                # Success! Update the URL pattern if we used the alternative
+                if pattern != self.api_url_pattern:
+                    _logger.warning(
+                        'eTIMS API call succeeded with alternative URL pattern "%s". '
+                        'Updating configuration from "%s" to "%s".',
+                        pattern, self.api_url_pattern, pattern
+                    )
+                    self.api_url_pattern = pattern
+
+                # Log response
+                self.write({
+                    'last_request_date': fields.Datetime.now(),
+                    'last_response': json.dumps(result, indent=2),
+                })
+
+                _logger.info('eTIMS API Response: %s', json.dumps(result, indent=2))
+                return result
+
+            except requests.exceptions.RequestException as e:
+                last_error = str(e)
+                _logger.warning('eTIMS API call failed with URL %s: %s', url, str(e))
+                continue  # Try next URL pattern
+
+        # Both patterns failed
+        _logger.error('eTIMS API Error (all URL patterns failed): %s', last_error)
+        raise UserError(_(
+            'eTIMS API Error: Failed to connect. Tried both URL patterns.\n'
+            'Last error: %s\n\n'
+            'Please verify your network connection and try again.'
+        ) % last_error)
 
     def action_test_connection(self):
         """Test connection to eTIMS API."""

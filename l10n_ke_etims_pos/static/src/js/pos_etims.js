@@ -19,7 +19,7 @@ patch(Order.prototype, {
     setup() {
         super.setup(...arguments);
         this.etims_submitted = false;
-        this.etims_scu_no = null;
+        this.etims_sdc_id = null;
         this.etims_rcpt_no = null;
         this.etims_submission_error = null;
         this.etims_refund_reason = '01';  // Default reason
@@ -28,7 +28,7 @@ patch(Order.prototype, {
     init_from_JSON(json) {
         super.init_from_JSON(...arguments);
         this.etims_submitted = json.etims_submitted || false;
-        this.etims_scu_no = json.etims_scu_no || null;
+        this.etims_sdc_id = json.etims_sdc_id || null;
         this.etims_rcpt_no = json.etims_rcpt_no || null;
         this.etims_submission_error = json.etims_submission_error || null;
         this.etims_refund_reason = json.etims_refund_reason || '01';
@@ -37,7 +37,7 @@ patch(Order.prototype, {
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
         json.etims_submitted = this.etims_submitted;
-        json.etims_scu_no = this.etims_scu_no;
+        json.etims_sdc_id = this.etims_sdc_id;
         json.etims_rcpt_no = this.etims_rcpt_no;
         json.etims_submission_error = this.etims_submission_error;
         json.etims_refund_reason = this.etims_refund_reason;
@@ -47,7 +47,7 @@ patch(Order.prototype, {
     export_for_printing() {
         const receipt = super.export_for_printing(...arguments);
         receipt.etims_submitted = this.etims_submitted;
-        receipt.etims_scu_no = this.etims_scu_no;
+        receipt.etims_sdc_id = this.etims_sdc_id;
         receipt.etims_rcpt_no = this.etims_rcpt_no;
         return receipt;
     },
@@ -80,7 +80,7 @@ patch(PaymentScreen.prototype, {
         const order = this.currentOrder;
         if (order && order.etims_submitted) {
             this.notification.add(
-                `eTIMS Receipt: ${order.etims_scu_no || 'Submitted'}`,
+                `eTIMS Receipt: ${order.etims_sdc_id || 'Submitted'}`,
                 { type: 'success', sticky: false }
             );
         } else if (order && order.etims_submission_error) {
