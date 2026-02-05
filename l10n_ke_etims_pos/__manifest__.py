@@ -58,7 +58,7 @@ This module requires the base Kenya eTIMS module (l10n_ke_etims).
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
-    'license': 'Other proprietary',
+    'license': 'LGPL-3',
     'depends': [
         'point_of_sale',
         'l10n_ke_etims',

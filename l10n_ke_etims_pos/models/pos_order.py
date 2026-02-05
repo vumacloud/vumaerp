@@ -215,8 +215,17 @@ class PosOrder(models.Model):
         """
         Get the next sequential eTIMS invoice number for POS.
         Per OSCU spec, invcNo must be a NUMBER (integer sequence).
+
+        Uses PostgreSQL advisory lock to prevent race conditions when
+        multiple POS terminals submit orders simultaneously.
         """
         self.ensure_one()
+        # Acquire advisory lock for this company's invoice number sequence
+        # Uses a hash of 'etims_invc_no_{company_id}' as the lock key
+        self.env.cr.execute(
+            "SELECT pg_advisory_xact_lock(hashtext(%s))",
+            (f'etims_invc_no_{self.company_id.id}',)
+        )
         # Get the max invoice number for this company from both invoices and POS orders
         self.env.cr.execute("""
             SELECT COALESCE(MAX(max_num), 0) + 1 FROM (
@@ -507,6 +516,15 @@ class PosOrder(models.Model):
         if self.state not in ('paid', 'done', 'invoiced'):
             return False  # Not ready yet
 
+        # For refunds, validate that the original order was submitted to eTIMS
+        if self.amount_total < 0 and self.etims_original_order_id:
+            if not self.etims_original_order_id.etims_submitted:
+                raise UserError(_(
+                    'Cannot submit this refund to eTIMS because the original '
+                    'order (%s) has not been submitted yet.\n\n'
+                    'Please submit the original order to eTIMS first, then submit this refund.'
+                ) % self.etims_original_order_id.name)
+
         # Validate products
         for line in self.lines:
             product = line.product_id
@@ -638,6 +656,34 @@ class PosOrder(models.Model):
                     order.etims_submission_error = str(e)
 
         return res
+
+    def export_for_printing(self):
+        """
+        Override to include all eTIMS receipt fields for printing.
+
+        Per TIS spec Section 6.23, receipts must include:
+        - SDC/CU ID
+        - CU Invoice Number
+        - Receipt Type Label
+        - SDC DateTime
+        - Internal Data (formatted with dashes)
+        - Receipt Signature (formatted with dashes)
+        - QR Code
+        """
+        result = super().export_for_printing()
+        result.update({
+            'etims_submitted': self.etims_submitted,
+            'etims_sdc_id': self.etims_sdc_id or '',
+            'etims_rcpt_no': self.etims_rcpt_no or '',
+            'etims_cu_invoice_number': self.etims_cu_invoice_number or '',
+            'etims_receipt_type_label': self.etims_receipt_type_label or '',
+            'etims_sdc_datetime': self.etims_sdc_datetime or '',
+            'etims_intrl_data_formatted': self.get_formatted_internal_data() or '',
+            'etims_rcpt_sign_formatted': self.get_formatted_receipt_signature() or '',
+            'etims_qr_image': self.get_etims_qr_image() or '',
+            'etims_transaction_type': self.etims_transaction_type or '',
+        })
+        return result
 
     @api.model
     def _process_order(self, order, draft, existing_order):

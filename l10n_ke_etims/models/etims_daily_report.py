@@ -187,14 +187,17 @@ class EtimsDailyReport(models.Model):
             ('etims_submit_date', '<=', period_end),
         ])
 
-        # Get POS orders in period
-        pos_orders = self.env['pos.order'].search([
-            ('company_id', '=', self.company_id.id),
-            ('state', 'in', ['paid', 'done', 'invoiced']),
-            ('etims_submitted', '=', True),
-            ('etims_submit_date', '>=', period_start),
-            ('etims_submit_date', '<=', period_end),
-        ])
+        # Get POS orders in period (only if point_of_sale module is installed)
+        if 'pos.order' in self.env:
+            pos_orders = self.env['pos.order'].search([
+                ('company_id', '=', self.company_id.id),
+                ('state', 'in', ['paid', 'done', 'invoiced']),
+                ('etims_submitted', '=', True),
+                ('etims_submit_date', '>=', period_start),
+                ('etims_submit_date', '<=', period_end),
+            ])
+        else:
+            pos_orders = self.env['account.move'].browse()  # Empty recordset
 
         # Calculate totals
         vals = {
