@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Account Move Form View Extension - Add eTIMS Payment Settings -->
+    <!--
+    Account Move Views for Kenya eTIMS Payment Integration
+
+    These views extend account.move (invoices) and account.move.reversal (credit note wizard)
+    to support eTIMS refund reason codes.
+    -->
+
+    <!-- Account Move Form View Extension - Add eTIMS Refund Reason -->
     <record id="view_move_form_etims_payment" model="ir.ui.view">
         <field name="name">account.move.form.etims.payment</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
-            <!-- Add refund reason field for credit notes -->
+            <!-- Add company_id as invisible if not present, for modifier evaluation -->
+            <xpath expr="//sheet" position="inside">
+                <field name="company_id" invisible="1"/>
+            </xpath>
+            <!-- Add refund reason field for credit notes in the invoice tab area -->
             <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="etims_refund_reason"
-                       invisible="move_type not in ('out_refund', 'in_refund') or company_id.country_id.code != 'KE'"/>
+                       invisible="move_type not in ('out_refund', 'in_refund') or company_id.country_id.code != 'KE'"
+                       string="eTIMS Refund Reason"/>
             </xpath>
         </field>
     </record>
@@ -19,12 +32,15 @@
         <field name="name">account.move.reversal.etims</field>
         <field name="model">account.move.reversal</field>
         <field name="inherit_id" ref="account.view_account_move_reversal"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='reason']" position="after">
                 <field name="etims_refund_reason"
                        required="1"
-                       string="eTIMS Refund Reason"/>
+                       string="eTIMS Refund Reason"
+                       help="Required reason code for KRA eTIMS credit note submission"/>
             </xpath>
         </field>
     </record>
+
 </odoo>

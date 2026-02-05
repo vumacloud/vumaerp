@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+    POS Views for Kenya eTIMS Integration
+
+    IMPORTANT: All views use careful xpath expressions that target elements
+    known to exist in Odoo 17 point_of_sale module views.
+    -->
+
+    <!-- ==================== POS ORDER VIEWS ==================== -->
+
     <!-- POS Order Form View Extension -->
     <record id="view_pos_order_form_etims" model="ir.ui.view">
         <field name="name">pos.order.form.etims</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
-            <!-- Add eTIMS submit button -->
+            <!-- Add eTIMS submit button in header -->
             <xpath expr="//header" position="inside">
                 <button name="action_submit_etims" type="object"
                         string="Submit to eTIMS"
@@ -14,29 +24,28 @@
                         invisible="state not in ('paid', 'done', 'invoiced') or etims_submitted"/>
             </xpath>
 
-            <!-- Add eTIMS tab -->
+            <!-- Add eTIMS tab in notebook -->
             <xpath expr="//notebook" position="inside">
-                <page string="eTIMS" name="etims_tab">
+                <page string="eTIMS Kenya" name="etims_tab">
                     <group>
                         <group string="Submission Status">
-                            <field name="etims_submitted"/>
-                            <field name="etims_submit_date"/>
-                            <field name="etims_submission_error" invisible="not etims_submission_error"/>
+                            <field name="etims_submitted" readonly="1"/>
+                            <field name="etims_submit_date" readonly="1"/>
+                            <field name="etims_submission_error" readonly="1"
+                                   invisible="not etims_submission_error"/>
                         </group>
                         <group string="eTIMS Receipt">
-                            <field name="etims_scu_no"/>
-                            <field name="etims_rcpt_no"/>
+                            <field name="etims_scu_no" readonly="1"/>
+                            <field name="etims_rcpt_no" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Refund Information"
-                           invisible="amount_total >= 0">
+                    <group string="Refund Information" invisible="amount_total &gt;= 0">
                         <field name="etims_refund_reason"/>
                         <field name="etims_original_order_id"/>
                     </group>
-                    <group string="Technical Details"
-                           invisible="not etims_submitted">
-                        <field name="etims_intrl_data"/>
-                        <field name="etims_rcpt_sign"/>
+                    <group string="Technical Details" invisible="not etims_submitted">
+                        <field name="etims_intrl_data" readonly="1"/>
+                        <field name="etims_rcpt_sign" readonly="1"/>
                         <field name="etims_response" readonly="1"/>
                     </group>
                 </page>
@@ -49,11 +58,11 @@
         <field name="name">pos.order.tree.etims</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
-                <field name="etims_submitted" string="eTIMS" optional="show"
-                       widget="boolean_toggle" readonly="1"/>
-                <field name="etims_scu_no" string="SCU No" optional="hide"/>
+                <field name="etims_submitted" string="eTIMS" optional="show" readonly="1"/>
+                <field name="etims_scu_no" string="SCU No" optional="hide" readonly="1"/>
             </xpath>
         </field>
     </record>
@@ -63,6 +72,7 @@
         <field name="name">pos.order.search.etims</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='session']" position="after">
                 <separator/>
@@ -76,77 +86,71 @@
         </field>
     </record>
 
+    <!-- ==================== POS SESSION VIEWS ==================== -->
+
     <!-- POS Session Form View Extension -->
     <record id="view_pos_session_form_etims" model="ir.ui.view">
         <field name="name">pos.session.form.etims</field>
         <field name="model">pos.session</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
-            <!-- Add invisible field for modifier evaluation -->
-            <xpath expr="//form" position="inside">
-                <field name="etims_submission_complete" invisible="1"/>
-            </xpath>
+            <!-- Add button in header -->
             <xpath expr="//header" position="inside">
                 <button name="action_submit_pending_etims" type="object"
                         string="Submit Pending to eTIMS"
                         class="btn-secondary"
-                        invisible="state != 'opened' or etims_submission_complete"/>
+                        invisible="state != 'opened'"/>
             </xpath>
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button class="oe_stat_button" type="object"
-                        name="action_view_etims_pending"
-                        icon="fa-clock-o"
-                        invisible="etims_orders_pending == 0">
-                    <field name="etims_orders_pending" string="eTIMS Pending" widget="statinfo"/>
-                </button>
-                <button class="oe_stat_button" type="object"
-                        name="action_view_etims_failed"
-                        icon="fa-exclamation-triangle"
-                        invisible="etims_orders_failed == 0">
-                    <field name="etims_orders_failed" string="eTIMS Failed" widget="statinfo"/>
-                </button>
+
+            <!-- Add stat buttons using sheet position if button_box exists -->
+            <xpath expr="//sheet" position="inside">
+                <group string="eTIMS Submission Status" col="4">
+                    <field name="etims_orders_submitted" readonly="1"/>
+                    <field name="etims_orders_pending" readonly="1"/>
+                    <field name="etims_orders_failed" readonly="1"/>
+                    <field name="etims_submission_complete" readonly="1"/>
+                </group>
             </xpath>
         </field>
     </record>
 
-    <!-- POS Config Form View Extension -->
+    <!-- ==================== POS CONFIG VIEWS ==================== -->
+
+    <!--
+    POS Config Form View Extension
+
+    NOTE: We add company_id as invisible field first, then use it in modifiers.
+    This is required because Odoo validates that fields used in modifiers exist in the view.
+    -->
     <record id="view_pos_config_form_etims" model="ir.ui.view">
         <field name="name">pos.config.form.etims</field>
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <!-- Add eTIMS settings using Odoo 17 settings container style -->
-            <xpath expr="//div[@class='oe_title']" position="after">
-                <div class="row mt16 o_settings_container"
-                     invisible="company_id.country_id.code != 'KE'"
-                     id="etims_settings_section">
-                    <div class="col-12 col-lg-6 o_setting_box">
-                        <div class="o_setting_left_pane">
-                            <field name="etims_auto_submit"/>
+            <!-- First, add company_id as invisible field so it can be used in modifiers -->
+            <xpath expr="//sheet" position="inside">
+                <field name="company_id" invisible="1"/>
+                <group string="Kenya eTIMS Settings"
+                       name="etims_settings"
+                       invisible="company_id.country_id.code != 'KE'">
+                    <group>
+                        <field name="etims_auto_submit"/>
+                        <field name="etims_block_on_failure"/>
+                    </group>
+                    <group>
+                        <div class="text-muted">
+                            <p><strong>Auto-submit:</strong> Automatically submit POS orders to KRA eTIMS when payment is completed.</p>
+                            <p><strong>Block on failure:</strong> If enabled, POS operations will be blocked if eTIMS submission fails.</p>
                         </div>
-                        <div class="o_setting_right_pane">
-                            <label for="etims_auto_submit"/>
-                            <div class="text-muted">
-                                Automatically submit POS orders to KRA eTIMS after payment
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-6 o_setting_box">
-                        <div class="o_setting_left_pane">
-                            <field name="etims_block_on_failure"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <label for="etims_block_on_failure"/>
-                            <div class="text-muted">
-                                Block new orders if eTIMS submission fails
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>
+
+    <!-- ==================== ACTIONS ==================== -->
 
     <!-- Action to view orders pending eTIMS submission -->
     <record id="action_pos_orders_pending_etims" model="ir.actions.act_window">
@@ -155,8 +159,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[
             ('etims_submitted', '=', False),
-            ('state', 'in', ['paid', 'done', 'invoiced']),
-            ('company_id.country_id.code', '=', 'KE')
+            ('state', 'in', ['paid', 'done', 'invoiced'])
         ]</field>
         <field name="context">{'search_default_etims_pending': 1}</field>
     </record>
@@ -168,8 +171,8 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[
             ('etims_submitted', '=', False),
-            ('etims_submission_error', '!=', False),
-            ('company_id.country_id.code', '=', 'KE')
+            ('etims_submission_error', '!=', False)
         ]</field>
     </record>
+
 </odoo>
