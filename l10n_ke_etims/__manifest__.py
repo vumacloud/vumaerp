@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Kenya eTIMS Integration',
-    # Version format: {ODOO_MAJOR}.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
-    # - ODOO_MAJOR: Odoo version compatibility (17 for Odoo 17.0)
+    # Version format: 17.0.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
+    # - 17.0: Odoo version prefix (required by Odoo)
     # - TIS_MAJOR: Breaking changes or major KRA compliance updates
     # - TIS_MINOR: New features or KRA requirement additions
     # - TIS_PATCH: Bug fixes and minor improvements
-    'version': '17.2.0.0',
+    'version': '17.0.2.0.0',
     'category': 'Accounting/Localizations',
     'summary': 'VumaERP KRA eTIMS OSCU integration for Kenya',
     'description': """
@@ -42,7 +42,7 @@ FEATURES
 
 VERSIONING
 ----------
-Module version: 17.2.0.0 (Odoo 17, TIS v2.0.0)
+Module version: 17.0.2.0.0 (Odoo 17.0, TIS v2.0.0)
 KRA TIS Version: 2.0.0
 
 For KRA registration, report TIS Version as: 2.0.0
