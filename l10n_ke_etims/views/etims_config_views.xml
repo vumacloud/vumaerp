@@ -10,21 +10,30 @@
                             string="Test Connection" class="btn-primary"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
                     <group>
-                        <group string="Company">
-                            <field name="name"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="active"/>
+                        <group string="TIS Identification">
+                            <field name="tis_name" readonly="1"/>
+                            <field name="tis_version" readonly="1"/>
                         </group>
                         <group string="Environment">
                             <field name="environment" widget="radio"/>
                         </group>
                     </group>
                     <group>
+                        <group string="Company">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
                         <group string="KRA Credentials">
                             <field name="tin" placeholder="P000000000X"/>
                             <field name="bhf_id"/>
-                            <field name="dvc_srl_no"/>
+                            <field name="dvc_srl_no" placeholder="Auto-generated from TIN"/>
                             <field name="cmn_key"/>
                         </group>
                         <group string="Status">

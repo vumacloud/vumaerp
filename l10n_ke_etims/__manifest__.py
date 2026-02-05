@@ -1,29 +1,51 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Kenya eTIMS Integration',
-    'version': '17.0.2.0.0',
+    # Version format: {ODOO_MAJOR}.{TIS_MAJOR}.{TIS_MINOR}.{TIS_PATCH}
+    # - ODOO_MAJOR: Odoo version compatibility (17 for Odoo 17.0)
+    # - TIS_MAJOR: Breaking changes or major KRA compliance updates
+    # - TIS_MINOR: New features or KRA requirement additions
+    # - TIS_PATCH: Bug fixes and minor improvements
+    'version': '17.2.0.0',
     'category': 'Accounting/Localizations',
-    'summary': 'KRA eTIMS OSCU integration for Kenya',
+    'summary': 'VumaERP KRA eTIMS OSCU integration for Kenya',
     'description': """
-Kenya eTIMS OSCU Integration for Odoo 17
+VumaERP Kenya eTIMS Integration
+===============================
 
-Compliant with KRA eTIMS requirements including:
+Trader Invoicing System (TIS) for Kenya Revenue Authority (KRA) eTIMS compliance.
+
+TIS IDENTIFICATION
+------------------
+- TIS Name: VumaERP
+- TIS Version: 2.0.0
+- Serial Number Format: VUMAERP{TIN}{BRANCH_ID}
+  Example: VUMAERPP051234567A00
+
+KRA eTIMS COMPLIANCE
+--------------------
 - OSCU (Online Sales Control Unit) device initialization
 - UNSPSC product classification codes
-- Product registration with KRA
+- Product registration with KRA before sales
 - Automatic stock movement reporting
-- Invoice submission to KRA eTIMS
+- Invoice submission with digital signatures
 - SCU (Signed Code Unit) receipt numbers
+- Payment-triggered submission (KPMG advisory compliant)
 
-Features:
+FEATURES
+--------
+- Auto-generated device serial numbers (VUMAERP convention)
 - Fetch and manage KRA standard codes (OSCU codes)
 - UNSPSC classification management for products
-- Product registration with eTIMS before sales
-- Automatic stock move reporting to eTIMS
-- Sales invoice submission with digital signatures
 - Multi-branch support with branch IDs
+- Sandbox and Production environment support
 
-Based on official Odoo 17 Kenya localization standards.
+VERSIONING
+----------
+Module version: 17.2.0.0 (Odoo 17, TIS v2.0.0)
+KRA TIS Version: 2.0.0
+
+For KRA registration, report TIS Version as: 2.0.0
     """,
     'author': 'VumaCloud',
     'website': 'https://vumacloud.com',
