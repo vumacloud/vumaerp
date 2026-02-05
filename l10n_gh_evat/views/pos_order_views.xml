@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend POS Order Form View -->
+    <record id="view_pos_order_form_evat" model="ir.ui.view">
+        <field name="name">pos.order.form.evat</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <!-- Add E-VAT submit button -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_evat" type="object"
+                        string="Submit to E-VAT"
+                        class="btn-primary"
+                        invisible="evat_submitted or state not in ('paid', 'done', 'invoiced')"/>
+            </xpath>
+
+            <!-- Add E-VAT tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="E-VAT" name="evat_tab">
+                    <group>
+                        <group string="Submission Status">
+                            <field name="evat_submitted"/>
+                            <field name="evat_submit_date"/>
+                        </group>
+                        <group string="E-VAT Receipt">
+                            <field name="evat_sdc_id"/>
+                            <field name="evat_sdc_time"/>
+                            <field name="evat_receipt_number"/>
+                        </group>
+                    </group>
+                    <group string="Technical Details" invisible="not evat_submitted">
+                        <field name="evat_internal_data"/>
+                        <field name="evat_signature"/>
+                        <field name="evat_qrcode" widget="url"/>
+                        <field name="evat_response" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend POS Order Tree View -->
+    <record id="view_pos_order_tree_evat" model="ir.ui.view">
+        <field name="name">pos.order.tree.evat</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="evat_submitted" string="E-VAT" optional="show"/>
+                <field name="evat_sdc_id" string="SDC ID" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

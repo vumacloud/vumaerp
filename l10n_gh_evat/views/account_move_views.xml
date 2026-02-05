@@ -25,6 +25,7 @@
                         </group>
                         <group string="E-VAT Receipt">
                             <field name="evat_sdc_id"/>
+                            <field name="evat_receipt_number"/>
                             <field name="evat_sdc_time"/>
                             <field name="evat_invoice_number"/>
                         </group>
@@ -33,7 +34,7 @@
                            invisible="not evat_submitted">
                         <field name="evat_internal_data"/>
                         <field name="evat_signature"/>
-                        <field name="evat_qrcode_url" widget="url"/>
+                        <field name="evat_qrcode" widget="url"/>
                         <field name="evat_response" readonly="1"/>
                     </group>
                 </page>
