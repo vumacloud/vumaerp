@@ -6,10 +6,35 @@
         <field name="arch" type="xml">
             <form string="eTIMS Configuration">
                 <header>
+                    <button name="action_initialize_device" type="object"
+                            string="Initialize Device" class="btn-primary"
+                            invisible="device_state == 'initialized'"
+                            confirm="This will register your device with KRA eTIMS and obtain the communication key. Continue?"/>
                     <button name="action_test_connection" type="object"
-                            string="Test Connection" class="btn-primary"/>
+                            string="Test Connection" class="btn-secondary"
+                            invisible="device_state != 'initialized'"/>
+                    <button name="action_reset_device" type="object"
+                            string="Reset Device" class="btn-link"
+                            invisible="device_state == 'draft'"
+                            confirm="This will reset the device state. You will need to re-initialize. Continue?"/>
+                    <field name="device_state" widget="statusbar"
+                           statusbar_visible="draft,initialized"/>
                 </header>
                 <sheet>
+                    <!-- Setup Guide Banner - shown before initialization -->
+                    <div class="alert alert-info" role="alert" invisible="device_state == 'initialized'">
+                        <strong>OSCU Setup Guide:</strong>
+                        <ol style="margin-bottom: 0; padding-left: 20px;">
+                            <li>Enter your KRA PIN (TIN) and Branch ID below</li>
+                            <li>Device Serial Number will be auto-generated</li>
+                            <li>Click <strong>"Initialize Device"</strong> to register with KRA and obtain communication key</li>
+                            <li>Once initialized, you can submit invoices to eTIMS</li>
+                        </ol>
+                    </div>
+                    <!-- Success Banner - shown after initialization -->
+                    <div class="alert alert-success" role="alert" invisible="device_state != 'initialized'">
+                        <strong>Device Initialized</strong> - Your OSCU device is registered with KRA eTIMS and ready to submit invoices.
+                    </div>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name"/></h1>
@@ -34,8 +59,22 @@
                             <field name="tin" placeholder="P000000000X"/>
                             <field name="bhf_id"/>
                             <field name="dvc_srl_no" placeholder="Auto-generated from TIN"/>
-                            <field name="cmn_key"/>
                         </group>
+                        <group string="Communication Key">
+                            <field name="cmn_key"
+                                   readonly="device_state == 'initialized'"
+                                   help="Automatically obtained from KRA during device initialization. Can be entered manually if needed."/>
+                            <field name="initialization_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group invisible="not initialization_error">
+                        <group string="Initialization Error" colspan="2">
+                            <div class="alert alert-danger" role="alert" style="margin-bottom: 0;">
+                                <field name="initialization_error" nolabel="1" readonly="1"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
                         <group string="Status">
                             <field name="last_request_date"/>
                         </group>
@@ -57,6 +96,11 @@
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="environment"/>
                 <field name="tin"/>
+                <field name="device_state" widget="badge"
+                       decoration-success="device_state == 'initialized'"
+                       decoration-warning="device_state == 'initializing'"
+                       decoration-danger="device_state == 'error'"
+                       decoration-muted="device_state == 'draft'"/>
                 <field name="last_request_date"/>
             </tree>
         </field>
@@ -68,12 +112,17 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Configure eTIMS integration
+                Configure eTIMS OSCU Integration
             </p>
             <p>
-                Enter your KRA PIN, device serial number, and other credentials
-                to start submitting invoices to eTIMS.
+                To set up your KRA eTIMS OSCU integration:
             </p>
+            <ol>
+                <li>Create a new configuration and enter your KRA PIN (TIN)</li>
+                <li>Click "Initialize Device" to register with KRA</li>
+                <li>The communication key will be obtained automatically</li>
+                <li>Start submitting invoices to eTIMS</li>
+            </ol>
         </field>
     </record>
 </odoo>

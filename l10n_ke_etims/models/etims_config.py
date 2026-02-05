@@ -72,6 +72,19 @@ class EtimsConfig(models.Model):
         store=False,
         help='TIS version number reported to KRA')
 
+    # OSCU Device Initialization Status
+    device_state = fields.Selection([
+        ('draft', 'Not Initialized'),
+        ('initializing', 'Initializing...'),
+        ('initialized', 'Initialized'),
+        ('error', 'Initialization Error'),
+    ], string='Device State', default='draft',
+        help='OSCU device initialization status with KRA')
+    initialization_date = fields.Datetime(string='Initialization Date',
+        help='Date when device was successfully initialized with KRA')
+    initialization_error = fields.Text(string='Initialization Error',
+        help='Last initialization error message from KRA')
+
     # Status
     last_request_date = fields.Datetime(string='Last Request')
     last_response = fields.Text(string='Last Response')
@@ -241,3 +254,196 @@ class EtimsConfig(models.Model):
                 'eTIMS not configured for %s. Go to Invoicing > Configuration > eTIMS Configuration.'
             ) % company.name)
         return config
+
+    # =========================================================================
+    # OSCU Device Initialization
+    # =========================================================================
+    # Per KRA eTIMS OSCU specifications, the TIS must call the OSCU initialization
+    # endpoint to register the device and receive the communication key.
+    #
+    # Flow:
+    # 1. TIS calls /selectInitOsdcInfo with TIN, branch ID, and device info
+    # 2. KRA verifies the device registration
+    # 3. KRA returns communication key (cmcKey/cmnKey) for subsequent API calls
+    # =========================================================================
+
+    def action_initialize_device(self):
+        """
+        Initialize OSCU device with KRA eTIMS.
+
+        This method calls the KRA eTIMS OSCU initialization endpoint to:
+        1. Register the device with KRA
+        2. Receive the communication key for API authentication
+
+        The communication key is required for all subsequent eTIMS API calls.
+        This is a critical step that must be completed before any invoice
+        submission or other eTIMS operations.
+
+        Endpoints:
+        - Sandbox: https://etims-api-sbx.kra.go.ke/etims-api/selectInitOsdcInfo
+        - Production: https://etims-api.kra.go.ke/etims-api/selectInitOsdcInfo
+        """
+        self.ensure_one()
+
+        if not self.tin:
+            raise UserError(_('Please enter your KRA PIN (TIN) first.'))
+
+        if not self.bhf_id:
+            raise UserError(_('Please enter your Branch ID first.'))
+
+        if not self.dvc_srl_no:
+            raise UserError(_('Please ensure Device Serial Number is set.'))
+
+        # Mark as initializing
+        self.write({
+            'device_state': 'initializing',
+            'initialization_error': False,
+        })
+
+        try:
+            # Call OSCU initialization endpoint
+            # This endpoint returns the communication key from KRA
+            result = self._call_oscu_init_api()
+
+            if result.get('resultCd') == '000':
+                # Success - extract and store communication key
+                data = result.get('data', {})
+
+                # KRA may return the key as 'cmcKey', 'cmnKey', or 'commKey'
+                comm_key = (
+                    data.get('cmcKey') or
+                    data.get('cmnKey') or
+                    data.get('commKey') or
+                    data.get('communicationKey')
+                )
+
+                if comm_key:
+                    self.write({
+                        'cmn_key': comm_key,
+                        'device_state': 'initialized',
+                        'initialization_date': fields.Datetime.now(),
+                        'initialization_error': False,
+                    })
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'display_notification',
+                        'params': {
+                            'title': _('Device Initialized'),
+                            'message': _('OSCU device successfully initialized with KRA. '
+                                        'Communication key received and stored.'),
+                            'type': 'success',
+                            'sticky': False,
+                        }
+                    }
+                else:
+                    # API succeeded but no key in response - might need manual entry
+                    self.write({
+                        'device_state': 'initialized',
+                        'initialization_date': fields.Datetime.now(),
+                        'initialization_error': _('Device verified but communication key not '
+                                                  'returned. Please contact KRA or enter key manually.'),
+                    })
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'display_notification',
+                        'params': {
+                            'title': _('Partial Success'),
+                            'message': _('Device verified with KRA but communication key was '
+                                        'not returned. Please enter the key manually or '
+                                        'contact KRA support.'),
+                            'type': 'warning',
+                            'sticky': True,
+                        }
+                    }
+            else:
+                # API returned error
+                error_msg = result.get('resultMsg', 'Unknown error from KRA')
+                self.write({
+                    'device_state': 'error',
+                    'initialization_error': f"KRA Error ({result.get('resultCd')}): {error_msg}",
+                })
+                raise UserError(_('KRA eTIMS Error: %s') % error_msg)
+
+        except UserError:
+            raise
+        except Exception as e:
+            self.write({
+                'device_state': 'error',
+                'initialization_error': str(e),
+            })
+            _logger.exception('OSCU device initialization failed')
+            raise UserError(_('Device initialization failed: %s') % str(e))
+
+    def _call_oscu_init_api(self):
+        """
+        Call the OSCU initialization endpoint.
+
+        This is separate from _call_api because initialization requests
+        don't include the communication key (we're requesting it).
+
+        Returns:
+            dict: API response with communication key on success
+        """
+        self.ensure_one()
+        url = self._get_api_url() + '/selectInitOsdcInfo'
+
+        # Build initialization request
+        # Per KRA specs: TIN, branch ID, device serial, and TIS info
+        data = {
+            'tin': self.tin,
+            'bhfId': self.bhf_id,
+            'dvcSrlNo': self.dvc_srl_no,
+            # TIS identification
+            'tisNm': TIS_NAME,
+            'tisVersion': TIS_VERSION,
+            # Additional device info that may be required
+            'dvcId': self.dvc_srl_no,  # Device ID (same as serial)
+        }
+
+        _logger.info('OSCU Init Request to %s: %s', url, json.dumps(data, indent=2))
+
+        try:
+            response = requests.post(
+                url,
+                json=data,
+                headers=self._prepare_headers(),
+                timeout=60  # Longer timeout for initialization
+            )
+            response.raise_for_status()
+            result = response.json()
+
+            # Log response
+            self.write({
+                'last_request_date': fields.Datetime.now(),
+                'last_response': json.dumps(result, indent=2),
+            })
+
+            _logger.info('OSCU Init Response: %s', json.dumps(result, indent=2))
+            return result
+
+        except requests.exceptions.RequestException as e:
+            _logger.error('OSCU Init API Error: %s', str(e))
+            raise UserError(_('Failed to connect to KRA eTIMS: %s') % str(e))
+
+    def action_reset_device(self):
+        """
+        Reset device initialization state.
+
+        This allows re-initialization if there was an error or if the
+        communication key needs to be refreshed.
+        """
+        self.ensure_one()
+        self.write({
+            'device_state': 'draft',
+            'initialization_error': False,
+            # Keep the communication key if it exists - user can clear manually
+        })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Device Reset'),
+                'message': _('Device state reset. You can now re-initialize.'),
+                'type': 'info',
+            }
+        }
