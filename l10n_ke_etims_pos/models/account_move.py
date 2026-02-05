@@ -83,8 +83,8 @@ class AccountMove(models.Model):
             return False
 
         try:
-            # Use the existing action_submit_to_etims method from base module
-            self.action_submit_to_etims()
+            # Use the existing action_submit_etims method from base module
+            self.action_submit_etims()
             _logger.info(
                 'Invoice %s auto-submitted to eTIMS on payment receipt',
                 self.name
