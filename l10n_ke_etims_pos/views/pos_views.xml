@@ -82,6 +82,10 @@
         <field name="model">pos.session</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
         <field name="arch" type="xml">
+            <!-- Add invisible field for modifier evaluation -->
+            <xpath expr="//form" position="inside">
+                <field name="etims_submission_complete" invisible="1"/>
+            </xpath>
             <xpath expr="//header" position="inside">
                 <button name="action_submit_pending_etims" type="object"
                         string="Submit Pending to eTIMS"
