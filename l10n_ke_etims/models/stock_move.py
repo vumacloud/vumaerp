@@ -28,14 +28,20 @@ class StockMove(models.Model):
         copy=False,
         help='Indicates if this stock move has been reported to KRA eTIMS',
     )
+    l10n_ke_etims_sar_no = fields.Char(
+        string='SAR Number',
+        copy=False,
+        readonly=True,
+        help='Stock Adjustment/Receipt Number assigned by eTIMS'
+    )
     l10n_ke_etims_move_type = fields.Selection([
         ('01', 'Import'),
         ('02', 'Purchase'),
-        ('03', 'Return'),
-        ('04', 'Stock Movement'),
-        ('05', 'Processing'),
-        ('06', 'Adjustment'),
-    ], string='eTIMS Move Type', copy=False)
+        ('11', 'Opening Stock'),
+        ('12', 'Incoming Transfer'),
+        ('21', 'Outgoing Transfer'),
+    ], string='eTIMS Move Type', copy=False,
+       help='Stock type per OSCU spec Section 4.14')
 
     l10n_ke_etims_report_date = fields.Datetime(
         string='eTIMS Report Date',
@@ -93,16 +99,18 @@ class StockMove(models.Model):
         stock_data = self._prepare_etims_stock_data(config, move_type)
 
         try:
-            result = config._call_api('/saveStockMaster', stock_data)
+            # Per OSCU spec: use /insertStockIO for stock movements
+            result = config._call_api('/insertStockIO', stock_data)
 
             if result.get('resultCd') == '000':
                 self.write({
                     'l10n_ke_etims_reported': True,
+                    'l10n_ke_etims_sar_no': str(stock_data.get('sarNo', '')),
                     'l10n_ke_etims_move_type': move_type,
                     'l10n_ke_etims_report_date': fields.Datetime.now(),
                     'l10n_ke_etims_response': str(result),
                 })
-                _logger.info('Stock move %s reported to eTIMS', self.id)
+                _logger.info('Stock move %s reported to eTIMS with SAR #%s', self.id, stock_data.get('sarNo'))
             else:
                 error_msg = result.get('resultMsg', 'Unknown error')
                 _logger.warning('eTIMS stock report failed: %s', error_msg)
@@ -113,12 +121,21 @@ class StockMove(models.Model):
             self.l10n_ke_etims_response = str(e)
 
     def _determine_etims_move_type(self):
-        """Determine the eTIMS stock movement type based on picking type."""
+        """
+        Determine the eTIMS stock adjustment/receipt type (sarTyCd).
+
+        Per OSCU Spec Section 4.14:
+        01 = Import
+        02 = Purchase
+        11 = Opening Stock
+        12 = Incoming Transfer
+        21 = Outgoing Transfer
+        """
         self.ensure_one()
 
         picking = self.picking_id
         if not picking:
-            return '06'  # Adjustment
+            return '11'  # Opening Stock / Adjustment
 
         # Check picking type
         if picking.picking_type_code == 'incoming':
@@ -128,21 +145,42 @@ class StockMove(models.Model):
             # Check for incoming from supplier
             if picking.partner_id and picking.partner_id.supplier_rank > 0:
                 return '02'  # Purchase
-            return '03'  # Return (e.g., customer return)
+            return '12'  # Incoming Transfer (e.g., customer return)
 
         elif picking.picking_type_code == 'outgoing':
-            # Check if it's a sale or return
-            if hasattr(picking, 'sale_id') and picking.sale_id:
-                return '04'  # Stock Movement (Sale)
-            return '04'  # Stock Movement
+            return '21'  # Outgoing Transfer (Sales/Transfers out)
 
         elif picking.picking_type_code == 'internal':
-            return '04'  # Internal transfer
+            # For internal transfers, determine direction
+            if self.location_dest_id.usage == 'internal':
+                return '12'  # Incoming Transfer
+            else:
+                return '21'  # Outgoing Transfer
 
-        return '06'  # Default to adjustment
+        return '11'  # Default to Opening Stock
+
+    def _get_next_sar_number(self):
+        """Get the next sequential SAR (Stock Adjustment/Receipt) number."""
+        self.ensure_one()
+        self.env.cr.execute("""
+            SELECT COALESCE(MAX(CAST(l10n_ke_etims_sar_no AS INTEGER)), 0) + 1
+            FROM stock_move
+            WHERE company_id = %s
+            AND l10n_ke_etims_sar_no IS NOT NULL
+            AND l10n_ke_etims_sar_no ~ '^[0-9]+$'
+        """, (self.company_id.id,))
+        result = self.env.cr.fetchone()
+        return result[0] if result else 1
 
     def _prepare_etims_stock_data(self, config, move_type):
-        """Prepare stock movement data for eTIMS API."""
+        """
+        Prepare stock movement data for eTIMS API (StockIOSaveReq).
+
+        Per OSCU spec, the structure requires:
+        - sarNo: Sequential SAR number (NUMBER 38)
+        - regTyCd: "M" for Manual or "A" for Automatic
+        - sarTyCd: Stock type from Section 4.14
+        """
         self.ensure_one()
 
         product = self.product_id
@@ -162,14 +200,17 @@ class StockMove(models.Model):
 
         supply_amount = unit_price * self.product_uom_qty
 
+        # Get next SAR number
+        sar_no = self._get_next_sar_number()
+
         return {
-            'sarNo': self.id,  # Stock Adjustment/Receipt Number
+            'sarNo': sar_no,  # Stock Adjustment/Receipt Number (unique sequence)
             'orgSarNo': 0,  # Original SAR number for adjustments
-            'regTyCd': move_type,  # Registration Type Code
+            'regTyCd': 'A',  # Registration Type: A=Automatic (system-generated)
             'custTin': self.picking_id.partner_id.vat if self.picking_id and self.picking_id.partner_id else '',
             'custNm': (self.picking_id.partner_id.name if self.picking_id and self.picking_id.partner_id else '')[:100],
             'custBhfId': '00',
-            'sarTyCd': move_type,  # Stock Adjustment/Receipt Type Code
+            'sarTyCd': move_type,  # Stock Adjustment/Receipt Type Code (from Section 4.14)
             'ocrnDt': move_date,  # Occurrence Date
             'totItemCnt': 1,
             'totTaxblAmt': round(supply_amount, 2),
@@ -299,7 +340,8 @@ class StockQuant(models.Model):
             }
 
             try:
-                result = config._call_api('/updateStockMaster', stock_data)
+                # Per OSCU spec: /saveStockMaster for updating remaining quantity
+                result = config._call_api('/saveStockMaster', stock_data)
                 if result.get('resultCd') == '000':
                     success_count += 1
                 else:

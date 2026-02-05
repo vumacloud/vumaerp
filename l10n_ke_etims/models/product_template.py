@@ -293,7 +293,7 @@ class ProductTemplate(models.Model):
             'grpPrcL3': self.list_price or 0,
             'grpPrcL4': self.list_price or 0,
             'grpPrcL5': self.list_price or 0,
-            'addInfo': (self.description_sale or '')[:200] if self.description_sale else '',
+            'addInfo': (self.description_sale or '')[:7] if self.description_sale else '',  # Max 7 chars per spec
             'sftyQty': 0,
             'isrcAplcbYn': 'Y' if self.l10n_ke_insurance_applicable else 'N',
             'useYn': 'Y' if self.active else 'N',

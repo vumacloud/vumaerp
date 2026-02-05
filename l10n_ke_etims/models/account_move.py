@@ -12,13 +12,117 @@ class AccountMove(models.Model):
 
     # eTIMS Fields
     etims_submitted = fields.Boolean(string='Submitted to eTIMS', copy=False)
-    etims_scu_no = fields.Char(string='SCU No', copy=False, readonly=True,
-                               help='Signed Code Unit number from KRA')
+    etims_invoice_number = fields.Integer(
+        string='eTIMS Invoice Number',
+        copy=False,
+        readonly=True,
+        help='Sequential numeric invoice number for eTIMS (invcNo)'
+    )
+
+    # Receipt type per TIS spec Section 4
+    etims_transaction_type = fields.Selection([
+        ('NORMAL', 'Normal'),
+        ('COPY', 'Copy'),
+        ('TRAINING', 'Training'),
+        ('PROFORMA', 'Proforma'),
+    ], string='Transaction Type', default='NORMAL', copy=False,
+       help='Transaction type per TIS spec: NORMAL, COPY, TRAINING, or PROFORMA')
+
+    etims_receipt_type_label = fields.Char(
+        string='Receipt Type',
+        compute='_compute_etims_receipt_type_label',
+        store=True,
+        help='Receipt type label per TIS spec (NS, NC, CS, CC, TS, TC, PS)'
+    )
+
+    etims_cu_invoice_number = fields.Char(
+        string='CU Invoice Number',
+        copy=False,
+        readonly=True,
+        compute='_compute_etims_cu_invoice_number',
+        store=True,
+        help='Formatted CU Invoice Number: {CU_ID}/{Receipt_Number}'
+    )
+    etims_sdc_id = fields.Char(string='SDC ID', copy=False, readonly=True,
+                               help='SDC/CU ID from device initialization')
     etims_rcpt_no = fields.Char(string='Receipt No', copy=False, readonly=True)
     etims_intrl_data = fields.Char(string='Internal Data', copy=False, readonly=True)
     etims_rcpt_sign = fields.Char(string='Receipt Signature', copy=False, readonly=True)
+    etims_sdc_datetime = fields.Char(string='SDC DateTime', copy=False, readonly=True,
+                                     help='Date/time from OSCU/VSCU')
     etims_submit_date = fields.Datetime(string='eTIMS Submit Date', copy=False, readonly=True)
     etims_response = fields.Text(string='eTIMS Response', copy=False, readonly=True)
+
+    # QR Code
+    etims_qr_code = fields.Binary(
+        string='eTIMS QR Code',
+        compute='_compute_etims_qr_code',
+        help='QR code for receipt per TIS spec'
+    )
+
+    @api.depends('etims_transaction_type', 'move_type')
+    def _compute_etims_receipt_type_label(self):
+        """Compute receipt type label per TIS spec Section 4."""
+        for move in self:
+            if move.move_type == 'out_refund':
+                receipt_type = 'CREDIT_NOTE'
+            else:
+                receipt_type = 'SALES'
+
+            trans_type = move.etims_transaction_type or 'NORMAL'
+
+            labels = {
+                ('NORMAL', 'SALES'): 'NS',
+                ('NORMAL', 'CREDIT_NOTE'): 'NC',
+                ('COPY', 'SALES'): 'CS',
+                ('COPY', 'CREDIT_NOTE'): 'CC',
+                ('TRAINING', 'SALES'): 'TS',
+                ('TRAINING', 'CREDIT_NOTE'): 'TC',
+                ('PROFORMA', 'SALES'): 'PS',
+            }
+            move.etims_receipt_type_label = labels.get((trans_type, receipt_type), 'NS')
+
+    @api.depends('etims_submitted', 'etims_sdc_datetime', 'etims_sdc_id', 'etims_rcpt_no',
+                 'etims_intrl_data', 'etims_rcpt_sign')
+    def _compute_etims_qr_code(self):
+        """Generate QR code image per TIS spec."""
+        import base64
+        for move in self:
+            if not move.etims_submitted:
+                move.etims_qr_code = False
+                continue
+
+            # Get QR image from mixin
+            qr_base64 = move.get_etims_qr_image()
+            if qr_base64:
+                move.etims_qr_code = qr_base64
+            else:
+                move.etims_qr_code = False
+
+    @api.depends('etims_sdc_id', 'etims_rcpt_no')
+    def _compute_etims_cu_invoice_number(self):
+        """Compute CU Invoice Number in format: {CU_ID}/{Receipt_Number}"""
+        for move in self:
+            if move.etims_sdc_id and move.etims_rcpt_no:
+                move.etims_cu_invoice_number = f"{move.etims_sdc_id}/{move.etims_rcpt_no}"
+            else:
+                move.etims_cu_invoice_number = False
+
+    def _get_next_etims_invoice_number(self):
+        """
+        Get the next sequential eTIMS invoice number.
+        Per OSCU spec, invcNo must be a NUMBER (integer sequence).
+        """
+        self.ensure_one()
+        # Get the max invoice number for this company
+        self.env.cr.execute("""
+            SELECT COALESCE(MAX(etims_invoice_number), 0) + 1
+            FROM account_move
+            WHERE company_id = %s
+            AND etims_invoice_number IS NOT NULL
+        """, (self.company_id.id,))
+        result = self.env.cr.fetchone()
+        return result[0] if result else 1
 
     def _get_etims_date(self, dt=None):
         """Format date for eTIMS: YYYYMMDD"""
@@ -147,12 +251,45 @@ class AccountMove(models.Model):
         # Payment type (simplified - could be enhanced)
         pmt_ty_cd = '01'  # 01=Cash, 02=Credit, 03=Cash/Credit, etc.
 
+        # Get eTIMS invoice number (must be a NUMBER per spec)
+        etims_invc_no = self.etims_invoice_number or self._get_next_etims_invoice_number()
+
+        # Handle original invoice number for credit notes
+        org_invc_no = 0
+        if self.move_type == 'out_refund' and self.reversed_entry_id:
+            # Get the original invoice's eTIMS invoice number
+            if self.reversed_entry_id.etims_invoice_number:
+                org_invc_no = self.reversed_entry_id.etims_invoice_number
+
+        # Get refund reason code (per OSCU spec Section 4.16: 01-05 only)
+        rfd_rsn_cd = ''
+        if self.move_type == 'out_refund':
+            # Map to valid KRA codes: 01=Return, 02=Incorrect info, 03=Omission, 04=Cancellation, 05=Other
+            if hasattr(self, 'etims_refund_reason') and self.etims_refund_reason:
+                reason = self.etims_refund_reason
+                # Map old codes to new spec-compliant codes
+                reason_map = {
+                    '01': '01',  # Damage/Defect -> Return
+                    '02': '05',  # Change of Mind -> Other
+                    '03': '02',  # Wrong Item -> Incorrect info
+                    '04': '05',  # Late Delivery -> Other
+                    '05': '05',  # Duplicate -> Other
+                    '06': '02',  # Price Dispute -> Incorrect info
+                    '07': '03',  # Quantity Dispute -> Omission
+                    '08': '01',  # Quality Issues -> Return
+                    '09': '04',  # Cancellation -> Cancellation
+                    '10': '05',  # Other -> Other
+                }
+                rfd_rsn_cd = reason_map.get(reason, '05')
+            else:
+                rfd_rsn_cd = '01'
+
         payload = {
-            'invcNo': self.name or '',
-            'orgInvcNo': 0,  # Original invoice for refunds
+            'trdInvcNo': (self.name or '')[:50],  # Trader invoice number (CHAR 50)
+            'invcNo': etims_invc_no,  # eTIMS invoice number (NUMBER 38)
+            'orgInvcNo': org_invc_no,  # Original invoice for refunds
             'custTin': self.partner_id.vat or '',
             'custNm': (self.partner_id.name or 'Cash Customer')[:100],
-            'salesTyCd': 'N',  # N=Normal, C=Copy
             'rcptTyCd': rcpt_ty_cd,
             'pmtTyCd': pmt_ty_cd,
             'salesSttsCd': '02',  # 02=Approved
@@ -162,7 +299,7 @@ class AccountMove(models.Model):
             'cnclReqDt': '',
             'cnclDt': '',
             'rfdDt': '' if rcpt_ty_cd == 'S' else self._get_etims_date(),
-            'rfdRsnCd': '' if rcpt_ty_cd == 'S' else '01',
+            'rfdRsnCd': rfd_rsn_cd,
             'totItemCnt': len(items),
             'taxblAmtA': round(totals['A'], 2),
             'taxblAmtB': round(totals['B'], 2),
@@ -191,7 +328,7 @@ class AccountMove(models.Model):
             'receipt': {
                 'custTin': self.partner_id.vat or '',
                 'custMblNo': self.partner_id.mobile or self.partner_id.phone or '',
-                'rptNo': 0,
+                'rcptPbctDt': self._get_etims_datetime(),  # Receipt published datetime (CHAR 14, YYYYMMDDHHmmss)
                 'trdeNm': (self.partner_id.name or '')[:100],
                 'adrs': (self.partner_id.street or '')[:200],
                 'topMsg': '',
@@ -245,17 +382,24 @@ class AccountMove(models.Model):
 
         # Prepare and send
         payload = self._prepare_etims_payload()
-        result = config._call_api('/trnsSales/saveSalesWr', payload)
+        result = config._call_api('/saveTrnsSalesOsdc', payload)
 
-        # Process response
+        # Process response per OSCU spec TrnsSalesSaveWrRes
         if result.get('resultCd') == '000':
             data = result.get('data', {})
+            # Get SDC ID from config (set during device initialization)
+            sdc_id = config.sdc_id if hasattr(config, 'sdc_id') else ''
+            # Per OSCU spec: curRcptNo is the current receipt number
+            rcpt_no = str(data.get('curRcptNo', data.get('rcptNo', '')))
+
             self.write({
                 'etims_submitted': True,
-                'etims_scu_no': data.get('scuNo'),
-                'etims_rcpt_no': str(data.get('rcptNo', '')),
-                'etims_intrl_data': data.get('intrlData'),
-                'etims_rcpt_sign': data.get('rcptSign'),
+                'etims_invoice_number': payload.get('invcNo'),  # Store the invoice number we sent
+                'etims_sdc_id': sdc_id,
+                'etims_rcpt_no': rcpt_no,
+                'etims_intrl_data': data.get('intrlData', ''),
+                'etims_rcpt_sign': data.get('rcptSign', ''),
+                'etims_sdc_datetime': data.get('sdcDateTime', ''),
                 'etims_submit_date': fields.Datetime.now(),
                 'etims_response': str(result),
             })
@@ -264,7 +408,7 @@ class AccountMove(models.Model):
                 'tag': 'display_notification',
                 'params': {
                     'title': _('Success'),
-                    'message': _('Invoice submitted to eTIMS. SCU: %s') % data.get('scuNo'),
+                    'message': _('Invoice submitted to eTIMS. Receipt #: %s') % rcpt_no,
                     'type': 'success',
                 }
             }

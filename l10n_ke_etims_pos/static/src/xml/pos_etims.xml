@@ -1,16 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <!-- Extend receipt to show eTIMS information -->
+    <!-- Extend receipt to show eTIMS information per TIS spec Section 6.23 -->
     <t t-name="l10n_ke_etims_pos.EtimsReceiptInfo" owl="1">
         <t t-if="receipt.etims_submitted">
             <div class="etims-info" style="text-align: center; margin-top: 10px; border-top: 1px dashed #000; padding-top: 10px;">
-                <div style="font-weight: bold;">KRA eTIMS</div>
-                <div t-if="receipt.etims_scu_no">
-                    SCU: <t t-esc="receipt.etims_scu_no"/>
+                <div style="font-weight: bold; font-size: 14px;">KRA eTIMS</div>
+
+                <!-- SCU Information Designation -->
+                <div style="font-size: 10px; margin-top: 5px;">SIGNED CODE UNIT (SCU) INFORMATION</div>
+
+                <!-- SDC ID (CU ID) per spec: KRACU04XXXXXXXX format -->
+                <div t-if="receipt.etims_sdc_id" style="margin-top: 3px;">
+                    CU ID: <t t-esc="receipt.etims_sdc_id"/>
                 </div>
-                <div t-if="receipt.etims_rcpt_no">
+
+                <!-- CU Invoice Number per spec: {CU_ID}/{Receipt_Number} -->
+                <div t-if="receipt.etims_cu_invoice_number" style="font-weight: bold;">
+                    CU Invoice #: <t t-esc="receipt.etims_cu_invoice_number"/>
+                </div>
+                <div t-elif="receipt.etims_rcpt_no">
                     Receipt #: <t t-esc="receipt.etims_rcpt_no"/>
+                </div>
+
+                <!-- Receipt Type Label (NS, NC, CS, CC, TS, TC, PS) -->
+                <div t-if="receipt.etims_receipt_type_label" style="font-weight: bold; margin-top: 3px;">
+                    Type: <t t-esc="receipt.etims_receipt_type_label"/>
+                </div>
+
+                <!-- SDC DateTime -->
+                <div t-if="receipt.etims_sdc_datetime" style="font-size: 10px;">
+                    Date/Time: <t t-esc="receipt.etims_sdc_datetime"/>
+                </div>
+
+                <!-- Internal Data (formatted with dashes per spec) -->
+                <div t-if="receipt.etims_intrl_data_formatted" style="font-size: 9px; margin-top: 5px; word-break: break-all;">
+                    Internal Data:<br/>
+                    <t t-esc="receipt.etims_intrl_data_formatted"/>
+                </div>
+
+                <!-- Receipt Signature (formatted with dashes per spec) -->
+                <div t-if="receipt.etims_rcpt_sign_formatted" style="font-size: 9px; margin-top: 3px; word-break: break-all;">
+                    Signature:<br/>
+                    <t t-esc="receipt.etims_rcpt_sign_formatted"/>
+                </div>
+
+                <!-- QR Code per TIS spec Section 6.23.8 -->
+                <div t-if="receipt.etims_qr_image" style="margin-top: 10px;">
+                    <img t-att-src="'data:image/png;base64,' + receipt.etims_qr_image"
+                         style="width: 120px; height: 120px;"
+                         alt="eTIMS QR Code"/>
+                </div>
+
+                <!-- Copy receipt watermark per TIS spec Section 11 -->
+                <div t-if="receipt.etims_transaction_type === 'COPY'"
+                     style="font-weight: bold; font-size: 12px; margin-top: 5px; color: #666;">
+                    *** THIS IS NOT AN OFFICIAL RECEIPT ***
+                </div>
+
+                <!-- Training mode watermark -->
+                <div t-if="receipt.etims_transaction_type === 'TRAINING'"
+                     style="font-weight: bold; font-size: 12px; margin-top: 5px; color: #666;">
+                    *** TRAINING MODE - NOT VALID ***
                 </div>
             </div>
         </t>
@@ -25,23 +76,18 @@
         </xpath>
     </t>
 
-    <!-- Refund reason selector for return orders -->
+    <!-- Refund reason selector for return orders (per OSCU Spec Section 4.16) -->
     <t t-name="l10n_ke_etims_pos.RefundReasonSelector" owl="1">
         <div class="etims-refund-reason" t-if="isReturnOrder">
             <label for="etims_refund_reason">Refund Reason (eTIMS):</label>
             <select id="etims_refund_reason"
                     t-on-change="onRefundReasonChange"
                     class="form-select">
-                <option value="01">Damage/Defect</option>
-                <option value="02">Change of Mind</option>
-                <option value="03">Wrong Item Delivered</option>
-                <option value="04">Late Delivery</option>
-                <option value="05">Duplicate Order</option>
-                <option value="06">Price Dispute</option>
-                <option value="07">Quantity Dispute</option>
-                <option value="08">Quality Issues</option>
-                <option value="09">Order Cancellation</option>
-                <option value="10">Other</option>
+                <option value="01">Return</option>
+                <option value="02">Incorrect Information</option>
+                <option value="03">Omission</option>
+                <option value="04">Cancellation</option>
+                <option value="05">Other</option>
             </select>
         </div>
     </t>
