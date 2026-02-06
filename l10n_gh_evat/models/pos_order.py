@@ -132,6 +132,7 @@ class PosOrder(models.Model):
             'quantity': str(round(line.qty, 3)),
             'levyAmountA': levy_a,
             'levyAmountB': levy_b,
+            'levyAmountC': 0,  # COVID levy - include even if 0 per v8.2 spec
             'levyAmountD': levy_d,
             'levyAmountE': levy_e,
             'discountAmount': discount_amt,
@@ -175,9 +176,14 @@ class PosOrder(models.Model):
 
         # POS typically uses EXCLUSIVE pricing (base price shown, taxes added)
         # totalAmount = base amount for EXCLUSIVE
+        # Exchange rate: use actual rate for foreign currency, 1.0 for GHS
+        exchange_rate = '1.0'
+        if self.currency_id and self.currency_id.name != 'GHS':
+            exchange_rate = str(self.currency_id.rate or 1.0)
+
         payload = {
             'currency': self.currency_id.name or 'GHS',
-            'exchangeRate': '1.0',
+            'exchangeRate': exchange_rate,
             'invoiceNumber': self.pos_reference or self.name or '',
             'totalLevy': round(total_levy, 2),
             'userName': config.user_name,
