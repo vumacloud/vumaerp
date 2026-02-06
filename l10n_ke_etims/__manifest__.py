@@ -6,7 +6,7 @@
     # - TIS_MAJOR: Breaking changes or major KRA compliance updates
     # - TIS_MINOR: New features or KRA requirement additions
     # - TIS_PATCH: Bug fixes and minor improvements
-    'version': '17.0.2.0.0',
+    'version': '17.0.2.0.1',
     'category': 'Accounting/Localizations',
     'summary': 'VumaERP KRA eTIMS OSCU integration for Kenya',
     'description': """
@@ -53,7 +53,6 @@ For KRA registration, report TIS Version as: 2.0.0
     'depends': [
         'account',
         'product',
-        'stock',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -63,7 +62,6 @@ For KRA registration, report TIS Version as: 2.0.0
         'views/etims_code_views.xml',
         'views/etims_daily_report_views.xml',
         'views/product_views.xml',
-        'views/stock_views.xml',
         'views/account_move_views.xml',
         'views/menu.xml',
     ],
