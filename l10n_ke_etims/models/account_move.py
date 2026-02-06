@@ -111,30 +111,38 @@ class AccountMove(models.Model):
     def _get_next_etims_invoice_number(self):
         """
         Get the next sequential eTIMS invoice number.
-        Per OSCU spec, invcNo must be a NUMBER (integer sequence).
-
-        Uses PostgreSQL advisory lock to prevent race conditions when
-        multiple invoices are submitted simultaneously.
+        Uses PostgreSQL advisory lock to prevent race conditions.
         """
         self.ensure_one()
-        # Acquire advisory lock for this company's invoice number sequence
-        # Uses a hash of 'etims_invc_no_{company_id}' as the lock key
         self.env.cr.execute(
             "SELECT pg_advisory_xact_lock(hashtext(%s))",
             (f'etims_invc_no_{self.company_id.id}',)
         )
-        # Get the max invoice number for this company from both invoices and POS orders
-        self.env.cr.execute("""
-            SELECT COALESCE(MAX(max_num), 0) + 1 FROM (
-                SELECT MAX(etims_invoice_number) as max_num
+        # Check if pos_order table exists (POS module may not be installed)
+        self.env.cr.execute(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'pos_order')"
+        )
+        has_pos = self.env.cr.fetchone()[0]
+
+        if has_pos:
+            self.env.cr.execute("""
+                SELECT COALESCE(MAX(max_num), 0) + 1 FROM (
+                    SELECT MAX(etims_invoice_number) as max_num
+                    FROM account_move
+                    WHERE company_id = %s AND etims_invoice_number IS NOT NULL
+                    UNION ALL
+                    SELECT MAX(etims_invoice_number) as max_num
+                    FROM pos_order
+                    WHERE company_id = %s AND etims_invoice_number IS NOT NULL
+                ) combined
+            """, (self.company_id.id, self.company_id.id))
+        else:
+            self.env.cr.execute("""
+                SELECT COALESCE(MAX(etims_invoice_number), 0) + 1
                 FROM account_move
                 WHERE company_id = %s AND etims_invoice_number IS NOT NULL
-                UNION ALL
-                SELECT MAX(etims_invoice_number) as max_num
-                FROM pos_order
-                WHERE company_id = %s AND etims_invoice_number IS NOT NULL
-            ) combined
-        """, (self.company_id.id, self.company_id.id))
+            """, (self.company_id.id,))
+
         result = self.env.cr.fetchone()
         return result[0] if result else 1
 
