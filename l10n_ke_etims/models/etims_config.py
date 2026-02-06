@@ -321,6 +321,79 @@ class EtimsConfig(models.Model):
             ) % company.name)
         return config
 
+    def check_connection(self, raise_on_error=True):
+        """
+        OSCU Connection Guard - Check if device is properly initialized
+        and ready for eTIMS operations.
+
+        This method should be called before any eTIMS submission to ensure:
+        1. Device is initialized with KRA
+        2. Communication key is available
+        3. SDC ID is set (for receipt formatting)
+
+        Args:
+            raise_on_error: If True, raises UserError on failure.
+                           If False, returns (success, error_message) tuple.
+
+        Returns:
+            If raise_on_error=True: True if connection is valid
+            If raise_on_error=False: (bool, str) tuple - (success, error_message)
+        """
+        self.ensure_one()
+
+        errors = []
+
+        # Check device initialization state
+        if self.device_state != 'initialized':
+            if self.device_state == 'error':
+                errors.append(_(
+                    'Device initialization failed. Error: %s\n'
+                    'Please fix the issue and re-initialize the device.'
+                ) % (self.initialization_error or 'Unknown error'))
+            elif self.device_state == 'initializing':
+                errors.append(_('Device initialization is in progress. Please wait.'))
+            else:
+                errors.append(_(
+                    'OSCU device not initialized with KRA.\n'
+                    'Go to eTIMS Configuration and click "Initialize Device".'
+                ))
+
+        # Check communication key
+        if not self.cmn_key:
+            errors.append(_(
+                'Communication key not set. Device must be initialized with KRA '
+                'to receive the communication key.'
+            ))
+
+        # Check SDC ID (needed for receipt formatting)
+        if not self.sdc_id:
+            errors.append(_(
+                'SDC/CU ID not set. This is usually received during device initialization. '
+                'Please re-initialize the device or enter the SDC ID manually.'
+            ))
+
+        if errors:
+            error_msg = '\n\n'.join(errors)
+            if raise_on_error:
+                raise UserError(_('eTIMS Connection Check Failed:\n\n%s') % error_msg)
+            return (False, error_msg)
+
+        return (True, '') if not raise_on_error else True
+
+    def is_ready(self):
+        """
+        Quick check if eTIMS is ready for operations.
+
+        Returns True if device is initialized and all required credentials are set.
+        Does not raise errors - use check_connection() for that.
+        """
+        self.ensure_one()
+        return (
+            self.device_state == 'initialized' and
+            bool(self.cmn_key) and
+            bool(self.sdc_id)
+        )
+
     # =========================================================================
     # OSCU Device Initialization
     # =========================================================================

@@ -41,18 +41,13 @@ INVOICE/PAYMENT FEATURES
 * Batch payment registration support
 * Clear audit trail for compliance
 
-REFUND REASON CODES (per KRA)
------------------------------
-* 01 - Damage/Defect
-* 02 - Change of Mind
-* 03 - Wrong Item Delivered
-* 04 - Late Delivery
-* 05 - Duplicate Order
-* 06 - Price Dispute
-* 07 - Quantity Dispute
-* 08 - Quality Issues
-* 09 - Order Cancellation
-* 10 - Other
+REFUND REASON CODES (per OSCU Spec Section 4.16)
+------------------------------------------------
+* 01 - Return
+* 02 - Incorrect Information
+* 03 - Omission
+* 04 - Cancellation
+* 05 - Other
 
 This module requires the base Kenya eTIMS module (l10n_ke_etims).
     """,

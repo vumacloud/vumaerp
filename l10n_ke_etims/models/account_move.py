@@ -182,16 +182,25 @@ class AccountMove(models.Model):
             tax_code = self._get_etims_tax_code(tax)
 
         tax_amt = tax.amount if tax else 0
+        tax_is_inclusive = tax.price_include if tax else True
 
         unit_price = line.price_unit
         qty = line.quantity
         discount_amt = (line.price_unit * line.quantity * line.discount / 100) if line.discount else 0
         supply_amt = (unit_price * qty) - discount_amt
 
-        # Calculate tax
+        # Calculate tax - handle both inclusive and exclusive pricing for B2B support
         if tax_amt > 0:
-            taxable_amt = supply_amt / (1 + tax_amt / 100)
-            tax_amount = supply_amt - taxable_amt
+            if tax_is_inclusive:
+                # Tax-inclusive: price already includes tax, extract taxable amount
+                taxable_amt = supply_amt / (1 + tax_amt / 100)
+                tax_amount = supply_amt - taxable_amt
+            else:
+                # Tax-exclusive: price is net, calculate tax to add
+                taxable_amt = supply_amt
+                tax_amount = supply_amt * tax_amt / 100
+                # For eTIMS, supply_amt should be the gross amount
+                supply_amt = taxable_amt + tax_amount
         else:
             taxable_amt = supply_amt
             tax_amount = 0
@@ -400,8 +409,9 @@ class AccountMove(models.Model):
                 '\n\nGo to the product form, eTIMS Kenya tab, and select a UNSPSC Classification.'
             ) % product_names)
 
-        # Get config
+        # Get config and verify OSCU connection
         config = self.env['etims.config'].get_config(self.company_id)
+        config.check_connection()  # OSCU Connection Guard - raises if not ready
 
         # Prepare and send
         payload = self._prepare_etims_payload()
