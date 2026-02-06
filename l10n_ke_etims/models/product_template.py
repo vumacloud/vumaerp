@@ -273,7 +273,22 @@ class ProductTemplate(models.Model):
         """Prepare item data for eTIMS API."""
         self.ensure_one()
 
-        item_code = self.default_code or self.l10n_ke_etims_item_code or str(self.id)
+        # Generate spec-format item code if none set
+        # Format: {CountryCode}{ProductType}{PkgUnit}{QtyUnit}{SeqNo}
+        if self.l10n_ke_etims_item_code:
+            item_code = self.l10n_ke_etims_item_code
+        elif self.default_code:
+            item_code = self.default_code
+        else:
+            # Generate spec-format code
+            country_code = 'KE'
+            if self.l10n_ke_origin_country_id and self.l10n_ke_origin_country_id.code:
+                country_code = self.l10n_ke_origin_country_id.code[:2]
+            product_type = self.l10n_ke_product_type or '2'
+            pkg_unit = self.l10n_ke_pkg_unit_code or 'NT'
+            qty_unit = self.l10n_ke_qty_unit_code or 'U'
+            seq_no = str(self.id).zfill(8)
+            item_code = f"{country_code}{product_type}{pkg_unit}{qty_unit}{seq_no}"
 
         return {
             'itemCd': item_code[:20],  # Max 20 chars
@@ -351,13 +366,41 @@ class ProductProduct(models.Model):
         return self.product_tmpl_id.action_register_etims()
 
     def _get_etims_item_code(self):
-        """Get the eTIMS item code for this product."""
+        """
+        Get the eTIMS item code for this product.
+
+        Priority order:
+        1. Explicitly set eTIMS item code (from registration or manual entry)
+        2. Product's default_code/SKU
+        3. Auto-generated spec-format code: {CountryCode}{ProductType}{PkgUnit}{QtyUnit}{SeqNo}
+           Example: KE2NTU00001 (Kenya, Finished Product, Net packaging, Unit qty, ID 1)
+        """
         self.ensure_one()
-        return (
-            self.product_tmpl_id.l10n_ke_etims_item_code or
-            self.default_code or
-            str(self.id)
-        )
+        tmpl = self.product_tmpl_id
+
+        # Priority 1: Explicitly set eTIMS item code
+        if tmpl.l10n_ke_etims_item_code:
+            return tmpl.l10n_ke_etims_item_code
+
+        # Priority 2: Product's default_code/SKU
+        if self.default_code:
+            return self.default_code
+
+        # Priority 3: Generate spec-format item code
+        # Format: {CountryCode}{ProductType}{PkgUnit}{QtyUnit}{SeqNo}
+        country_code = 'KE'  # Kenya
+        if tmpl.l10n_ke_origin_country_id and tmpl.l10n_ke_origin_country_id.code:
+            country_code = tmpl.l10n_ke_origin_country_id.code[:2]
+
+        product_type = tmpl.l10n_ke_product_type or '2'  # Default: Finished Product
+        pkg_unit = tmpl.l10n_ke_pkg_unit_code or 'NT'
+        qty_unit = tmpl.l10n_ke_qty_unit_code or 'U'
+
+        # Sequence number based on product ID, zero-padded
+        # Keep total length <= 20 chars: 2 + 1 + 2 + 3 + 12 = 20 max
+        seq_no = str(self.id).zfill(8)
+
+        return f"{country_code}{product_type}{pkg_unit}{qty_unit}{seq_no}"
 
     def _get_etims_item_class_code(self):
         """Get the UNSPSC classification code for this product."""

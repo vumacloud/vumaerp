@@ -355,6 +355,7 @@ class PosOrder(models.Model):
             tax_code = self._get_etims_tax_code(tax)
 
         tax_amt = tax.amount if tax else 0
+        tax_is_inclusive = tax.price_include if tax else True
 
         # Get quantities - handle negative for refunds
         qty = abs(line.qty)
@@ -362,10 +363,18 @@ class PosOrder(models.Model):
         discount_amt = (abs(unit_price * line.qty) * line.discount / 100) if line.discount else 0
         supply_amt = abs(line.price_subtotal_incl)
 
-        # Calculate tax amounts
+        # Calculate tax amounts - handle both inclusive and exclusive pricing for B2B support
         if tax_amt > 0:
-            taxable_amt = supply_amt / (1 + tax_amt / 100)
-            tax_amount = supply_amt - taxable_amt
+            if tax_is_inclusive:
+                # Tax-inclusive: price already includes tax, extract taxable amount
+                taxable_amt = supply_amt / (1 + tax_amt / 100)
+                tax_amount = supply_amt - taxable_amt
+            else:
+                # Tax-exclusive: price is net, calculate tax to add
+                taxable_amt = supply_amt
+                tax_amount = supply_amt * tax_amt / 100
+                # For eTIMS, supply_amt should be the gross amount
+                supply_amt = taxable_amt + tax_amount
         else:
             taxable_amt = supply_amt
             tax_amount = 0
@@ -549,9 +558,15 @@ class PosOrder(models.Model):
         """Submit POS order to eTIMS."""
         self.ensure_one()
 
-        # Get config
+        # Get config and verify OSCU connection
         try:
             config = self.env['etims.config'].get_config(self.company_id)
+            # OSCU Connection Guard - check without raising to allow graceful degradation
+            is_ready, error_msg = config.check_connection(raise_on_error=False)
+            if not is_ready:
+                _logger.warning('eTIMS not ready for company %s: %s', self.company_id.name, error_msg)
+                self.etims_submission_error = error_msg
+                return False
         except UserError:
             _logger.warning('eTIMS not configured for company %s', self.company_id.name)
             return False
