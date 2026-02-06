@@ -152,6 +152,7 @@ class AccountMove(models.Model):
             'quantity': str(round(line.quantity, 3)),
             'levyAmountA': levy_a,
             'levyAmountB': levy_b,
+            'levyAmountC': 0,  # COVID levy - include even if 0 per v8.2 spec
             'levyAmountD': levy_d,
             'levyAmountE': levy_e,
             'discountAmount': round((line.price_unit * line.quantity) - base_amt, 2) if line.discount else 0,
@@ -202,6 +203,17 @@ class AccountMove(models.Model):
         else:
             total_amount = self.amount_total
 
+        # For refunds, reference must link to original invoice's E-VAT receipt number
+        reference = ''
+        if self.move_type == 'out_refund':
+            # Try to get original invoice from reversed_entry_id or ref
+            original_invoice = self.reversed_entry_id
+            if original_invoice and original_invoice.evat_receipt_number:
+                reference = original_invoice.evat_receipt_number
+            elif self.ref:
+                # Fallback to ref field
+                reference = self.ref
+
         payload = {
             'currency': self.currency_id.name or 'GHS',
             'exchangeRate': str(self.currency_id.rate or 1.0),
@@ -219,7 +231,7 @@ class AccountMove(models.Model):
             'saleType': 'NORMAL',
             'discountType': 'GENERAL',
             'discountAmount': round(total_discount, 2),
-            'reference': self.ref or '',
+            'reference': reference,
             'groupReferenceId': '',
             'purchaseOrderReference': self.invoice_origin or '',
             'items': items,

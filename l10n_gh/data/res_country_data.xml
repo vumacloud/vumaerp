@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Ghana's 16 Regions -->
-        <record id="state_gh_ah" model="res.country.state">
+        <!-- Ghana's 16 Regions (ISO 3166-2:GH codes) -->
+        <record id="state_gh_af" model="res.country.state">
             <field name="name">Ahafo</field>
-            <field name="code">AH</field>
+            <field name="code">AF</field>
             <field name="country_id" ref="base.gh"/>
         </record>
-        <record id="state_gh_af" model="res.country.state">
+        <record id="state_gh_ah" model="res.country.state">
             <field name="name">Ashanti</field>
-            <field name="code">AF</field>
+            <field name="code">AH</field>
             <field name="country_id" ref="base.gh"/>
         </record>
         <record id="state_gh_bo" model="res.country.state">
