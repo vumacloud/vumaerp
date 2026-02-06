@@ -210,6 +210,13 @@ class EtimsConfig(models.Model):
                       If False, sends the stored communication key.
         """
         self.ensure_one()
+
+        # Determine cmcKey value
+        if for_init:
+            cmc_key = ''
+        else:
+            cmc_key = self.cmn_key or ''
+
         headers = {
             'Content-Type': 'application/json',
             # TIS identification headers
@@ -218,12 +225,17 @@ class EtimsConfig(models.Model):
             # KRA authentication headers (required per OSCU spec)
             'tin': self.tin or '',
             'bhfId': self.bhf_id or '',
+            'cmcKey': cmc_key,
         }
-        # cmcKey: empty string for init (we don't have it yet), actual key otherwise
-        if for_init:
-            headers['cmcKey'] = ''
-        else:
-            headers['cmcKey'] = self.cmn_key or ''
+
+        # Log headers for debugging (mask sensitive data)
+        _logger.info(
+            'eTIMS Headers prepared: tin=%s, bhfId=%s, cmcKey=%s (for_init=%s)',
+            self.tin or '(empty)',
+            self.bhf_id or '(empty)',
+            '***' + cmc_key[-4:] if cmc_key and len(cmc_key) > 4 else ('(empty)' if not cmc_key else cmc_key),
+            for_init
+        )
 
         return headers
 
@@ -560,11 +572,12 @@ class EtimsConfig(models.Model):
         self.ensure_one()
 
         # Build initialization request
-        # Per OSCU spec: only tin, bhfId, and dvcSrlNo are required
+        # Per OSCU spec: tin, bhfId, dvcSrlNo required; cmcKey empty for init
         data = {
             'tin': self.tin,
             'bhfId': self.bhf_id,
             'dvcSrlNo': self.dvc_srl_no,
+            'cmcKey': '',  # Empty for initialization - we're requesting this key
         }
 
         # Try configured URL pattern first, then alternative if it fails
@@ -585,16 +598,25 @@ class EtimsConfig(models.Model):
         last_error = None
         for base_url, pattern in url_patterns:
             url = base_url + '/selectInitOsdcInfo'
-            _logger.info('OSCU Init Request to %s (pattern: %s): %s',
-                        url, pattern, json.dumps(data, indent=2))
+            headers = self._prepare_headers(for_init=True)
+
+            _logger.info('OSCU Init Request to %s (pattern: %s)', url, pattern)
+            _logger.info('OSCU Init Request Body: %s', json.dumps(data, indent=2))
+            _logger.info('OSCU Init Request Headers: %s', {k: v for k, v in headers.items() if k != 'cmcKey'})
 
             try:
                 response = requests.post(
                     url,
                     json=data,
-                    headers=self._prepare_headers(for_init=True),
+                    headers=headers,
                     timeout=60  # Longer timeout for initialization
                 )
+
+                # Log raw response for debugging
+                _logger.info('OSCU Init Response Status: %s', response.status_code)
+                _logger.info('OSCU Init Response Headers: %s', dict(response.headers))
+                _logger.info('OSCU Init Response Body: %s', response.text[:2000] if response.text else '(empty)')
+
                 response.raise_for_status()
                 result = response.json()
 
