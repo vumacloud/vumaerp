@@ -191,19 +191,41 @@ class EtimsConfig(models.Model):
                 return PRODUCTION_URL_NO_PREFIX
             return PRODUCTION_URL_WITH_PREFIX
 
-    def _prepare_headers(self):
+    def _prepare_headers(self, for_init=False):
         """
         Prepare HTTP headers for API request.
 
-        Includes TIS identification headers for KRA eTIMS:
+        KRA eTIMS OSCU spec requires authentication fields as HTTP headers,
+        not just in the JSON body. This includes:
+        - tin: Taxpayer Identification Number (KRA PIN)
+        - bhfId: Branch ID
+        - cmcKey: Communication key (empty string for initialization)
+
+        Also includes TIS identification headers:
         - X-TIS-Name: Trader Invoicing System name (VumaERP)
         - X-TIS-Version: TIS version number
+
+        Args:
+            for_init: If True, sends empty cmcKey (for device initialization).
+                      If False, sends the stored communication key.
         """
-        return {
+        self.ensure_one()
+        headers = {
             'Content-Type': 'application/json',
+            # TIS identification headers
             'X-TIS-Name': TIS_NAME,
             'X-TIS-Version': TIS_VERSION,
+            # KRA authentication headers (required per OSCU spec)
+            'tin': self.tin or '',
+            'bhfId': self.bhf_id or '',
         }
+        # cmcKey: empty string for init (we don't have it yet), actual key otherwise
+        if for_init:
+            headers['cmcKey'] = ''
+        else:
+            headers['cmcKey'] = self.cmn_key or ''
+
+        return headers
 
     def _call_api(self, endpoint, data):
         """
@@ -570,7 +592,7 @@ class EtimsConfig(models.Model):
                 response = requests.post(
                     url,
                     json=data,
-                    headers=self._prepare_headers(),
+                    headers=self._prepare_headers(for_init=True),
                     timeout=60  # Longer timeout for initialization
                 )
                 response.raise_for_status()
